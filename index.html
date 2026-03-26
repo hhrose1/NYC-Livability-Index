@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NYC Neighborhood Explorer</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🗽 NYC Neighborhood Explorer</h1>
+            <p class="subtitle">Find your perfect NYC neighborhood based on what matters most to you</p>
+        </header>
+
+        <div class="controls-panel">
+            <h2 class="controls-header">Set Your Priorities</h2>
+            
+            <div class="budget-section">
+                <div class="budget-input-group">
+                    <label for="budget">Maximum Monthly Rent:</label>
+                    <input type="number" id="budget" placeholder="e.g., 2500" step="100" min="0">
+                    <span style="color: #666; font-size: 0.9rem;">(Leave blank for no limit)</span>
+                </div>
+            </div>
+
+            <div class="sliders-grid">
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>🛡️ Safety</span>
+                        <span class="slider-value" id="safety-value">50</span>
+                    </div>
+                    <input type="range" id="safety" min="0" max="100" value="50">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>🚇 Transit Access</span>
+                        <span class="slider-value" id="transit-value">50</span>
+                    </div>
+                    <input type="range" id="transit" min="0" max="100" value="50">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>💰 Affordability</span>
+                        <span class="slider-value" id="affordability-value">50</span>
+                    </div>
+                    <input type="range" id="affordability" min="0" max="100" value="50">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>🎉 Nightlife</span>
+                        <span class="slider-value" id="nightlife-value">50</span>
+                    </div>
+                    <input type="range" id="nightlife" min="0" max="100" value="50">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>🚶 Walkability</span>
+                        <span class="slider-value" id="walkability-value">50</span>
+                    </div>
+                    <input type="range" id="walkability" min="0" max="100" value="50">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>🏫 School Quality</span>
+                        <span class="slider-value" id="schools-value">50</span>
+                    </div>
+                    <input type="range" id="schools" min="0" max="100" value="50">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>🛒 Grocery Access</span>
+                        <span class="slider-value" id="groceries-value">50</span>
+                    </div>
+                    <input type="range" id="groceries" min="0" max="100" value="50">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>🌳 Park Access</span>
+                        <span class="slider-value" id="parks-value">50</span>
+                    </div>
+                    <input type="range" id="parks" min="0" max="100" value="50">
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="findNeighborhoods()">Find My Neighborhoods</button>
+                <button class="btn-secondary" onclick="resetFilters()">Reset</button>
+            </div>
+        </div>
+
+        <div class="results-section" id="results-section" style="display: none;">
+            <div class="results-header">
+                <span>Top Matches</span>
+                <span class="results-count" id="results-count"></span>
+            </div>
+            <div class="cards-container" id="cards-container"></div>
+        </div>
+    </div>
+
+    <script src="data/neighborhoods.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
