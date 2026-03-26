@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subway Safety Lookup - NYC Neighborhood Explorer</title>
+    <link rel="stylesheet" href="css/subway.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚇 NYC Subway Safety Lookup</h1>
+            <p class="subtitle">Check the safety and perception ratings for any subway station</p>
+            <nav>
+                <a href="index.html">← Back to Neighborhood Explorer</a>
+            </nav>
+        </header>
+
+        <div class="search-panel">
+            <h2 class="panel-header">Find Your Station</h2>
+            <div class="search-box">
+                <input 
+                    type="text" 
+                    id="station-search" 
+                    placeholder="Start typing a station name... (e.g., Union Square, 14 St, Times Sq)"
+                    autocomplete="off"
+                >
+                <div id="search-results" class="search-results"></div>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <h2 class="panel-header">Understanding the Scores</h2>
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="info-icon">🔢</div>
+                    <h3>Safety Index</h3>
+                    <p>This number evaluates both the actual safety and the perception of safety at any given station. Both are heavily influenced by ridership, safety of the surrounding area, isolation, and presence of law enforcement.</p>
+                </div>
+                
+                <div class="info-card">
+                    <div class="info-icon">⚠️</div>
+                    <h3>Crime Index</h3>
+                    <p>While the NYC subway system is overwhelmingly safe, some stations have higher rates of crime. This number shows the safety of your chosen station relative to others: a value of 100 means that station is among the highest in terms of crime incidence, <strong>not</strong> that you have a 100% chance of experiencing a crime.</p>
+                </div>
+                
+                <div class="info-card">
+                    <div class="info-icon">👁️</div>
+                    <h3>Sketchy Index</h3>
+                    <p>This number evaluates the perception of safety, calculated primarily by isolation and online reports. Since this combines both nighttime and daytime perception, a station may be perfectly fine during the day but feel less safe at night.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="station-result" id="station-result" style="display: none;">
+            <div class="result-header">
+                <h2 id="station-name"></h2>
+                <div id="station-precinct" class="precinct-badge"></div>
+            </div>
+            
+            <div class="scores-grid">
+                <div class="score-card safety">
+                    <div class="score-label">Overall Safety Index</div>
+                    <div class="score-value" id="safety-score">--</div>
+                    <div class="score-bar">
+                        <div class="score-fill" id="safety-fill"></div>
+                    </div>
+                    <div class="score-description" id="safety-desc"></div>
+                </div>
+                
+                <div class="score-card crime">
+                    <div class="score-label">Crime Index</div>
+                    <div class="score-value" id="crime-score">--</div>
+                    <div class="score-bar">
+                        <div class="score-fill" id="crime-fill"></div>
+                    </div>
+                    <div class="score-description" id="crime-desc"></div>
+                </div>
+                
+                <div class="score-card sketchy">
+                    <div class="score-label">Sketchy Index</div>
+                    <div class="score-value" id="sketchy-score">--</div>
+                    <div class="score-bar">
+                        <div class="score-fill" id="sketchy-fill"></div>
+                    </div>
+                    <div class="score-description" id="sketchy-desc"></div>
+                </div>
+            </div>
+
+            <div class="additional-info">
+                <h3>Additional Details</h3>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <span class="detail-label">Average Daily Ridership</span>
+                        <span class="detail-value" id="ridership">--</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Precinct</span>
+                        <span class="detail-value" id="precinct-detail">--</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="data/subway-stations.js"></script>
+    <script src="js/subway.js"></script>
+</body>
+</html>
