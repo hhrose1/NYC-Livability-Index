@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transportation - NYC Livability Index</title>
     <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/subway.css">
+    <link rel="stylesheet" href="css/transportation.css">
 </head>
 <body>
     <nav class="top-nav">
@@ -21,12 +21,14 @@
         </div>
     </nav>
 
-    <main class="page-content">
-        <section class="page-header">
-            <h1>🚇 NYC Subway Safety</h1>
+    <div class="hero-image">
+        <div class="hero-overlay">
+            <h1>NYC Subway Safety</h1>
             <p>Check the safety and perception ratings for any subway station</p>
-        </section>
+        </div>
+    </div>
 
+    <main class="page-content">
         <div class="search-panel">
             <h2>Find Your Station</h2>
             <div class="search-box">
@@ -44,19 +46,16 @@
             <h2>Understanding the Scores</h2>
             <div class="info-grid">
                 <div class="info-card">
-                    <div class="info-icon">🔢</div>
                     <h3>Safety Index</h3>
                     <p>This number evaluates both the actual safety and the perception of safety at any given station. Both are heavily influenced by ridership, safety of the surrounding area, isolation, and presence of law enforcement.</p>
                 </div>
                 
                 <div class="info-card">
-                    <div class="info-icon">⚠️</div>
                     <h3>Crime Index</h3>
                     <p>While the NYC subway system is overwhelmingly safe, some stations have higher rates of crime. This number shows the safety of your chosen station relative to others: a value of 100 means that station is among the highest in terms of crime incidence, <strong>not</strong> that you have a 100% chance of experiencing a crime.</p>
                 </div>
                 
                 <div class="info-card">
-                    <div class="info-icon">👁️</div>
                     <h3>Sketchy Index</h3>
                     <p>This number evaluates the perception of safety, calculated primarily by isolation and online reports. Since this combines both nighttime and daytime perception, a station may be perfectly fine during the day but feel less safe at night.</p>
                 </div>
