@@ -7,62 +7,69 @@
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-    <nav class="main-nav">
+    <nav class="top-nav">
         <div class="nav-container">
-            <a href="index.html" class="logo">NYC Livability Index</a>
-            <ul class="nav-links">
-                <li><a href="transportation.html">Transportation</a></li>
-                <li><a href="apartments.html">Searching for Apartments</a></li>
-                <li><a href="livability.html">Livability Mapping</a></li>
-                <li><a href="visitors.html">For Visitors</a></li>
-                <li><a href="social.html">The Social Index</a></li>
-            </ul>
+            <a href="index.html" class="nav-logo">NYC Livability Index</a>
+            <div class="nav-menu">
+                <a href="transportation.html" class="nav-item">
+                    <span class="nav-icon">🚇</span>
+                    <span>Transportation</span>
+                </a>
+                <a href="apartments.html" class="nav-item">
+                    <span class="nav-icon">🏠</span>
+                    <span>Searching for Apartments</span>
+                </a>
+                <a href="livability.html" class="nav-item">
+                    <span class="nav-icon">🗺️</span>
+                    <span>Livability Mapping</span>
+                </a>
+                <a href="visitors.html" class="nav-item">
+                    <span class="nav-icon">✈️</span>
+                    <span>For Visitors</span>
+                </a>
+                <a href="social.html" class="nav-item">
+                    <span class="nav-icon">🎭</span>
+                    <span>The Social Index</span>
+                </a>
+            </div>
         </div>
     </nav>
 
-    <main class="content">
+    <main>
         <section class="hero">
-            <h1>New York City Livability Index</h1>
-            <p class="subtitle">A comprehensive guide to moving to and living in the greatest city in the world</p>
-        </section>
-
-        <section class="intro">
-            <p>Welcome to the New York City Livability Index. Created by a transplant who didn't know quite where to look, the New York City Livability Index provides a comprehensive guide to the city. We've tracked neighborhood safety, transit safety, and mapped the city, and will gradually expand this website to make it even more comprehensive with live database connection, StreetEasy-powered rent tracking, and we gradually hope to become the place you come to when you're moving to the big apple.</p>
-            <p>So welcome to the greatest city in the world: hope you enjoy your stay.</p>
-        </section>
-
-        <section class="features">
-            <div class="feature-card">
-                <h2>Transportation</h2>
-                <p>Comprehensive subway safety ratings and transit accessibility data for every station in NYC.</p>
-                <a href="transportation.html" class="btn">Explore →</a>
-            </div>
-
-            <div class="feature-card">
-                <h2>Searching for Apartments</h2>
-                <p>HPD violation guides, building safety checks, and essential tools for NYC apartment hunters.</p>
-                <a href="apartments.html" class="btn">Learn More →</a>
-            </div>
-
-            <div class="feature-card">
-                <h2>Livability Mapping</h2>
-                <p>Interactive neighborhood explorer with 111 NYC neighborhoods ranked by your priorities.</p>
-                <a href="livability.html" class="btn">Find Your Neighborhood →</a>
-            </div>
-
-            <div class="feature-card coming-soon">
-                <h2>For Visitors</h2>
-                <p>Coming Soon</p>
-            </div>
-
-            <div class="feature-card coming-soon">
-                <h2>The Social Index</h2>
-                <p>Coming Soon - Groups, organizations, and things to do in the city</p>
+            <div class="hero-overlay">
+                <h1>New York City Livability Index</h1>
+                <p class="hero-subtitle">A comprehensive guide to moving to and living in the greatest city in the world</p>
             </div>
         </section>
 
-        <section class="feedback">
-            <p><strong>Note:</strong> If you find any of the information on this website to be inaccurate, please reach out. I'm open to feedback, and happy to make changes.</p>
+        <section class="welcome">
+            <div class="content-block">
+                <h2>Welcome</h2>
+                <p>Created by a transplant who didn't know quite where to look, the New York City Livability Index provides a comprehensive guide to the city. We've tracked neighborhood safety, transit safety, and mapped the city, and will gradually expand this website to make it even more comprehensive with live database connection, StreetEasy-powered rent tracking, and we gradually hope to become the place you come to when you're moving to the big apple.</p>
+                <p><strong>So welcome to the greatest city in the world: hope you enjoy your stay.</strong></p>
+            </div>
+        </section>
+
+        <section class="stats">
+            <div class="stat-box">
+                <div class="stat-number">111</div>
+                <div class="stat-label">Neighborhoods Mapped</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">422</div>
+                <div class="stat-label">Subway Stations Rated</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">383</div>
+                <div class="stat-label">HPD Violation Codes</div>
+            </div>
+        </section>
+
+        <section class="info-block">
+            <div class="content-block disclaimer">
+                <p><strong>Note:</strong> If you find any of the information on this website to be inaccurate, please reach out. I'm open to feedback, and happy to make changes.</p>
+            </div>
         </section>
     </main>
 
