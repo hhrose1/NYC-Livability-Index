@@ -411,3 +411,63 @@ button {
         padding: 20px;
     }
 }
+
+.hpd-warning {
+    background: #fff3cd;
+    border: 2px solid #ffc107;
+    border-radius: 8px;
+    padding: 35px;
+    margin-bottom: 40px;
+}
+
+.hpd-warning h2 {
+    color: #001f3f;
+    margin-bottom: 15px;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.warning-text {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    margin-bottom: 25px;
+    color: #333;
+}
+
+.hpd-buttons {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.btn-hpd-primary,
+.btn-hpd-secondary {
+    padding: 14px 28px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s;
+    display: inline-block;
+}
+
+.btn-hpd-primary {
+    background: #001f3f;
+    color: white;
+}
+
+.btn-hpd-primary:hover {
+    background: #003366;
+    transform: translateY(-2px);
+}
+
+.btn-hpd-secondary {
+    background: white;
+    color: #001f3f;
+    border: 2px solid #001f3f;
+}
+
+.btn-hpd-secondary:hover {
+    background: #f8f9fa;
+    transform: translateY(-2px);
+}
