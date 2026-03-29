@@ -84,10 +84,10 @@ function displayStation(station) {
     document.getElementById('sketchy-desc').textContent = getSketchyDescription(sketchyIndex);
     
     // Additional info
-    const ridership = station['Average Ridership'] || 0;
-    document.getElementById('ridership').textContent = ridership > 0 
-        ? ridership.toLocaleString() + ' passengers' 
-        : 'N/A';
+const ridership = station['Average Ridership'] || 'N/A';
+document.getElementById('ridership').textContent = ridership !== 'N/A'
+    ? ridership + ' passengers' 
+    : 'N/A';
     document.getElementById('precinct-detail').textContent = precinct;
     
     // Scroll to results
