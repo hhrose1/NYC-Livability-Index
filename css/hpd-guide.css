@@ -1,120 +1,116 @@
-/* How to Check Section */
+/* Page Layout */
+.page-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 60px 30px 80px;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 50px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    color: #001f3f;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.page-header p {
+    font-size: 1.15rem;
+    color: #666;
+}
+
+/* Compact How to Check */
 .how-to-section {
     background: white;
     border: 1px solid #e0e0e0;
     border-radius: 8px;
-    padding: 40px;
-    margin-bottom: 40px;
+    padding: 35px;
+    margin-bottom: 30px;
 }
 
 .how-to-section h2 {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     color: #001f3f;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
     font-weight: 700;
 }
 
-.steps {
+.steps-horizontal {
     display: grid;
-    gap: 25px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
 }
 
-.step {
-    display: flex;
-    gap: 25px;
-    padding: 25px;
+.step-box {
     background: #f8f9fa;
+    border: 2px solid #001f3f;
     border-radius: 8px;
-    border-left: 4px solid #001f3f;
+    padding: 20px;
+    text-align: center;
 }
 
-.step-number {
+.step-num {
     background: #001f3f;
     color: white;
-    width: 50px;
-    height: 50px;
+    width: 35px;
+    height: 35px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
     font-weight: 700;
-    flex-shrink: 0;
-}
-
-.step-content h3 {
-    color: #001f3f;
-    margin-bottom: 10px;
     font-size: 1.2rem;
-    font-weight: 600;
+    margin: 0 auto 12px;
 }
 
-.step-content p {
-    margin-bottom: 10px;
-    color: #555;
-    line-height: 1.6;
-}
-
-.step-content ul {
-    margin-left: 20px;
-    color: #555;
-}
-
-.step-content li {
-    margin-bottom: 8px;
-    line-height: 1.6;
-}
-
-.step-content a {
+.step-box h3 {
     color: #001f3f;
-    text-decoration: underline;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
 }
 
-/* Tips Section */
-.tips-section {
+.step-box p {
+    font-size: 0.85rem;
+    color: #555;
+    line-height: 1.5;
+}
+
+/* Compact Tips */
+.tips-compact {
     background: white;
     border: 1px solid #e0e0e0;
     border-radius: 8px;
-    padding: 40px;
-    margin-bottom: 40px;
+    padding: 35px;
+    margin-bottom: 30px;
 }
 
-.tips-section h2 {
-    font-size: 1.8rem;
+.tips-compact h2 {
+    font-size: 1.5rem;
     color: #001f3f;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     font-weight: 700;
 }
 
-.tips-grid {
+.tips-compact ul {
+    list-style: none;
+    padding: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
 }
 
-.tip-box {
+.tips-compact li {
+    padding: 12px 15px;
     background: #f8f9fa;
-    padding: 25px;
-    border-radius: 8px;
-    border: 1px solid #e0e0e0;
-}
-
-.tip-box.critical {
-    background: #fff3cd;
-    border: 2px solid #ffc107;
-}
-
-.tip-box h3 {
-    color: #001f3f;
-    margin-bottom: 12px;
-    font-size: 1.1rem;
-    font-weight: 600;
-}
-
-.tip-box p {
-    color: #555;
-    line-height: 1.6;
+    border-radius: 6px;
     font-size: 0.95rem;
+    line-height: 1.5;
 }
 
 /* Reference Table */
@@ -122,12 +118,12 @@
     background: white;
     border: 1px solid #e0e0e0;
     border-radius: 8px;
-    padding: 40px;
-    margin-bottom: 40px;
+    padding: 35px;
+    margin-bottom: 30px;
 }
 
 .reference-section h2 {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     color: #001f3f;
     margin-bottom: 25px;
     font-weight: 700;
@@ -168,11 +164,11 @@
     background: white;
     border: 1px solid #e0e0e0;
     border-radius: 8px;
-    padding: 40px;
+    padding: 35px;
 }
 
 .code-lookup h2 {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     color: #001f3f;
     margin-bottom: 15px;
     font-weight: 700;
@@ -321,24 +317,18 @@
     color: #999;
 }
 
-@media (max-width: 768px) {
-    .how-to-section,
-    .tips-section,
-    .reference-section,
-    .code-lookup {
-        padding: 25px;
+@media (max-width: 968px) {
+    .steps-horizontal {
+        grid-template-columns: repeat(2, 1fr);
     }
-
-    .tips-grid {
+    
+    .tips-compact ul {
         grid-template-columns: 1fr;
     }
+}
 
-    .step {
-        flex-direction: column;
-    }
-
-    .violation-header {
-        flex-direction: column;
-        align-items: flex-start;
+@media (max-width: 640px) {
+    .steps-horizontal {
+        grid-template-columns: 1fr;
     }
 }
