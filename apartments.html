@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Searching for Apartments - NYC Livability Index</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">NYC Livability Index</a>
+            <div class="nav-links">
+                <a href="transportation.html">Transportation</a>
+                <a href="apartments.html">Searching for Apartments</a>
+                <a href="livability.html">Livability Mapping</a>
+                <a href="visitors.html">For Visitors</a>
+                <a href="social.html">The Social Index</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="page-content">
+        <section class="page-header">
+            <h1>🏠 Searching for Apartments</h1>
+            <p>Find your perfect neighborhood and check building violations</p>
+        </section>
+
+        <!-- HPD Warning Box -->
+        <div class="hpd-warning">
+            <div class="warning-icon">⚠️</div>
+            <h2>Before You Even Consider an Apartment</h2>
+            <p class="warning-text">
+                You <strong>MUST</strong> check HPD violations. HPD (Housing Preservation and Development) tracks building code violations, including heat/hot water complaints, pest infestations, structural issues, and landlord neglect. These violations reveal the true condition of a building that landlords won't tell you about.
+            </p>
+            <div class="hpd-buttons">
+                <a href="https://hpdonline.nyc.gov/hpdonline/" target="_blank" class="btn-hpd-primary">
+                    🔍 Search HPD Violations
+                </a>
+                <a href="hpd-guide.html" class="btn-hpd-secondary">
+                    📖 Violation Guide (What Each Code Means)
+                </a>
+            </div>
+        </div>
+
+        <!-- Neighborhood Explorer -->
+        <div class="controls-panel">
+            <h2 class="controls-header">Find Your Perfect Neighborhood</h2>
+            
+            <div class="budget-section">
+                <div class="budget-input-group">
+                    <label for="budget">Maximum Monthly Rent:</label>
+                    <input type="number" id="budget" placeholder="e.g., 2500" step="100" min="0">
+                    <span style="color: #666; font-size: 0.9rem;">(Leave blank for no limit)</span>
+                </div>
+            </div>
+
+            <div class="sliders-grid">
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>🛡️ Safety</span>
+                        <span class="slider-value" id="safety-value">50</span>
+                    </div>
+                    <input type="range" id="safety" min="0" max="100" value="50">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>🚇 Transit Access</span>
+                        <span class="slider-value" id="transit-value">50</span>
+                    </div>
+                    <input type="range" id="transit" min="0" max="100" value="50">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>💰 Affordability</span>
+                        <span class="slider-value" id="affordability-value">50</span>
+                    </div>
+                    <input type="range" id="affordability" min="0" max="100" value="50">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>🎉 Nightlife</span>
+                        <span class="slider-value" id="nightlife-value">50</span>
+                    </div>
+                    <input type="range" id="nightlife" min="0" max="100" value="50">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>🚶 Walkability</span>
+                        <span class="slider-value" id="walkability-value">50</span>
+                    </div>
+                    <input type="range" id="walkability" min="0" max="100" value="50">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>🏫 School Quality</span>
+                        <span class="slider-value" id="schools-value">50</span>
+                    </div>
+                    <input type="range" id="schools" min="0" max="100" value="50">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>🛒 Grocery Access</span>
+                        <span class="slider-value" id="groceries-value">50</span>
+                    </div>
+                    <input type="range" id="groceries" min="0" max="100" value="50">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>🌳 Park Access</span>
+                        <span class="slider-value" id="parks-value">50</span>
+                    </div>
+                    <input type="range" id="parks" min="0" max="100" value="50">
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="findNeighborhoods()">Find My Neighborhoods</button>
+                <button class="btn-secondary" onclick="resetFilters()">Reset</button>
+            </div>
+        </div>
+
+        <div class="results-section" id="results-section" style="display: none;">
+            <div class="results-header">
+                <span>Top Matches</span>
+                <span class="results-count" id="results-count"></span>
+            </div>
+            <div class="cards-container" id="cards-container"></div>
+        </div>
+    </main>
+
+    <footer>
+        <p>NYC Livability Index | Built for transplants, by a transplant</p>
+        <p class="feedback-note">If you find any information to be inaccurate, please reach out. I'm open to feedback.</p>
+    </footer>
+
+    <script src="data/neighborhoods.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
