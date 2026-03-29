@@ -1,0 +1,46 @@
+.placeholder-container {
+    min-height: 70vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.construction-icon {
+    font-size: 8rem;
+    margin-bottom: 30px;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+.placeholder-container h1 {
+    font-size: 3rem;
+    color: #001f3f;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.placeholder-container p {
+    font-size: 1.2rem;
+    color: #666;
+    max-width: 600px;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+.check-back {
+    font-weight: 600;
+    color: #001f3f;
+    font-size: 1.3rem !important;
+    margin-top: 20px;
+}
