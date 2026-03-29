@@ -1,29 +1,42 @@
+/* Hero Image Section */
+.hero-image {
+    height: 350px;
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                url('https://images.unsplash.com/photo-1532105956626-9569c03602f6?w=1600');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-image .hero-overlay {
+    text-align: center;
+    color: white;
+    max-width: 900px;
+    padding: 0 20px;
+}
+
+.hero-image h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    letter-spacing: -1px;
+}
+
+.hero-image p {
+    font-size: 1.2rem;
+    font-weight: 300;
+}
+
 /* Page Layout */
 .page-content {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 40px 30px 80px;
+    padding: 60px 30px 80px;
 }
 
-.page-header {
-    text-align: center;
-    margin-bottom: 50px;
-    padding-bottom: 30px;
-    border-bottom: 1px solid #e0e0e0;
-}
-
-.page-header h1 {
-    font-size: 2.5rem;
-    color: #001f3f;
-    margin-bottom: 10px;
-    font-weight: 700;
-}
-
-.page-header p {
-    font-size: 1.15rem;
-    color: #666;
-}
-
+/* Search Panel */
 .search-panel {
     background: white;
     border: 1px solid #e0e0e0;
@@ -48,14 +61,13 @@
     padding: 18px 24px;
     font-size: 1.1rem;
     border: 2px solid #e0e0e0;
-    border-radius: 12px;
+    border-radius: 8px;
     transition: all 0.3s;
 }
 
 #station-search:focus {
     outline: none;
-    border-color: #4facfe;
-    box-shadow: 0 0 0 4px rgba(79, 172, 254, 0.1);
+    border-color: #001f3f;
 }
 
 .search-results {
@@ -66,7 +78,7 @@
     background: white;
     border: 2px solid #e0e0e0;
     border-top: none;
-    border-radius: 0 0 12px 12px;
+    border-radius: 0 0 8px 8px;
     max-height: 400px;
     overflow-y: auto;
     display: none;
@@ -99,11 +111,7 @@
     margin-bottom: 4px;
 }
 
-.result-station-lines {
-    font-size: 0.85rem;
-    color: #666;
-}
-
+/* Info Panel */
 .info-panel {
     background: white;
     border: 1px solid #e0e0e0;
@@ -130,18 +138,13 @@
     padding: 25px;
     border-radius: 8px;
     border: 1px solid #e0e0e0;
-    text-align: center;
-}
-
-.info-icon {
-    font-size: 3rem;
-    margin-bottom: 15px;
 }
 
 .info-card h3 {
-    font-size: 1.3rem;
-    color: #333;
+    font-size: 1.2rem;
+    color: #001f3f;
     margin-bottom: 12px;
+    font-weight: 600;
 }
 
 .info-card p {
@@ -150,6 +153,7 @@
     color: #555;
 }
 
+/* Station Result */
 .station-result {
     background: white;
     border: 1px solid #e0e0e0;
@@ -163,14 +167,14 @@
     align-items: center;
     margin-bottom: 30px;
     padding-bottom: 20px;
-    border-bottom: 2px solid #f0f0f0;
+    border-bottom: 1px solid #e0e0e0;
     flex-wrap: wrap;
     gap: 15px;
 }
 
 .result-header h2 {
     font-size: 2rem;
-    color: #333;
+    color: #001f3f;
 }
 
 .precinct-badge {
@@ -229,15 +233,15 @@
 }
 
 .score-card.safety .score-fill {
-    background: linear-gradient(90deg, #11998e 0%, #38ef7d 100%);
+    background: #28a745;
 }
 
 .score-card.crime .score-fill {
-    background: linear-gradient(90deg, #ee0979 0%, #ff6a00 100%);
+    background: #dc3545;
 }
 
 .score-card.sketchy .score-fill {
-    background: linear-gradient(90deg, #f2994a 0%, #f2c94c 100%);
+    background: #ffc107;
 }
 
 .score-description {
@@ -249,13 +253,15 @@
 .additional-info {
     background: #f8f9fa;
     padding: 25px;
-    border-radius: 12px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
 }
 
 .additional-info h3 {
     font-size: 1.3rem;
-    color: #333;
+    color: #001f3f;
     margin-bottom: 20px;
+    font-weight: 600;
 }
 
 .detail-grid {
@@ -285,7 +291,7 @@
 }
 
 @media (max-width: 768px) {
-    h1 {
+    .hero-image h1 {
         font-size: 2rem;
     }
 
@@ -300,13 +306,5 @@
     .result-header {
         flex-direction: column;
         align-items: flex-start;
-    }
-
-    .station-result {
-        padding: 25px;
-    }
-
-    .search-panel {
-        padding: 20px;
     }
 }
