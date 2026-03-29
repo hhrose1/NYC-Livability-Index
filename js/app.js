@@ -109,8 +109,9 @@ function displayResults(neighborhoods) {
         const walkScore = n['Walk Score'] || 'N/A';
         const nightlifeScore = n['Nightlife/Social Score'] || 'N/A';
 
-        return `
-            <div class="neighborhood-card">
+const neighborhoodSlug = n['Neighborhood'].toLowerCase().replace(/[^a-z0-9]+/g, '-');
+return `
+    <div class="neighborhood-card" onclick="window.location.href='${neighborhoodSlug}.html'" style="cursor: pointer;">
                 <div class="card-rank">${index + 1}</div>
                 <div class="card-header">
                     <div class="card-title">${n['Neighborhood']}</div>
