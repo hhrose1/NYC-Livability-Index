@@ -3,131 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NYC Neighborhood Explorer</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>New York City Livability Index</title>
+    <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🗽 NYC Neighborhood Explorer</h1>
-            <p class="subtitle">Find your perfect NYC neighborhood based on what matters most to you</p>
-            <nav>
-                <a href="subway.html">🚇 Check Subway Safety</a>
-            </nav>
-        </header>
-
-        <div class="controls-panel">
-            <h2 class="controls-header">Set Your Priorities</h2>
-            
-            <div class="budget-section">
-                <div class="budget-input-group">
-                    <label for="budget">Maximum Monthly Rent:</label>
-                    <input type="number" id="budget" placeholder="e.g., 2500" step="100" min="0">
-                    <span style="color: #666; font-size: 0.9rem;">(Leave blank for no limit)</span>
-                </div>
-            </div>
-
-            <div class="sliders-grid">
-                <div class="slider-group">
-                    <div class="slider-label">
-                        <span>🛡️ Safety</span>
-                        <span class="slider-value" id="safety-value">50</span>
-                    </div>
-                    <input type="range" id="safety" min="0" max="100" value="50">
-                </div>
-
-                <div class="slider-group">
-                    <div class="slider-label">
-                        <span>🚇 Transit Access</span>
-                        <span class="slider-value" id="transit-value">50</span>
-                    </div>
-                    <input type="range" id="transit" min="0" max="100" value="50">
-                </div>
-
-                <div class="slider-group">
-                    <div class="slider-label">
-                        <span>💰 Affordability</span>
-                        <span class="slider-value" id="affordability-value">50</span>
-                    </div>
-                    <input type="range" id="affordability" min="0" max="100" value="50">
-                </div>
-
-                <div class="slider-group">
-                    <div class="slider-label">
-                        <span>🎉 Nightlife</span>
-                        <span class="slider-value" id="nightlife-value">50</span>
-                    </div>
-                    <input type="range" id="nightlife" min="0" max="100" value="50">
-                </div>
-
-                <div class="slider-group">
-                    <div class="slider-label">
-                        <span>🚶 Walkability</span>
-                        <span class="slider-value" id="walkability-value">50</span>
-                    </div>
-                    <input type="range" id="walkability" min="0" max="100" value="50">
-                </div>
-
-                <div class="slider-group">
-                    <div class="slider-label">
-                        <span>🏫 School Quality</span>
-                        <span class="slider-value" id="schools-value">50</span>
-                    </div>
-                    <input type="range" id="schools" min="0" max="100" value="50">
-                </div>
-
-                <div class="slider-group">
-                    <div class="slider-label">
-                        <span>🛒 Grocery Access</span>
-                        <span class="slider-value" id="groceries-value">50</span>
-                    </div>
-                    <input type="range" id="groceries" min="0" max="100" value="50">
-                </div>
-
-                <div class="slider-group">
-                    <div class="slider-label">
-                        <span>🌳 Park Access</span>
-                        <span class="slider-value" id="parks-value">50</span>
-                    </div>
-                    <input type="range" id="parks" min="0" max="100" value="50">
-                </div>
-            </div>
-
-            <div class="button-group">
-                <button class="btn-primary" onclick="findNeighborhoods()">Find My Neighborhoods</button>
-                <button class="btn-secondary" onclick="resetFilters()">Reset</button>
-            </div>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="logo">NYC Livability Index</a>
+            <ul class="nav-links">
+                <li><a href="transportation.html">Transportation</a></li>
+                <li><a href="apartments.html">Searching for Apartments</a></li>
+                <li><a href="livability.html">Livability Mapping</a></li>
+                <li><a href="visitors.html">For Visitors</a></li>
+                <li><a href="social.html">The Social Index</a></li>
+            </ul>
         </div>
-<div class="map-section">
-            <h2 class="map-header">NYC Neighborhood Map</h2>
-            <div class="map-container">
-                <iframe src="https://www.google.com/maps/d/u/0/embed?mid=1KxB9LGhnoBdYkNQoOvej5EwSwbxvlXA&ehbc=2E312F&noprof=1" width="100%" height="600"></iframe>
+    </nav>
+
+    <main class="content">
+        <section class="hero">
+            <h1>New York City Livability Index</h1>
+            <p class="subtitle">A comprehensive guide to moving to and living in the greatest city in the world</p>
+        </section>
+
+        <section class="intro">
+            <p>Welcome to the New York City Livability Index. Created by a transplant who didn't know quite where to look, the New York City Livability Index provides a comprehensive guide to the city. We've tracked neighborhood safety, transit safety, and mapped the city, and will gradually expand this website to make it even more comprehensive with live database connection, StreetEasy-powered rent tracking, and we gradually hope to become the place you come to when you're moving to the big apple.</p>
+            <p>So welcome to the greatest city in the world: hope you enjoy your stay.</p>
+        </section>
+
+        <section class="features">
+            <div class="feature-card">
+                <h2>Transportation</h2>
+                <p>Comprehensive subway safety ratings and transit accessibility data for every station in NYC.</p>
+                <a href="transportation.html" class="btn">Explore →</a>
             </div>
-        </div>
-        <div class="results-section" id="results-section" style="display: none;">
-            <div class="results-header">
-                <span>Top Matches</span>
-                <span class="results-count" id="results-count"></span>
+
+            <div class="feature-card">
+                <h2>Searching for Apartments</h2>
+                <p>HPD violation guides, building safety checks, and essential tools for NYC apartment hunters.</p>
+                <a href="apartments.html" class="btn">Learn More →</a>
             </div>
-            <div class="cards-container" id="cards-container"></div>
-        </div>
-    </div>
-<div class="hpd-warning">
-            <div class="warning-icon">⚠️</div>
-            <h2>Before You Even Consider an Apartment</h2>
-            <p class="warning-text">
-                You <strong>MUST</strong> check HPD violations. HPD (Housing Preservation and Development) tracks building code violations, including heat/hot water complaints, pest infestations, structural issues, and landlord neglect. These violations reveal the true condition of a building that landlords won't tell you about.
-            </p>
-            <div class="hpd-buttons">
-                <a href="https://hpdonline.nyc.gov/hpdonline/" target="_blank" class="btn-hpd-primary">
-                    🔍 Search HPD Violations
-                </a>
-                <a href="hpd-guide.html" class="btn-hpd-secondary">
-                    📖 Violation Guide (What Each Code Means)
-                </a>
+
+            <div class="feature-card">
+                <h2>Livability Mapping</h2>
+                <p>Interactive neighborhood explorer with 111 NYC neighborhoods ranked by your priorities.</p>
+                <a href="livability.html" class="btn">Find Your Neighborhood →</a>
             </div>
-        </div>
-    <script src="data/neighborhoods.js"></script>
-    <script src="js/app.js"></script>
+
+            <div class="feature-card coming-soon">
+                <h2>For Visitors</h2>
+                <p>Coming Soon</p>
+            </div>
+
+            <div class="feature-card coming-soon">
+                <h2>The Social Index</h2>
+                <p>Coming Soon - Groups, organizations, and things to do in the city</p>
+            </div>
+        </section>
+
+        <section class="feedback">
+            <p><strong>Note:</strong> If you find any of the information on this website to be inaccurate, please reach out. I'm open to feedback, and happy to make changes.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>NYC Livability Index | Built for transplants, by a transplant</p>
+    </footer>
 </body>
 </html>
