@@ -36,21 +36,35 @@ function findNeighborhoods() {
     const budget = document.getElementById('budget').value;
     const maxRent = budget ? parseFloat(budget) : Infinity;
 
+    // Helper function to parse rent from range string (e.g., "3600-5200")
+    function parseRent(rentRange) {
+        if (!rentRange || rentRange === '') return null;
+        if (typeof rentRange === 'number') return rentRange;
+        
+        // If it's a range like "3600-5200", take the minimum value
+        const parts = rentRange.toString().split('-');
+        return parseFloat(parts[0]);
+    }
+
     // Calculate min/max for normalization
-    const rentValues = NEIGHBORHOODS.map(n => n['Median Studio Rent']).filter(r => r > 0);
+    const rentValues = NEIGHBORHOODS.map(n => parseRent(n['Studio Rent Range'])).filter(r => r !== null && r > 0);
     const minRent = Math.min(...rentValues);
     const maxRent_data = Math.max(...rentValues);
 
     // Filter and score neighborhoods
     let scoredNeighborhoods = NEIGHBORHOODS
         .filter(n => {
-            const rent = n['Median Studio Rent'] || 0;
-            return rent === 0 || rent <= maxRent;
+            const rent = parseRent(n['Studio Rent Range']);
+            if (!rent) return true; // Include if no rent data
+            return rent <= maxRent;
         })
         .map(n => {
             const safetyScore = (n['Safety Score (/10)'] || 0) * 10;
             const transitScore = n['Transit Access Score'] || 0;
-            const affordabilityScore = normalizeScore(n['Median Studio Rent'] || maxRent_data, minRent, maxRent_data, true);
+            
+            const rent = parseRent(n['Studio Rent Range']);
+            const affordabilityScore = rent ? normalizeScore(rent, minRent, maxRent_data, true) : 50;
+            
             const nightlifeScore = (n['Nightlife/Social Score'] || 0) * 20;
             const walkabilityScore = n['Walk Score'] || 0;
             const schoolsScore = n['School Quality Score'] || 0;
