@@ -62,7 +62,7 @@ function findNeighborhoods() {
             const safetyScore = (n['Safety Score (/10)'] || 0) * 10;
             const transitScore = n['Transit Access Score'] || 0;
             
-            const rent = parseRent(n['Studio Rent Range']);
+            const rent = n['Studio Rent Range'] ? `$${n['Studio Rent Range']}` : 'N/A';
             const affordabilityScore = rent ? normalizeScore(rent, minRent, maxRent_data, true) : 50;
             
             const nightlifeScore = (n['Nightlife/Social Score'] || 0) * 20;
