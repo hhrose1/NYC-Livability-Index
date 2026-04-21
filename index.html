@@ -24,8 +24,15 @@
     <main>
         <section class="hero-compact">
             <div class="hero-content">
-                <h1>Moving to New York City?</h1>
-                <p class="tagline">We'll help you find the right neighborhood</p>
+                <h1>Find your corner of the city.</h1>
+                <p class="tagline">Data-driven neighborhood search for NYC</p>
+            </div>
+            <div class="hero-visual">
+                <div class="hero-collage">
+                    <div class="collage-img"></div>
+                    <div class="collage-img"></div>
+                    <div class="collage-img"></div>
+                </div>
             </div>
         </section>
 
@@ -42,13 +49,28 @@
                         
                         <div class="search-item">
                             <label>Top Priority</label>
-                            <select id="quick-priority">
-                                <option value="safety">Safety</option>
-                                <option value="transit">Transit Access</option>
-                                <option value="affordability">Affordability</option>
-                                <option value="nightlife">Nightlife</option>
-                                <option value="walkability">Walkability</option>
-                            </select>
+                            <div class="priority-chips">
+                                <button class="priority-chip active" data-priority="safety">
+                                    <span class="chip-icon">🛡️</span>
+                                    <span>Safety</span>
+                                </button>
+                                <button class="priority-chip" data-priority="transit">
+                                    <span class="chip-icon">🚇</span>
+                                    <span>Transit</span>
+                                </button>
+                                <button class="priority-chip" data-priority="nightlife">
+                                    <span class="chip-icon">🍕</span>
+                                    <span>Nightlife</span>
+                                </button>
+                                <button class="priority-chip" data-priority="walkability">
+                                    <span class="chip-icon">🚶</span>
+                                    <span>Walkability</span>
+                                </button>
+                                <button class="priority-chip" data-priority="parks">
+                                    <span class="chip-icon">🌳</span>
+                                    <span>Parks</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     
@@ -91,16 +113,27 @@
     </footer>
 
     <script>
+        // Priority chip selection
+        const chips = document.querySelectorAll('.priority-chip');
+        let selectedPriority = 'safety';
+        
+        chips.forEach(chip => {
+            chip.addEventListener('click', function() {
+                chips.forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                selectedPriority = this.dataset.priority;
+            });
+        });
+        
         function goToSearch() {
             const budget = document.getElementById('quick-budget').value;
-            const priority = document.getElementById('quick-priority').value;
             
             // Store in sessionStorage so apartments page can read it
             if (budget) {
                 sessionStorage.setItem('quickSearchBudget', budget);
             }
-            if (priority) {
-                sessionStorage.setItem('quickSearchPriority', priority);
+            if (selectedPriority) {
+                sessionStorage.setItem('quickSearchPriority', selectedPriority);
             }
             
             // Go to apartments page
