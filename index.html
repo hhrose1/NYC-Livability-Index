@@ -95,18 +95,16 @@
             const budget = document.getElementById('quick-budget').value;
             const priority = document.getElementById('quick-priority').value;
             
-            // Build URL with parameters
-            let url = 'apartments.html';
-            const params = [];
-            
-            if (budget) params.push(`budget=${budget}`);
-            if (priority) params.push(`priority=${priority}`);
-            
-            if (params.length > 0) {
-                url += '?' + params.join('&');
+            // Store in sessionStorage so apartments page can read it
+            if (budget) {
+                sessionStorage.setItem('quickSearchBudget', budget);
+            }
+            if (priority) {
+                sessionStorage.setItem('quickSearchPriority', priority);
             }
             
-            window.location.href = url;
+            // Go to apartments page
+            window.location.href = 'apartments.html';
         }
 
         // Allow Enter key to trigger search
