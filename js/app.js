@@ -16,7 +16,8 @@ window.addEventListener('DOMContentLoaded', function() {
                 'transit': 'transit',
                 'affordability': 'affordability',
                 'nightlife': 'nightlife',
-                'walkability': 'walkability'
+                'walkability': 'walkability',
+                'parks': 'parks'
             };
             
             const prioritySlider = priorityMap[quickPriority];
@@ -37,54 +38,88 @@ window.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-
 // Update slider value displays
 document.querySelectorAll('input[type="range"]').forEach(slider => {
-    const valueDisplay = document.getElementById(slider.id + '-value');
-    slider.addEventListener('input', (e) => {
-        valueDisplay.textContent = e.target.value;
-    });
+    if (!slider.classList.contains('weight-slider')) {
+        slider.addEventListener('input', function() {
+            document.getElementById(this.id + '-value').textContent = this.value;
+        });
+    }
 });
 
-function resetFilters() {
-    document.querySelectorAll('input[type="range"]').forEach(slider => {
-        slider.value = 50;
-        document.getElementById(slider.id + '-value').textContent = '50';
-    });
-    document.getElementById('budget').value = '';
-    document.getElementById('results-section').style.display = 'none';
+function normalizeScore(value, min, max, reverse = false) {
+    if (max === min) return 50;
+    let normalized = ((value - min) / (max - min)) * 100;
+    return reverse ? 100 - normalized : normalized;
 }
 
-function normalizeScore(value, min, max, invert = false) {
-    if (value === null || value === undefined || value === '') return 0;
-    const normalized = (value - min) / (max - min) * 100;
-    return invert ? 100 - normalized : normalized;
+function parseRent(rentRange) {
+    if (!rentRange || rentRange === '') return null;
+    if (typeof rentRange === 'number') return rentRange;
+    
+    // If it's a range like "3600-5200", take the minimum value
+    const parts = rentRange.toString().split('-');
+    return parseFloat(parts[0]);
+}
+
+function getBudgetPosition(budget, rentRange) {
+    if (!budget || !rentRange) return null;
+    
+    const parts = rentRange.toString().split('-');
+    if (parts.length !== 2) return null;
+    
+    const minRent = parseFloat(parts[0]);
+    const maxRent = parseFloat(parts[1]);
+    
+    if (budget < minRent) return 'below';
+    if (budget >= maxRent) return 'comfortable';
+    
+    const position = (budget - minRent) / (maxRent - minRent);
+    if (position < 0.33) return 'low';
+    if (position < 0.67) return 'mid';
+    return 'high';
 }
 
 function findNeighborhoods() {
-    const weights = {
-        safety: parseInt(document.getElementById('safety').value) / 100,
-        transit: parseInt(document.getElementById('transit').value) / 100,
-        affordability: parseInt(document.getElementById('affordability').value) / 100,
-        nightlife: parseInt(document.getElementById('nightlife').value) / 100,
-        walkability: parseInt(document.getElementById('walkability').value) / 100,
-        schools: parseInt(document.getElementById('schools').value) / 100,
-        groceries: parseInt(document.getElementById('groceries').value) / 100,
-        parks: parseInt(document.getElementById('parks').value) / 100
-    };
+    const isAdvancedMode = document.getElementById('advanced-mode').style.display === 'block';
+    
+    let weights;
+    
+    if (isAdvancedMode) {
+        // Use custom weights from advanced mode
+        const rawWeights = {
+            safety: parseInt(document.getElementById('weight-safety').value),
+            transit: parseInt(document.getElementById('weight-transit').value),
+            affordability: parseInt(document.getElementById('weight-affordability').value),
+            nightlife: parseInt(document.getElementById('weight-nightlife').value),
+            walkability: parseInt(document.getElementById('weight-walkability').value),
+            schools: parseInt(document.getElementById('weight-schools').value),
+            groceries: parseInt(document.getElementById('weight-groceries').value),
+            parks: parseInt(document.getElementById('weight-parks').value)
+        };
+        
+        // Normalize weights to sum to 1
+        const total = Object.values(rawWeights).reduce((a, b) => a + b, 0);
+        weights = {};
+        for (let key in rawWeights) {
+            weights[key] = total > 0 ? rawWeights[key] / total : 0.125;
+        }
+    } else {
+        // Use simple mode - convert slider values to weights
+        weights = {
+            safety: parseInt(document.getElementById('safety').value) / 100,
+            transit: parseInt(document.getElementById('transit').value) / 100,
+            affordability: parseInt(document.getElementById('affordability').value) / 100,
+            nightlife: parseInt(document.getElementById('nightlife').value) / 100,
+            walkability: parseInt(document.getElementById('walkability').value) / 100,
+            schools: parseInt(document.getElementById('schools').value) / 100,
+            groceries: parseInt(document.getElementById('groceries').value) / 100,
+            parks: parseInt(document.getElementById('parks').value) / 100
+        };
+    }
 
     const budget = document.getElementById('budget').value;
     const maxRent = budget ? parseFloat(budget) : Infinity;
-
-    // Helper function to parse rent from range string (e.g., "3600-5200")
-    function parseRent(rentRange) {
-        if (!rentRange || rentRange === '') return null;
-        if (typeof rentRange === 'number') return rentRange;
-        
-        // If it's a range like "3600-5200", take the minimum value
-        const parts = rentRange.toString().split('-');
-        return parseFloat(parts[0]);
-    }
 
     // Calculate min/max for normalization
     const rentValues = NEIGHBORHOODS.map(n => parseRent(n['Studio Rent Range'])).filter(r => r !== null && r > 0);
@@ -95,14 +130,14 @@ function findNeighborhoods() {
     let scoredNeighborhoods = NEIGHBORHOODS
         .filter(n => {
             const rent = parseRent(n['Studio Rent Range']);
-            if (!rent) return true; // Include if no rent data
+            if (!rent) return true;
             return rent <= maxRent;
         })
         .map(n => {
             const safetyScore = (n['Safety Score (/10)'] || 0) * 10;
             const transitScore = n['Transit Access Score'] || 0;
             
-            const rent = n['Studio Rent Range'] ? `$${n['Studio Rent Range']}` : 'N/A';
+            const rent = parseRent(n['Studio Rent Range']);
             const affordabilityScore = rent ? normalizeScore(rent, minRent, maxRent_data, true) : 50;
             
             const nightlifeScore = (n['Nightlife/Social Score'] || 0) * 20;
@@ -111,7 +146,9 @@ function findNeighborhoods() {
             const groceriesScore = (n['Grocery Store Density'] || 0) * 20;
             const parksScore = (n['Park Access Score'] || 0) * 20;
 
-            const matchScore = (
+            const totalWeight = Object.values(weights).reduce((a, b) => a + b, 0);
+            
+            const matchScore = totalWeight > 0 ? (
                 safetyScore * weights.safety +
                 transitScore * weights.transit +
                 affordabilityScore * weights.affordability +
@@ -120,11 +157,12 @@ function findNeighborhoods() {
                 schoolsScore * weights.schools +
                 groceriesScore * weights.groceries +
                 parksScore * weights.parks
-            ) / Object.values(weights).reduce((a, b) => a + b, 0);
+            ) / totalWeight : 0;
 
             return {
                 ...n,
-                matchScore: Math.round(matchScore)
+                matchScore: Math.round(matchScore),
+                budgetPosition: budget ? getBudgetPosition(parseFloat(budget), n['Studio Rent Range']) : null
             };
         })
         .sort((a, b) => b.matchScore - a.matchScore);
@@ -137,78 +175,110 @@ function displayResults(neighborhoods) {
     const cardsContainer = document.getElementById('cards-container');
     const resultsCount = document.getElementById('results-count');
 
-    resultsSection.style.display = 'block';
-    resultsCount.textContent = `(${neighborhoods.length} neighborhoods found)`;
-
     if (neighborhoods.length === 0) {
-        cardsContainer.innerHTML = `
-            <div class="no-results">
-                <div class="no-results-icon">🔍</div>
-                <div class="no-results-text">No neighborhoods found</div>
-                <div class="no-results-hint">Try adjusting your budget or priorities</div>
-            </div>
-        `;
+        resultsSection.style.display = 'none';
         return;
     }
 
-    cardsContainer.innerHTML = neighborhoods.slice(0, 20).map((n, index) => {
-        const safetyClass = n['Map Color'] === 'Green' ? 'safety-green' : 
-                           n['Map Color'] === 'Yellow' ? 'safety-yellow' : 'safety-red';
-        const safetyLabel = n['Map Color'] === 'Green' ? '✓ Safe' : 
-                           n['Map Color'] === 'Yellow' ? '⚠ Moderate' : '⚠ Caution';
+    resultsSection.style.display = 'block';
+    resultsCount.textContent = `${neighborhoods.length} neighborhoods found`;
+    cardsContainer.innerHTML = '';
 
-        const rent = n['Median Studio Rent'] ? `$${n['Median Studio Rent'].toLocaleString()}` : 'N/A';
-        const safetyScore = n['Safety Score (/10)'] ? n['Safety Score (/10)'].toFixed(1) : 'N/A';
-        const transitScore = n['Transit Access Score'] || 'N/A';
-        const walkScore = n['Walk Score'] || 'N/A';
-        const nightlifeScore = n['Nightlife/Social Score'] || 'N/A';
+    const topResults = neighborhoods.slice(0, 20);
 
-const neighborhoodSlug = n['Neighborhood'].toLowerCase().replace(/[^a-z0-9]+/g, '-');
-return `
-    <div class="neighborhood-card" onclick="window.location.href='${neighborhoodSlug}.html'" style="cursor: pointer;">
-                <div class="card-rank">${index + 1}</div>
-                <div class="card-header">
-                    <div class="card-title">${n['Neighborhood']}</div>
-                    <div class="card-borough">${n['Borough']}</div>
-                    <div class="safety-badge ${safetyClass}">${safetyLabel}</div>
+    topResults.forEach(n => {
+        const card = document.createElement('a');
+        card.className = 'neighborhood-card';
+        card.href = `${n.Neighborhood.toLowerCase().replace(/\s+/g, '-')}.html`;
+
+        // Safety badge
+        const safetyScore = n['Safety Score (/10)'] || 0;
+        let safetyClass = 'red';
+        if (safetyScore >= 7) safetyClass = 'green';
+        else if (safetyScore >= 5) safetyClass = 'yellow';
+
+        // Rent display with budget position
+        const rentRange = n['Studio Rent Range'] ? `$${n['Studio Rent Range']}` : 'N/A';
+        let budgetIndicator = '';
+        
+        if (n.budgetPosition) {
+            const indicators = {
+                'comfortable': '<span class="budget-indicator comfortable">✓ Comfortable budget</span>',
+                'high': '<span class="budget-indicator good">Good budget position</span>',
+                'mid': '<span class="budget-indicator mid">Mid-range budget</span>',
+                'low': '<span class="budget-indicator low">⚠ Lower end - expect trade-offs</span>',
+                'below': '<span class="budget-indicator below">Below range minimum</span>'
+            };
+            budgetIndicator = indicators[n.budgetPosition] || '';
+        }
+
+        // Composite Livability Score
+        const compositeScore = n['Composite Livability Score'] ? Math.round(n['Composite Livability Score']) : 'N/A';
+
+        card.innerHTML = `
+            <div class="card-header">
+                <div>
+                    <div class="card-title">${n.Neighborhood}</div>
+                    <div class="card-borough">${n.Borough}</div>
                 </div>
-                <div class="card-stats">
-                    <div class="stat-item">
-                        <div class="stat-label">Rent</div>
-                        <div class="stat-value">${rent}</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Safety</div>
-                        <div class="stat-value">${safetyScore}/10</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Transit</div>
-                        <div class="stat-value">${transitScore}/100</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Walk Score</div>
-                        <div class="stat-value">${walkScore}/100</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Nightlife</div>
-                        <div class="stat-value">${nightlifeScore}/5</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Stations</div>
-                        <div class="stat-value">${n['# Stations in Area']}</div>
-                    </div>
+                <div class="match-score">${n.matchScore}</div>
+            </div>
+            <div class="safety-badge ${safetyClass}">
+                Safety: ${safetyScore}/10
+            </div>
+            <div class="card-stats">
+                <div class="stat-row">
+                    <span class="stat-label">Rent Range:</span>
+                    <span class="stat-value">${rentRange}</span>
                 </div>
-                <div class="match-score">
-                    <div class="match-score-label">Match Score</div>
-                    <div class="match-score-value">${n.matchScore}/100</div>
+                ${budgetIndicator}
+                <div class="stat-row">
+                    <span class="stat-label">Livability Index:</span>
+                    <span class="stat-value">${compositeScore}/100</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Transit:</span>
+                    <span class="stat-value">${n['Transit Access Score'] || 'N/A'}/100</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Walk Score:</span>
+                    <span class="stat-value">${n['Walk Score'] || 'N/A'}</span>
                 </div>
             </div>
         `;
-    }).join('');
 
-    // Scroll to results
-    resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        cardsContainer.appendChild(card);
+    });
 }
 
-// Initial state
-resetFilters();
+function resetFilters() {
+    document.getElementById('budget').value = '';
+    
+    // Reset simple mode sliders
+    document.querySelectorAll('#simple-mode input[type="range"]').forEach(slider => {
+        slider.value = 50;
+        document.getElementById(slider.id + '-value').textContent = 50;
+    });
+    
+    // Reset advanced mode weights
+    const defaultWeights = {
+        'weight-safety': 20,
+        'weight-transit': 15,
+        'weight-affordability': 15,
+        'weight-nightlife': 10,
+        'weight-walkability': 15,
+        'weight-schools': 10,
+        'weight-groceries': 10,
+        'weight-parks': 5
+    };
+    
+    for (let id in defaultWeights) {
+        const slider = document.getElementById(id);
+        if (slider) {
+            slider.value = defaultWeights[id];
+            document.getElementById(id + '-value').textContent = defaultWeights[id] + '%';
+        }
+    }
+    
+    document.getElementById('results-section').style.display = 'none';
+}
