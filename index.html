@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NYC Livability Index - Find Your Perfect NYC Neighborhood</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/homepage.css">
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">NYC Livability Index</a>
+            <div class="nav-links">
+                <a href="transportation.html">Transportation</a>
+                <a href="apartments.html">Searching for Apartments</a>
+                <a href="livability.html">Livability Mapping</a>
+                <a href="visitors.html">For Visitors</a>
+                <a href="social.html">The Social Index</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero-compact">
+            <div class="hero-content">
+                <h1>Moving to New York City?</h1>
+                <p class="tagline">We'll help you find the right neighborhood</p>
+            </div>
+        </section>
+
+        <section class="search-section">
+            <div class="search-container">
+                <h2>What matters most to you?</h2>
+                
+                <div class="quick-search">
+                    <div class="search-row">
+                        <div class="search-item">
+                            <label>Maximum Rent (Studio)</label>
+                            <input type="number" id="quick-budget" placeholder="e.g., 2500" step="100">
+                        </div>
+                        
+                        <div class="search-item">
+                            <label>Top Priority</label>
+                            <select id="quick-priority">
+                                <option value="safety">Safety</option>
+                                <option value="transit">Transit Access</option>
+                                <option value="affordability">Affordability</option>
+                                <option value="nightlife">Nightlife</option>
+                                <option value="walkability">Walkability</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button class="btn-search" onclick="goToSearch()">Search Neighborhoods</button>
+                    <a href="apartments.html" class="link-advanced">Advanced search with all filters →</a>
+                </div>
+
+                <div class="tool-cards">
+                    <a href="transportation.html" class="tool-card">
+                        <div class="tool-icon">🚇</div>
+                        <h3>Subway Safety</h3>
+                        <p>Check safety ratings for 423 stations</p>
+                    </a>
+
+                    <a href="apartments.html#hpd" class="tool-card">
+                        <div class="tool-icon">📋</div>
+                        <h3>HPD Violations</h3>
+                        <p>Learn what building codes mean</p>
+                    </a>
+
+                    <a href="livability.html" class="tool-card">
+                        <div class="tool-icon">🗺️</div>
+                        <h3>Interactive Map</h3>
+                        <p>Explore color-coded neighborhoods</p>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-section">
+            <div class="about-content">
+                <p>Created by a transplant who didn't know where to look, the NYC Livability Index provides data-driven neighborhood rankings, subway safety ratings, and building violation guides. We're gradually expanding with live database connections and StreetEasy-powered rent tracking.</p>
+                <p class="feedback">If you find any information to be inaccurate, please reach out. I'm open to feedback.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>NYC Livability Index | Built for transplants, by a transplant</p>
+    </footer>
+
+    <script>
+        function goToSearch() {
+            const budget = document.getElementById('quick-budget').value;
+            const priority = document.getElementById('quick-priority').value;
+            
+            // Build URL with parameters
+            let url = 'apartments.html';
+            const params = [];
+            
+            if (budget) params.push(`budget=${budget}`);
+            if (priority) params.push(`priority=${priority}`);
+            
+            if (params.length > 0) {
+                url += '?' + params.join('&');
+            }
+            
+            window.location.href = url;
+        }
+
+        // Allow Enter key to trigger search
+        document.getElementById('quick-budget')?.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') goToSearch();
+        });
+    </script>
+</body>
+</html>
