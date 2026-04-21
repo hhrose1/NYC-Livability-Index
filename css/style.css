@@ -299,7 +299,45 @@ body {
     outline: none;
     border-color: #001f3f;
 }
+/* Borough Filter */
+.borough-section {
+    margin-bottom: 25px;
+}
 
+.borough-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #333;
+    font-size: 0.95rem;
+}
+
+.borough-chips {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.borough-chip {
+    padding: 10px 18px;
+    border: 2px solid #e0e0e0;
+    background: white;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.borough-chip:hover {
+    border-color: #001f3f;
+}
+
+.borough-chip.active {
+    background: #001f3f;
+    color: white;
+    border-color: #001f3f;
+}
 .sliders-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
