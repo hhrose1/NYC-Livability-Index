@@ -43,9 +43,18 @@
             </div>
         </div>
 
+        <!-- Budget Reality Disclaimer -->
+        <div class="budget-disclaimer">
+            <h3>Understanding Your Budget</h3>
+            <p>This tool shows neighborhoods within your budget along with typical rent ranges. <strong>If your budget falls at the lower end of a neighborhood's range, expect trade-offs:</strong> you may need to accept a walk-up apartment, less space, or a harder search process (walking neighborhoods to find postings, working with brokers, waiting for word-of-mouth opportunities rather than relying on StreetEasy).</p>
+        </div>
+
         <!-- Neighborhood Explorer -->
         <div class="controls-panel">
-            <h2 class="controls-header">Find Your Perfect Neighborhood</h2>
+            <div class="controls-header-row">
+                <h2 class="controls-header">Find Your Perfect Neighborhood</h2>
+                <button class="toggle-advanced" id="toggleAdvanced">Advanced Options</button>
+            </div>
             
             <div class="rent-disclaimer">
                 <strong>Note:</strong> Rent values shown are median studio rents only. This means neighborhoods with high medians may still have affordable options (for example, Brownsville's median is $1,700 but studios can be found for $850). One-bedroom, two-bedroom, and condo data coming soon.
@@ -59,69 +68,145 @@
                 </div>
             </div>
 
-            <div class="sliders-grid">
-                <div class="slider-group">
-                    <div class="slider-label">
-                        <span>🛡️ Safety</span>
-                        <span class="slider-value" id="safety-value">50</span>
+            <!-- Simple Mode (Default) -->
+            <div id="simple-mode" class="search-mode active">
+                <h3 class="mode-title">Quick Search - Pick Your Top Priorities</h3>
+                <div class="sliders-grid">
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>🛡️ Safety</span>
+                            <span class="slider-value" id="safety-value">50</span>
+                        </div>
+                        <input type="range" id="safety" min="0" max="100" value="50">
                     </div>
-                    <input type="range" id="safety" min="0" max="100" value="50">
-                </div>
 
-                <div class="slider-group">
-                    <div class="slider-label">
-                        <span>🚇 Transit Access</span>
-                        <span class="slider-value" id="transit-value">50</span>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>🚇 Transit Access</span>
+                            <span class="slider-value" id="transit-value">50</span>
+                        </div>
+                        <input type="range" id="transit" min="0" max="100" value="50">
                     </div>
-                    <input type="range" id="transit" min="0" max="100" value="50">
-                </div>
 
-                <div class="slider-group">
-                    <div class="slider-label">
-                        <span>💰 Affordability</span>
-                        <span class="slider-value" id="affordability-value">50</span>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>💰 Affordability</span>
+                            <span class="slider-value" id="affordability-value">50</span>
+                        </div>
+                        <input type="range" id="affordability" min="0" max="100" value="50">
                     </div>
-                    <input type="range" id="affordability" min="0" max="100" value="50">
-                </div>
 
-                <div class="slider-group">
-                    <div class="slider-label">
-                        <span>🎉 Nightlife</span>
-                        <span class="slider-value" id="nightlife-value">50</span>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>🎉 Nightlife</span>
+                            <span class="slider-value" id="nightlife-value">50</span>
+                        </div>
+                        <input type="range" id="nightlife" min="0" max="100" value="50">
                     </div>
-                    <input type="range" id="nightlife" min="0" max="100" value="50">
-                </div>
 
-                <div class="slider-group">
-                    <div class="slider-label">
-                        <span>🚶 Walkability</span>
-                        <span class="slider-value" id="walkability-value">50</span>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>🚶 Walkability</span>
+                            <span class="slider-value" id="walkability-value">50</span>
+                        </div>
+                        <input type="range" id="walkability" min="0" max="100" value="50">
                     </div>
-                    <input type="range" id="walkability" min="0" max="100" value="50">
-                </div>
 
-                <div class="slider-group">
-                    <div class="slider-label">
-                        <span>🏫 School Quality</span>
-                        <span class="slider-value" id="schools-value">50</span>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>🏫 School Quality</span>
+                            <span class="slider-value" id="schools-value">50</span>
+                        </div>
+                        <input type="range" id="schools" min="0" max="100" value="50">
                     </div>
-                    <input type="range" id="schools" min="0" max="100" value="50">
-                </div>
 
-                <div class="slider-group">
-                    <div class="slider-label">
-                        <span>🛒 Grocery Access</span>
-                        <span class="slider-value" id="groceries-value">50</span>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>🛒 Grocery Access</span>
+                            <span class="slider-value" id="groceries-value">50</span>
+                        </div>
+                        <input type="range" id="groceries" min="0" max="100" value="50">
                     </div>
-                    <input type="range" id="groceries" min="0" max="100" value="50">
-                </div>
 
-                <div class="slider-group">
-                    <div class="slider-label">
-                        <span>🌳 Park Access</span>
-                        <span class="slider-value" id="parks-value">50</span>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>🌳 Park Access</span>
+                            <span class="slider-value" id="parks-value">50</span>
+                        </div>
+                        <input type="range" id="parks" min="0" max="100" value="50">
                     </div>
-                    <input type="range" id="parks" min="0" max="100" value="50">
+                </div>
+            </div>
+
+            <!-- Advanced Mode (Hidden by default) -->
+            <div id="advanced-mode" class="search-mode" style="display: none;">
+                <h3 class="mode-title">Advanced - Build Your Custom Livability Index</h3>
+                <p class="mode-description">Adjust the importance (weight) of each factor. Higher weights = more important to you. Total weights will be normalized automatically.</p>
+                
+                <div class="weight-sliders-grid">
+                    <div class="weight-slider-group">
+                        <div class="weight-label">
+                            <span>🛡️ Safety Weight</span>
+                            <span class="weight-value" id="weight-safety-value">20%</span>
+                        </div>
+                        <input type="range" id="weight-safety" min="0" max="100" value="20" class="weight-slider">
+                    </div>
+
+                    <div class="weight-slider-group">
+                        <div class="weight-label">
+                            <span>🚇 Transit Access Weight</span>
+                            <span class="weight-value" id="weight-transit-value">15%</span>
+                        </div>
+                        <input type="range" id="weight-transit" min="0" max="100" value="15" class="weight-slider">
+                    </div>
+
+                    <div class="weight-slider-group">
+                        <div class="weight-label">
+                            <span>💰 Affordability Weight</span>
+                            <span class="weight-value" id="weight-affordability-value">15%</span>
+                        </div>
+                        <input type="range" id="weight-affordability" min="0" max="100" value="15" class="weight-slider">
+                    </div>
+
+                    <div class="weight-slider-group">
+                        <div class="weight-label">
+                            <span>🎉 Nightlife Weight</span>
+                            <span class="weight-value" id="weight-nightlife-value">10%</span>
+                        </div>
+                        <input type="range" id="weight-nightlife" min="0" max="100" value="10" class="weight-slider">
+                    </div>
+
+                    <div class="weight-slider-group">
+                        <div class="weight-label">
+                            <span>🚶 Walkability Weight</span>
+                            <span class="weight-value" id="weight-walkability-value">15%</span>
+                        </div>
+                        <input type="range" id="weight-walkability" min="0" max="100" value="15" class="weight-slider">
+                    </div>
+
+                    <div class="weight-slider-group">
+                        <div class="weight-label">
+                            <span>🏫 School Quality Weight</span>
+                            <span class="weight-value" id="weight-schools-value">10%</span>
+                        </div>
+                        <input type="range" id="weight-schools" min="0" max="100" value="10" class="weight-slider">
+                    </div>
+
+                    <div class="weight-slider-group">
+                        <div class="weight-label">
+                            <span>🛒 Grocery Access Weight</span>
+                            <span class="weight-value" id="weight-groceries-value">10%</span>
+                        </div>
+                        <input type="range" id="weight-groceries" min="0" max="100" value="10" class="weight-slider">
+                    </div>
+
+                    <div class="weight-slider-group">
+                        <div class="weight-label">
+                            <span>🌳 Park Access Weight</span>
+                            <span class="weight-value" id="weight-parks-value">5%</span>
+                        </div>
+                        <input type="range" id="weight-parks" min="0" max="100" value="5" class="weight-slider">
+                    </div>
                 </div>
             </div>
 
@@ -147,5 +232,31 @@
 
     <script src="data/neighborhoods.js"></script>
     <script src="js/app.js"></script>
+    <script>
+        // Toggle between simple and advanced mode
+        document.getElementById('toggleAdvanced').addEventListener('click', function() {
+            const simpleMode = document.getElementById('simple-mode');
+            const advancedMode = document.getElementById('advanced-mode');
+            const button = this;
+            
+            if (advancedMode.style.display === 'none') {
+                simpleMode.style.display = 'none';
+                advancedMode.style.display = 'block';
+                button.textContent = 'Simple Mode';
+            } else {
+                simpleMode.style.display = 'block';
+                advancedMode.style.display = 'none';
+                button.textContent = 'Advanced Options';
+            }
+        });
+
+        // Update weight slider displays
+        document.querySelectorAll('.weight-slider').forEach(slider => {
+            slider.addEventListener('input', function() {
+                const valueSpan = document.getElementById(this.id + '-value');
+                valueSpan.textContent = this.value + '%';
+            });
+        });
+    </script>
 </body>
 </html>
