@@ -127,8 +127,15 @@ function findNeighborhoods() {
     const maxRent_data = Math.max(...rentValues);
 
     // Filter and score neighborhoods
+    // Filter and score neighborhoods
     let scoredNeighborhoods = NEIGHBORHOODS
         .filter(n => {
+            // Borough filter
+            if (selectedBorough !== 'all' && n.Borough !== selectedBorough) {
+                return false;
+            }
+            
+            // Budget filter
             const rent = parseRent(n['Studio Rent Range']);
             if (!rent) return true;
             return rent <= maxRent;
@@ -282,3 +289,14 @@ function resetFilters() {
     
     document.getElementById('results-section').style.display = 'none';
 }
+
+// Borough filter
+let selectedBorough = 'all';
+
+document.querySelectorAll('.borough-chip').forEach(chip => {
+    chip.addEventListener('click', function() {
+        document.querySelectorAll('.borough-chip').forEach(c => c.classList.remove('active'));
+        this.classList.add('active');
+        selectedBorough = this.dataset.borough;
+    });
+});
