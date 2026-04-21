@@ -21,128 +21,149 @@
         </div>
     </nav>
 
-    <main>
-        <section class="hero-compact">
-            <div class="hero-content">
-                <h1>Find your corner of the city.</h1>
-                <p class="tagline">Data-driven neighborhood search for NYC</p>
-            </div>
-            <div class="hero-visual">
-                <div class="hero-collage">
-                    <div class="collage-img"></div>
-                    <div class="collage-img"></div>
-                    <div class="collage-img"></div>
-                </div>
-            </div>
-        </section>
+    <!-- Photo Collage Background -->
+    <div class="photo-collage">
+        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=600" alt="NYC Skyline" loading="lazy"></div>
+        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1518391846015-55a9cc003b25?w=600" alt="NYC Street" loading="lazy"></div>
+        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=600" alt="NYC Coffee Shop" loading="lazy"></div>
+        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600" alt="NYC Brownstone" loading="lazy"></div>
+        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1532105956626-9569c03602f6?w=600" alt="NYC Subway" loading="lazy"></div>
+        
+        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1514539079130-25950c84af65?w=600" alt="NYC Park" loading="lazy"></div>
+        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?w=600" alt="NYC People" loading="lazy"></div>
+        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1568515387631-8b650bbcdb90?w=600" alt="NYC Mural" loading="lazy"></div>
+        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1605649487212-47bdab064df7?w=600" alt="NYC Street Food" loading="lazy"></div>
+        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1490644658840-3f2e3f8c5625?w=600" alt="NYC Bridge" loading="lazy"></div>
+        
+        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1485871981521-5b1fd3805eee?w=600" alt="NYC Store" loading="lazy"></div>
+        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1513407030348-c983a97b98d8?w=600" alt="NYC Architecture" loading="lazy"></div>
+        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1519331379826-f10be5486c6f?w=600" alt="NYC Night" loading="lazy"></div>
+        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1555109307-f7d9da25c244?w=600" alt="NYC Life" loading="lazy"></div>
+        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1514565131-fce0801e5785?w=600" alt="NYC Scene" loading="lazy"></div>
+        
+        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1546484396-fb3fc6f95f98?w=600" alt="NYC Taxi" loading="lazy"></div>
+        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1518391846015-55a9cc003b25?w=600" alt="NYC Street 2" loading="lazy"></div>
+        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1508739773434-c26b3d09e071?w=600" alt="NYC Central Park" loading="lazy"></div>
+        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1518391846015-55a9cc003b25?w=600" alt="NYC Buildings" loading="lazy"></div>
+        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=600" alt="NYC Views" loading="lazy"></div>
+    </div>
 
-        <section class="search-section">
+    <!-- Main Content -->
+    <div class="content-wrapper">
+        <div class="hero-card">
+            <h1 class="hero-headline">Find your corner of the city.</h1>
+            
             <div class="search-container">
-                <h2>What matters most to you?</h2>
-                
-                <div class="quick-search">
-                    <div class="search-row">
-                        <div class="search-item">
-                            <label>Maximum Rent (Studio)</label>
-                            <input type="number" id="quick-budget" placeholder="e.g., 2500" step="100">
+                <div class="input-group">
+                    <label class="input-label">Monthly Budget</label>
+                    <input type="text" class="budget-input" placeholder="$2,500" id="budgetInput">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">What Matters Most</label>
+                    <div class="priority-chips">
+                        <div class="chip" data-priority="safety">
+                            <span class="chip-icon">🛡️</span>
+                            <span>Safety</span>
                         </div>
-                        
-                        <div class="search-item">
-                            <label>Top Priority</label>
-                            <div class="priority-chips">
-                                <button class="priority-chip active" data-priority="safety">
-                                    <span class="chip-icon">🛡️</span>
-                                    <span>Safety</span>
-                                </button>
-                                <button class="priority-chip" data-priority="transit">
-                                    <span class="chip-icon">🚇</span>
-                                    <span>Transit</span>
-                                </button>
-                                <button class="priority-chip" data-priority="nightlife">
-                                    <span class="chip-icon">🍕</span>
-                                    <span>Nightlife</span>
-                                </button>
-                                <button class="priority-chip" data-priority="walkability">
-                                    <span class="chip-icon">🚶</span>
-                                    <span>Walkability</span>
-                                </button>
-                                <button class="priority-chip" data-priority="parks">
-                                    <span class="chip-icon">🌳</span>
-                                    <span>Parks</span>
-                                </button>
-                            </div>
+                        <div class="chip" data-priority="transit">
+                            <span class="chip-icon">🚇</span>
+                            <span>Transit</span>
+                        </div>
+                        <div class="chip" data-priority="nightlife">
+                            <span class="chip-icon">🌃</span>
+                            <span>Nightlife</span>
+                        </div>
+                        <div class="chip" data-priority="walkability">
+                            <span class="chip-icon">🚶</span>
+                            <span>Walkability</span>
+                        </div>
+                        <div class="chip" data-priority="parks">
+                            <span class="chip-icon">🌳</span>
+                            <span>Parks</span>
                         </div>
                     </div>
-                    
-                    <button class="btn-search" onclick="goToSearch()">Search Neighborhoods</button>
-                    <a href="apartments.html" class="link-advanced">Advanced search with all filters →</a>
                 </div>
 
-                <div class="tool-cards">
-                    <a href="transportation.html" class="tool-card">
-                        <div class="tool-icon">🚇</div>
-                        <h3>Subway Safety</h3>
-                        <p>Check safety ratings for 423 stations</p>
-                    </a>
-
-                    <a href="apartments.html#hpd" class="tool-card">
-                        <div class="tool-icon">📋</div>
-                        <h3>HPD Violations</h3>
-                        <p>Learn what building codes mean</p>
-                    </a>
-
-                    <a href="livability.html" class="tool-card">
-                        <div class="tool-icon">🗺️</div>
-                        <h3>Interactive Map</h3>
-                        <p>Explore color-coded neighborhoods</p>
-                    </a>
-                </div>
+                <button class="search-button" id="searchBtn">Search Neighborhoods</button>
             </div>
-        </section>
 
-        <section class="about-section">
-            <div class="about-content">
-                <p>Created by a transplant who didn't know where to look, the NYC Livability Index provides data-driven neighborhood rankings, subway safety ratings, and building violation guides. We're gradually expanding with live database connections and StreetEasy-powered rent tracking.</p>
-                <p class="feedback">If you find any information to be inaccurate, please reach out. I'm open to feedback.</p>
+            <div class="tool-cards">
+                <a href="transportation.html" class="tool-card mta">
+                    <span class="tool-icon">🚇</span>
+                    <div class="tool-title">Subway Safety</div>
+                    <div class="tool-subtitle">Station Ratings</div>
+                </a>
+                <a href="apartments.html#hpd" class="tool-card taxi">
+                    <span class="tool-icon">⚠️</span>
+                    <div class="tool-title">HPD Violations</div>
+                    <div class="tool-subtitle">Building Reports</div>
+                </a>
+                <a href="livability.html" class="tool-card brick">
+                    <span class="tool-icon">🗺️</span>
+                    <div class="tool-title">Interactive Map</div>
+                    <div class="tool-subtitle">Explore NYC</div>
+                </a>
             </div>
-        </section>
-    </main>
-
-    <footer>
-        <p>NYC Livability Index | Built for transplants, by a transplant</p>
-    </footer>
+        </div>
+    </div>
 
     <script>
         // Priority chip selection
-        const chips = document.querySelectorAll('.priority-chip');
-        let selectedPriority = 'safety';
-        
+        const chips = document.querySelectorAll('.chip');
+        const selectedPriorities = new Set();
+
         chips.forEach(chip => {
-            chip.addEventListener('click', function() {
-                chips.forEach(c => c.classList.remove('active'));
-                this.classList.add('active');
-                selectedPriority = this.dataset.priority;
+            chip.addEventListener('click', () => {
+                const priority = chip.dataset.priority;
+                
+                if (chip.classList.contains('active')) {
+                    chip.classList.remove('active');
+                    selectedPriorities.delete(priority);
+                } else {
+                    chip.classList.add('active');
+                    selectedPriorities.add(priority);
+                }
             });
         });
-        
-        function goToSearch() {
-            const budget = document.getElementById('quick-budget').value;
-            
-            // Store in sessionStorage so apartments page can read it
-            if (budget) {
-                sessionStorage.setItem('quickSearchBudget', budget);
-            }
-            if (selectedPriority) {
-                sessionStorage.setItem('quickSearchPriority', selectedPriority);
-            }
-            
-            // Go to apartments page
-            window.location.href = 'apartments.html';
-        }
 
-        // Allow Enter key to trigger search
-        document.getElementById('quick-budget')?.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') goToSearch();
+        // Search button - goes to apartments page with selected values
+        document.getElementById('searchBtn').addEventListener('click', () => {
+            const budgetRaw = document.getElementById('budgetInput').value.replace(/[^0-9]/g, '');
+            const priorities = Array.from(selectedPriorities);
+            
+            // Store in sessionStorage
+            if (budgetRaw) {
+                sessionStorage.setItem('quickSearchBudget', budgetRaw);
+            }
+            if (priorities.length > 0) {
+                // Take first priority as the main one
+                sessionStorage.setItem('quickSearchPriority', priorities[0]);
+            }
+            
+            // Navigate to apartments page
+            window.location.href = 'apartments.html';
+        });
+
+        // Budget input formatting
+        const budgetInput = document.getElementById('budgetInput');
+        
+        budgetInput.addEventListener('blur', (e) => {
+            let value = e.target.value.replace(/[^0-9]/g, '');
+            if (value) {
+                e.target.value = '$' + parseInt(value).toLocaleString();
+            }
+        });
+
+        budgetInput.addEventListener('focus', (e) => {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+        });
+
+        // Enter key triggers search
+        budgetInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('searchBtn').click();
+            }
         });
     </script>
 </body>
