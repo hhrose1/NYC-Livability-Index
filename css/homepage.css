@@ -24,7 +24,7 @@
 
 /* Search Section */
 .search-section {
-    background: #fafafa;
+    background: white;
     padding: 60px 20px;
 }
 
@@ -133,6 +133,35 @@
     text-decoration: none;
     transition: all 0.3s;
     display: block;
+    position: relative;
+    overflow: hidden;
+    min-height: 200px;
+}
+
+.tool-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0.08;
+    z-index: 0;
+    transition: opacity 0.3s;
+}
+
+.tool-card:nth-child(1)::before {
+    background-image: url('https://images.unsplash.com/photo-1532105956626-9569c03602f6?w=600');
+}
+
+.tool-card:nth-child(2)::before {
+    background-image: url('https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600');
+}
+
+.tool-card:nth-child(3)::before {
+    background-image: url('https://images.unsplash.com/photo-1524661135-423995f22d0b?w=600');
 }
 
 .tool-card:hover {
@@ -141,9 +170,19 @@
     transform: translateY(-4px);
 }
 
+.tool-card:hover::before {
+    opacity: 0.12;
+}
+
+.tool-card > * {
+    position: relative;
+    z-index: 1;
+}
+
 .tool-icon {
     font-size: 3rem;
     margin-bottom: 15px;
+    display: none;
 }
 
 .tool-card h3 {
