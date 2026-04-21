@@ -1,3 +1,43 @@
+// Check if coming from quick search on homepage
+window.addEventListener('DOMContentLoaded', function() {
+    const quickBudget = sessionStorage.getItem('quickSearchBudget');
+    const quickPriority = sessionStorage.getItem('quickSearchPriority');
+    
+    if (quickBudget || quickPriority) {
+        // Set budget
+        if (quickBudget) {
+            document.getElementById('budget').value = quickBudget;
+        }
+        
+        // Set priority slider to 100, others to default
+        if (quickPriority) {
+            const priorityMap = {
+                'safety': 'safety',
+                'transit': 'transit',
+                'affordability': 'affordability',
+                'nightlife': 'nightlife',
+                'walkability': 'walkability'
+            };
+            
+            const prioritySlider = priorityMap[quickPriority];
+            if (prioritySlider) {
+                document.getElementById(prioritySlider).value = 100;
+                document.getElementById(prioritySlider + '-value').textContent = 100;
+            }
+        }
+        
+        // Clear session storage
+        sessionStorage.removeItem('quickSearchBudget');
+        sessionStorage.removeItem('quickSearchPriority');
+        
+        // Auto-run search
+        setTimeout(() => {
+            findNeighborhoods();
+        }, 100);
+    }
+});
+
+
 // Update slider value displays
 document.querySelectorAll('input[type="range"]').forEach(slider => {
     const valueDisplay = document.getElementById(slider.id + '-value');
