@@ -381,8 +381,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Set data timestamp
   $$('[data-last-updated]').forEach(el => { el.textContent = DATA_LAST_UPDATED; });
 
-  // Initialise multi-borough Set: all boroughs start active
-  $$('.borough-chip').forEach(c => selectedBoroughs.add(c.dataset.borough));
+  // Initialise multi-borough Set: starts empty (user must select manually)
+  // Empty set = no filter applied (all boroughs shown)
 
   // Restore from URL params first, then localStorage
   const urlParams = location.search;
@@ -414,17 +414,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Borough chips — multi-select toggle
+  // Borough chips — multi-select toggle (starts unselected; empty = all shown)
   $$('.borough-chip').forEach(chip => {
     chip.addEventListener('click', function() {
       const b = this.dataset.borough;
       if (selectedBoroughs.has(b)) {
         selectedBoroughs.delete(b);
         this.classList.remove('active');
-        // If nothing selected, reactivate all
-        if (selectedBoroughs.size === 0) {
-          $$('.borough-chip').forEach(c => { selectedBoroughs.add(c.dataset.borough); c.classList.add('active'); });
-        }
       } else {
         selectedBoroughs.add(b);
         this.classList.add('active');
@@ -448,9 +444,10 @@ document.addEventListener('DOMContentLoaded', () => {
     $('commute-dest') && ($('commute-dest').value = 'none');
     $('exclude-flood') && ($('exclude-flood').checked = false);
     $('require-ada') && ($('require-ada').checked = false);
-    // Re-activate all boroughs
+    // Reset boroughs: clear all selections (empty = all shown)
     selectedBoroughs.clear();
-    $$('.borough-chip').forEach(c => { selectedBoroughs.add(c.dataset.borough); c.classList.add('active'); });
+    $$('.borough-chip').forEach(c => c.classList.remove('active'));
+
     if ($('results-section')) $('results-section').style.display = 'none';
     showToast('Filters reset');
   });
