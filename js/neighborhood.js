@@ -281,13 +281,18 @@ async function render() {
       <span class="score-pill-label">Livability
         <span class="tooltip-wrap">
           <span class="tooltip-icon">?</span>
-          <span class="tooltip-text">Livability Score: Pre-computed overall rating | Match Score: Personalized to your priorities</span>
+          <span class="tooltip-text">Composite Livability Score (0–100): Weighted combination of Safety (30%), Transit Access (20%), Walk Score (15%), Restaurant Density (10%), Nightlife (10%), School Quality (5%), and Amenities — medical, grocery, parks (10% combined). Affordability is excluded so you can filter by budget and rank by quality separately.</span>
         </span>
       </span>
     </div>
     <div class="score-pill">
       <span class="score-pill-value">${safeScore}</span>
-      <span class="score-pill-label">Safety</span>
+      <span class="score-pill-label">Safety
+        <span class="tooltip-wrap">
+          <span class="tooltip-icon">?</span>
+          <span class="tooltip-text">Neighborhood Safety Score (0–10 scale, shown here /100): Crime per 1k residents (60%), transit crime per 1k (20%), avg Subway Sketchy Index (20%). Manhattan below 110th St and Downtown Brooklyn use ambient/daytime population instead of residential to avoid skewing scores in high-commuter areas.</span>
+        </span>
+      </span>
     </div>`);
 
   // ── Flood Zone Banner ───────────────────────────────────────
@@ -354,7 +359,7 @@ async function render() {
     <p class="methodology-note">Methodology coming soon
       <span class="tooltip-wrap">
         <span class="tooltip-icon">?</span>
-        <span class="tooltip-text">Livability Score: Pre-computed overall rating based on safety, transit, schools, and amenities.</span>
+        <span class="tooltip-text">Composite Livability Score (0–100): Safety 30%, Transit 20%, Walk Score 15%, Restaurant Density 10%, Nightlife 10%, Schools 5%, Amenities (medical + grocery + parks) 10%. Does not include affordability — budget is filtered separately.</span>
       </span>
     </p>`);
 
@@ -366,7 +371,7 @@ async function render() {
     <p class="methodology-note">Methodology: [To be provided]
       <span class="tooltip-wrap">
         <span class="tooltip-icon">?</span>
-        <span class="tooltip-text">Sketchy Index: Custom perception metric based on user reports and environmental factors. Methodology: [To be provided]</span>
+        <span class="tooltip-text">Subway Sketchy Index (0–100): Weighted score for each station — Precinct crime per 1k residents (45%), NYCHA proximity within 2 blocks (25%), qualitative sketchy mentions from Reddit/local news (15%), ridership rank (15%). Green = safest third, Yellow = middle third, Red = top-concern third. Yellow/red reflects relative ranking, not a guarantee of danger.</span>
       </span>
     </p>`);
 
