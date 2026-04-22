@@ -44,20 +44,20 @@ function showSpinner(show) {
 
 // ── Slider persistence ─────────────────────────────────────────
 function getSliderIds() {
-  return ['safety','transit','affordability','nightlife','walkability','schools','groceries','parks','commute','noise',
-          'weight-safety','weight-transit','weight-affordability','weight-nightlife','weight-walkability','weight-schools','weight-groceries','weight-parks'];
+  return ['safety', 'transit', 'affordability', 'nightlife', 'walkability', 'schools', 'groceries', 'parks', 'commute', 'noise',
+    'weight-safety', 'weight-transit', 'weight-affordability', 'weight-nightlife', 'weight-walkability', 'weight-schools', 'weight-groceries', 'weight-parks'];
 }
 
 function getThresholdIds() {
-  return ['safety','transit','affordability','nightlife','walkability','schools','groceries','parks','commute','noise']
-         .map(k => `thresh-${k}`);
+  return ['safety', 'transit', 'affordability', 'nightlife', 'walkability', 'schools', 'groceries', 'parks', 'commute', 'noise']
+    .map(k => `thresh-${k}`);
 }
 
 function saveSliderState() {
   const vals = {};
   getSliderIds().forEach(id => { const el = $(id); if (el) vals[id] = el.value; });
   getThresholdIds().forEach(id => { const el = $(id); if (el) vals[id] = el.value; });
-  try { localStorage.setItem(LS_KEYS.weights, JSON.stringify(vals)); } catch {}
+  try { localStorage.setItem(LS_KEYS.weights, JSON.stringify(vals)); } catch { }
 }
 
 function restoreSliderState(vals) {
@@ -84,7 +84,7 @@ function getSearchParams() {
   let weights = {};
 
   if (isAdvanced) {
-    const dims = ['safety','transit','affordability','nightlife','walkability','schools','groceries','parks'];
+    const dims = ['safety', 'transit', 'affordability', 'nightlife', 'walkability', 'schools', 'groceries', 'parks'];
     const raw = {};
     dims.forEach(d => { raw[d] = parseInt($(`weight-${d}`)?.value || 50); });
     const total = Object.values(raw).reduce((a, b) => a + b, 0) || 1;
@@ -92,12 +92,12 @@ function getSearchParams() {
     weights.commute = parseInt($('commute')?.value || 0);
     weights.noise = parseInt($('noise')?.value || 0);
   } else {
-    ['safety','transit','affordability','nightlife','walkability','schools','groceries','parks','commute','noise']
+    ['safety', 'transit', 'affordability', 'nightlife', 'walkability', 'schools', 'groceries', 'parks', 'commute', 'noise']
       .forEach(d => { weights[d] = parseInt($(d)?.value || 50); });
   }
 
   const thresholds = {};
-  ['safety','transit','affordability','nightlife','walkability','schools','groceries','parks','commute','noise']
+  ['safety', 'transit', 'affordability', 'nightlife', 'walkability', 'schools', 'groceries', 'parks', 'commute', 'noise']
     .forEach(d => { thresholds[d] = parseInt($(`thresh-${d}`)?.value || 0); });
 
   return {
@@ -162,7 +162,8 @@ function findNeighborhoods() {
     } finally {
       showSpinner(false);
     }
-  }, 50);
+  }, 600);
+
 }
 
 function displayResults() {
@@ -243,7 +244,7 @@ function buildCard(n) {
           <div class="card-borough">${n.borough}</div>
         </div>
         <div class="card-actions">
-          <button class="fav-btn${isFav?' active':''}" data-slug="${n.slug}" title="Save to favorites" aria-label="Toggle favorite">${isFav?'\u2605':'\u2606'}</button>
+          <button class="fav-btn${isFav ? ' active' : ''}" data-slug="${n.slug}" title="Save to favorites" aria-label="Toggle favorite">${isFav ? '\u2605' : '\u2606'}</button>
           <div class="match-score" title="Match Score: Personalized to your priorities">
             ${n.matchScore}
             <span class="match-score-label">match</span>
@@ -392,7 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const saved = JSON.parse(localStorage.getItem(LS_KEYS.weights) || 'null');
       if (saved) restoreSliderState(saved);
-    } catch {}
+    } catch { }
   }
 
   // Restore from sessionStorage (quick search on homepage)
@@ -408,7 +409,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Slider event listeners
   $$('input[type="range"]').forEach(slider => {
-    slider.addEventListener('input', function() {
+    slider.addEventListener('input', function () {
       updateSliderDisplay(this);
       saveSliderState();
     });
@@ -416,7 +417,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Borough chips — multi-select toggle (starts unselected; empty = all shown)
   $$('.borough-chip').forEach(chip => {
-    chip.addEventListener('click', function() {
+    chip.addEventListener('click', function () {
       const b = this.dataset.borough;
       if (selectedBoroughs.has(b)) {
         selectedBoroughs.delete(b);
@@ -474,7 +475,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Load saved search
-  $('load-saved-search')?.addEventListener('change', function() {
+  $('load-saved-search')?.addEventListener('change', function () {
     const idx = parseInt(this.value);
     if (isNaN(idx)) return;
     const saved = getSavedSearches()[idx];
@@ -490,7 +491,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Sort dropdown
-  $('sort-select')?.addEventListener('change', function() {
+  $('sort-select')?.addEventListener('change', function () {
     currentSort = this.value;
     allResults = sortResults(allResults, currentSort);
     shownCount = 0;
@@ -509,8 +510,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target === $('compare-modal')) $('compare-modal').classList.remove('visible');
   });
 
-  // Name search — live filter
-  $('name-search')?.addEventListener('input', () => findNeighborhoods());
+  // Name search — debounced live filter (waits 350ms after typing stops)
+  let nameSearchTimer = null;
+  $('name-search')?.addEventListener('input', () => {
+    clearTimeout(nameSearchTimer);
+    nameSearchTimer = setTimeout(() => findNeighborhoods(), 350);
+  });
+
 
   // Keyboard shortcuts
   document.addEventListener('keydown', e => {
