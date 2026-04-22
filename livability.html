@@ -1,53 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Livability Mapping - NYC Livability Index</title>
-    <link rel="stylesheet" href="css/main.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Interactive map of NYC neighborhood livability scores, safety ratings, rent, and transit access.">
+  <title>NYC Livability Map — NYC Livability Index</title>
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/map.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 </head>
 <body>
-    <nav class="top-nav">
-        <div class="nav-container">
-            <a href="index.html" class="nav-logo">NYC Livability Index</a>
-            <div class="nav-links">
-                <a href="transportation.html">Transportation</a>
-                <a href="apartments.html">Searching for Apartments</a>
-                <a href="livability.html">Livability Mapping</a>
-                <a href="visitors.html">For Visitors</a>
-                <a href="social.html">The Social Index</a>
+  <nav class="top-nav">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">NYC Livability Index</a>
+      <div class="nav-links">
+        <a href="search.html">Find a Neighborhood</a>
+        <a href="transportation.html">Subway Safety</a>
+        <a href="livability.html" class="active">Map</a>
+        <a href="address.html">Learn About An Address</a>
+        <a href="favorites.html" class="nav-favorites fav-count">Favorites</a>
+      </div>
+    </div>
+  </nav>
+  <div class="map-page-content">
+    <section class="page-header">
+      <h1>NYC Livability Map</h1>
+      <p>All 111 neighborhoods — click any dot for details</p>
+      <span class="data-badge">📅 Data updated: 2026-04-21</span>
+    </section>
+    <div class="map-controls">
+      <label for="metric-select">Color by:</label>
+      <select id="metric-select" class="metric-select">
+        <option value="livabilityScore">Livability Score</option>
+        <option value="safetyScore">Safety Score</option>
+        <option value="transitScore">Transit Access</option>
+        <option value="walkScore">Walk Score</option>
+        <option value="schoolScore">School Quality</option>
+        <option value="nightlifeScore">Nightlife</option>
+        <option value="parkScore">Park Access</option>
+        <option value="groceryScore">Grocery Access</option>
+        <option value="noiseComplaintsPer1000">Noise (lower = better)</option>
+      </select>
+      <span class="map-data-note">Click a dot to see neighborhood details</span>
+    </div>
+    <div class="leaflet-map-container" id="map"></div>
+  </div>
+  <footer><p>NYC Livability Index | Built for transplants, by a transplant</p><p class="footer-updated">Data last updated: 2026-04-21</p></footer>
+  <script type="module">
+    import { neighborhoods } from "./data/neighborhoods.js";
+    import { NEIGHBORHOOD_COORDS } from "./data/neighborhood-coords.js";
+
+    const LABELS = {livabilityScore:"Livability",safetyScore:"Safety",transitScore:"Transit",walkScore:"Walk Score",schoolScore:"Schools",nightlifeScore:"Nightlife",parkScore:"Parks",groceryScore:"Groceries",noiseComplaintsPer1000:"Noise (inverted)"};
+    const map = L.map("map",{center:[40.7128,-74.006],zoom:11});
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",{attribution:"© OpenStreetMap contributors © CARTO",maxZoom:18}).addTo(map);
+    let layer=L.layerGroup().addTo(map),legendCtrl=null;
+
+    function toColor(v,min,max){
+      if(v==null)return"#ccc";
+      let p=Math.max(0,Math.min(1,(v-min)/(max-min||1)));
+      const r=p<0.5?255:Math.round(255*(1-(p-0.5)*2));
+      const g=p<0.5?Math.round(255*p*2):255;
+      return`rgb(${r},${g},0)`;
+    }
+
+    function render(metric){
+      layer.clearLayers();
+      const isNoise=metric==="noiseComplaintsPer1000";
+      const vals=neighborhoods.map(n=>{let v=n[metric];return isNoise&&v!=null?Math.max(0,100-v):v}).filter(v=>v!=null);
+      const mn=Math.min(...vals),mx=Math.max(...vals);
+      let placed=0,missing=[];
+
+      neighborhoods.forEach(n=>{
+        const coords=NEIGHBORHOOD_COORDS[n.slug];
+        if(!coords){missing.push(n.slug);return;}
+        let v=n[metric];if(isNoise&&v!=null)v=Math.max(0,100-v);
+        const circle=L.circleMarker(coords,{
+          radius:14, fillColor:toColor(v,mn,mx), color:"#fff", weight:2, fillOpacity:0.88
+        });
+        circle.bindPopup(`
+          <div style="font-family:inherit;min-width:180px">
+            <div style="font-weight:800;font-size:1rem;color:#1a2233;margin-bottom:2px">${n.name}</div>
+            <div style="font-size:0.75rem;color:#888;margin-bottom:8px">${n.borough}</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px">
+              <div style="background:#f5f7fa;border-radius:6px;padding:6px"><div style="font-size:0.65rem;color:#888;font-weight:700">LIVABILITY</div><div style="font-weight:800;font-size:1rem">${n.livabilityScore?Math.round(n.livabilityScore):"N/A"}</div></div>
+              <div style="background:#f5f7fa;border-radius:6px;padding:6px"><div style="font-size:0.65rem;color:#888;font-weight:700">SAFETY</div><div style="font-weight:800;font-size:1rem">${n.safetyScore??'N/A'}</div></div>
+              <div style="background:#f5f7fa;border-radius:6px;padding:6px"><div style="font-size:0.65rem;color:#888;font-weight:700">TRANSIT</div><div style="font-weight:800;font-size:1rem">${n.transitScore??'N/A'}</div></div>
+              <div style="background:#f5f7fa;border-radius:6px;padding:6px"><div style="font-size:0.65rem;color:#888;font-weight:700">RENT</div><div style="font-weight:800;font-size:0.85rem">${n.studioRentRange?'$'+n.studioRentRange:'N/A'}</div></div>
             </div>
-        </div>
-    </nav>
+            <a href="neighborhood.html?slug=${n.slug}" style="display:block;text-align:center;padding:8px;background:var(--color-primary,#1a2233);color:white;border-radius:8px;text-decoration:none;font-weight:700;font-size:0.85rem">View Full Details →</a>
+          </div>`,{maxWidth:240});
+        circle.addTo(layer);
+        placed++;
+      });
 
-    <main class="page-content">
-        <section class="page-header">
-            <h1> NYC Livability Map</h1>
-            <p>Explore color-coded neighborhoods and subway stations across New York City</p>
-        </section>
+      if(missing.length) console.warn("Missing coords for:",missing);
+      const countEl=document.getElementById("map-count");
+      if(countEl) countEl.textContent=`${placed} neighborhoods`;
 
-        <div class="map-container-full">
-            <iframe src="https://www.google.com/maps/d/u/0/embed?mid=1KxB9LGhnoBdYkNQoOvej5EwSwbxvlXA&ehbc=2E312F&noprof=1" width="100%" height="800"></iframe>
-        </div>
-    </main>
+      if(legendCtrl)map.removeControl(legendCtrl);
+      legendCtrl=L.control({position:"bottomright"});
+      legendCtrl.onAdd=()=>{
+        const d=L.DomUtil.create("div","map-legend");
+        d.innerHTML=`<div class="legend-title">${LABELS[metric]||metric}</div><div class="legend-gradient"></div><div class="legend-labels"><span>${Math.round(mn)}</span><span>Higher →</span><span>${Math.round(mx)}</span></div>`;
+        return d;
+      };
+      legendCtrl.addTo(map);
+    }
 
-    <footer>
-        <p>NYC Livability Index | Built for transplants, by a transplant</p>
-        <p class="feedback-note">If you find any information to be inaccurate, please reach out. I'm open to feedback.</p>
-    </footer>
+    document.getElementById("metric-select").addEventListener("change",e=>render(e.target.value));
+    render("livabilityScore");
 
-    <style>
-        .map-container-full {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 30px 60px;
-        }
-
-        .map-container-full iframe {
-            border: none;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-    </style>
+    try{const f=JSON.parse(localStorage.getItem("nyc_favorites")||"[]");if(f.length>0)document.querySelectorAll(".fav-count").forEach(e=>e.textContent=`Favorites (${f.length})`)}catch{}
+    if("serviceWorker"in navigator)navigator.serviceWorker.register("/sw.js").catch(()=>{});
+  </script>
 </body>
 </html>

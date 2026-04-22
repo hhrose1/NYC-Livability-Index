@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Your saved NYC neighborhoods.">
+  <title>Favorites — NYC Livability Index</title>
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/search.css">
+</head>
+<body>
+  <nav class="top-nav">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">NYC Livability Index</a>
+      <div class="nav-links">
+        <a href="search.html">Find a Neighborhood</a>
+        <a href="transportation.html">Subway Safety</a>
+        <a href="livability.html">Map</a>
+        <a href="address.html">Learn About An Address</a>
+        <a href="favorites.html" class="nav-favorites fav-countactive">Favorites</a>
+      </div>
+    </div>
+  </nav>
+  <div class="page-content">
+    <section class="page-header">
+      <h1>⭐ Your Favorites</h1>
+      <p id="fav-subtitle">Neighborhoods you have saved</p>
+    </section>
+    <div id="favorites-container"></div>
+  </div>
+  <footer><p>NYC Livability Index | Built for transplants, by a transplant</p><p class="footer-updated">Data last updated: 2026-04-21</p></footer>
+  <div class="toast" id="toast"></div>
+  <script type="module">
+    import { neighborhoods } from "./data/neighborhoods.js";
+    function getFavs(){try{return JSON.parse(localStorage.getItem("nyc_favorites")||"[]")}catch{return[]}}
+    function saveFavs(f){try{localStorage.setItem("nyc_favorites",JSON.stringify(f))}catch{}}
+    function showToast(m){const t=document.getElementById("toast");if(t){t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2500)}}
+    function fmt(r){return r&&r!=""?"$"+r:"N/A"}
+    function badge(s){const c=s>=70?"green":s>=50?"yellow":"red";const l=s>=70?"✓ Safe":s>=50?"⚠ Caution":"✗ Alert";return `<div class="safety-badge ${c}">${l}</div>`}
+    function card(n){
+      const d=document.createElement("div");
+      d.innerHTML=`<div class="neighborhood-card"><div class="card-header"><div class="card-title-wrap"><div class="card-title">${n.name}</div><div class="card-borough">${n.borough}</div></div><div class="card-actions"><button class="fav-btn active" data-slug="${n.slug}" title="Remove">★</button><div class="match-score">${Math.round(n.livabilityScore||0)}<span class="match-score-label">livability</span></div></div></div>${badge(n.safetyScore||0)}<div class="card-stats"><div class="stat-row"><span class="stat-label">Studio:</span><span class="stat-value">${fmt(n.studioRentRange)}</span></div><div class="stat-row"><span class="stat-label">Transit:</span><span class="stat-value">${n.transitScore??'N/A'}/100</span></div><div class="stat-row"><span class="stat-label">Walk:</span><span class="stat-value">${n.walkScore??'N/A'}</span></div></div><div style="margin-top:12px;text-align:right"><a href="neighborhood.html?slug=${n.slug}" style="font-size:0.85rem;color:var(--color-primary);font-weight:700;text-decoration:none">View details →</a></div></div>`;
+      d.querySelector(".fav-btn").addEventListener("click",e=>{const slug=e.currentTarget.dataset.slug;const favs=getFavs();const i=favs.indexOf(slug);if(i>=0)favs.splice(i,1);saveFavs(favs);showToast("Removed "+n.name+" from favorites");render()});
+      return d;
+    }
+    function render(){
+      const c=document.getElementById("favorites-container");
+      const sub=document.getElementById("fav-subtitle");
+      const favs=getFavs();
+      document.querySelectorAll(".fav-count").forEach(e=>e.textContent=favs.length>0?`Favorites (${favs.length})`:"Favorites");
+      if(favs.length===0){sub.textContent="";c.innerHTML=`<div class="empty-state"><div class="empty-state-icon">⭐</div><h3>No favorites yet</h3><p>Star neighborhoods on the search page.</p><br><a href="search.html" class="btn-primary" style="display:inline-flex;text-decoration:none;margin-top:16px">Search →</a></div>`;return}
+      sub.textContent=`${favs.length} neighborhood${favs.length>1?"s":""} saved`;
+      c.innerHTML="";
+      const g=document.createElement("div");g.className="cards-container";c.appendChild(g);
+      favs.forEach(slug=>{const n=neighborhoods.find(x=>x.slug===slug);if(n)g.appendChild(card(n))});
+    }
+    document.addEventListener("DOMContentLoaded",render);
+    if("serviceWorker"in navigator)navigator.serviceWorker.register("/sw.js").catch(()=>{});
+  </script>
+</body>
+</html>

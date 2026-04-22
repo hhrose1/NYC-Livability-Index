@@ -1,151 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HPD Violation Guide - NYC Livability Index</title>
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/hpd-guide.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="HPD violation code guide and building lookup for NYC apartment hunters.">
+  <title>HPD Violation Guide — NYC Livability Index</title>
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="css/hpd-guide.css">
 </head>
 <body>
-    <nav class="top-nav">
-        <div class="nav-container">
-            <a href="index.html" class="nav-logo">NYC Livability Index</a>
-            <div class="nav-links">
-                <a href="transportation.html">Transportation</a>
-                <a href="apartments.html">Searching for Apartments</a>
-                <a href="livability.html">Livability Mapping</a>
-                <a href="visitors.html">For Visitors</a>
-                <a href="social.html">The Social Index</a>
-            </div>
-        </div>
-    </nav>
-
-    <div class="page-content">
-        <section class="page-header">
-            <h1>HPD Violation Code Guide</h1>
-            <p>Understand what each building violation code means and search for violations below.</p>
-        </section>
-
-    <!-- How to Check Section -->
-        <div class="how-to-section">
-            <h2>How to Check HPD Violations</h2>
-            
-            <div class="steps-horizontal">
-                <div class="step-box">
-                    <div class="step-num">1</div>
-                    <h3>Search</h3>
-                    <p>Go to HPD Online, check Complaints, Violations, and Bedbug Reports tabs</p>
-                </div>
-                <div class="step-box">
-                    <div class="step-num">2</div>
-                    <h3>Assess</h3>
-                    <p>Review by class (A/B/C). Check how many are open vs. closed and how recent</p>
-                </div>
-                <div class="step-box">
-                    <div class="step-num">3</div>
-                    <h3>Suspicious?</h3>
-                    <p>No violations at all? Cross-check NYC Open Data for missing reports</p>
-                </div>
-                <div class="step-box">
-                    <div class="step-num">4</div>
-                    <h3>Research</h3>
-                    <p>Google the owner and property management company for lawsuits or complaints</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Key Tips Section -->
-        <div class="tips-compact">
-            <h2>Key Tips</h2>
-            <ul>
-                <li><strong>Class A (minor):</strong> A few are normal for older buildings</li>
-                <li><strong>Class B (hazardous):</strong> Multiple open = yellow flag</li>
-                <li><strong>Class C (immediately hazardous):</strong> ANY open = red flag</li>
-                <li><strong>Codes 729/730:</strong> Building chronically neglected — red flag</li>
-                <li><strong>Codes 759/760/765:</strong> Vacate orders — illegal if rented</li>
-                <li><strong>Age matters:</strong> Violations from 2001 matter less than one from 2025</li>
-            </ul>
-        </div>
-
-
-        <!-- Quick Reference Table -->
-        <div class="reference-section">
-            <h2>Quick Reference</h2>
-            <table class="reference-table">
-                <thead>
-                    <tr>
-                        <th>What You Find</th>
-                        <th>What It Means</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="safe">
-                        <td>A few old Class A violations</td>
-                        <td>Normal for older buildings</td>
-                    </tr>
-                    <tr class="warning">
-                        <td>Multiple open Class B violations</td>
-                        <td>Yellow flag — investigate further</td>
-                    </tr>
-                    <tr class="danger">
-                        <td>ANY open Class C violations</td>
-                        <td>Red flag — avoid</td>
-                    </tr>
-                    <tr class="danger">
-                        <td>Codes 729/730</td>
-                        <td>Red flag — chronically neglected</td>
-                    </tr>
-                    <tr class="danger">
-                        <td>Codes 759/760/765</td>
-                        <td>Red flag — vacate orders</td>
-                    </tr>
-                    <tr class="warning">
-                        <td>No violations + many complaints</td>
-                        <td>Proactive neighbors or hidden issues</td>
-                    </tr>
-                    <tr class="danger">
-                        <td>Owner with lawsuit history</td>
-                        <td>Red flag — check details</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Code Lookup -->
-        <div class="code-lookup">
-            <h2>Violation Code Lookup</h2>
-            <p class="lookup-intro">Search for any violation code to see what it means in plain English</p>
-            
-            <div class="search-box">
-                <input 
-                    type="text" 
-                    id="code-search" 
-                    placeholder="Search by code number, description, or class (A/B/C)..."
-                    autocomplete="off"
-                >
-                <div class="filter-chips">
-                    <button class="filter-chip active" data-class="all">All Classes</button>
-                    <button class="filter-chip" data-class="A">Class A</button>
-                    <button class="filter-chip" data-class="B">Class B</button>
-                    <button class="filter-chip" data-class="C">Class C</button>
-                </div>
-            </div>
-
-            <div id="results-count" class="results-count"></div>
-
-            <div id="violations-table" class="violations-table">
-                <!-- Table will be populated by JavaScript -->
-            </div>
-        </div>
+  <nav class="top-nav">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">NYC Livability Index</a>
+      <div class="nav-links">
+        <a href="search.html">Find a Neighborhood</a>
+        <a href="transportation.html">Subway Safety</a>
+        <a href="livability.html">Map</a>
+        <a href="address.html">Learn About An Address</a>
+        <a href="favorites.html" class="nav-favorites fav-count">Favorites</a>
+      </div>
     </div>
-
-    <footer>
-        <p>NYC Livability Index | Built for transplants, by a transplant</p>
-        <p class="feedback-note">If you find any information to be inaccurate, please reach out. I'm open to feedback.</p>
-    </footer>
-
-    <script src="data/hpd-violations.js"></script>
-    <script src="js/hpd-guide.js"></script>
+  </nav>
+  <div class="page-content">
+    <section class="page-header">
+      <h1>HPD Violation Code Guide</h1>
+      <p>Understand building violations and look up any address before signing a lease.</p>
+    </section>
+    <div style="background:var(--color-primary);border-radius:12px;padding:28px;margin-bottom:28px;color:white">
+      <h2 style="font-size:1.3rem;margin-bottom:8px">🔍 Look Up Building Violations</h2>
+      <p style="opacity:0.85;margin-bottom:16px;font-size:0.9rem">Enter an address to open the official HPD Online building report in a new tab.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <input type="text" id="address-lookup" placeholder="e.g. 123 Main Street, Brooklyn" autocomplete="street-address" style="flex:1;min-width:240px;padding:12px 16px;border-radius:8px;border:none;font-size:1rem;color:#333">
+        <button id="lookup-btn" style="padding:12px 24px;background:white;color:var(--color-primary);border:none;border-radius:8px;font-weight:700;font-size:0.95rem;cursor:pointer;white-space:nowrap">Open HPD Report →</button>
+      </div>
+      <p id="lookup-link-display" style="margin-top:12px;font-size:0.85rem;opacity:0.7"></p>
+    </div>
+    <div class="how-to-section">
+      <h2>How to Check HPD Violations</h2>
+      <div class="steps-horizontal">
+        <div class="step-box"><div class="step-num">1</div><h3>Search</h3><p>Go to HPD Online and check Complaints, Violations, and Bedbug tabs</p></div>
+        <div class="step-box"><div class="step-num">2</div><h3>Assess</h3><p>Review by class (A/B/C). Check how many are open vs. closed</p></div>
+        <div class="step-box"><div class="step-num">3</div><h3>Suspicious?</h3><p>No violations at all? Cross-check NYC Open Data</p></div>
+        <div class="step-box"><div class="step-num">4</div><h3>Research</h3><p>Google the owner and management company for lawsuits</p></div>
+      </div>
+    </div>
+    <div class="tips-compact">
+      <h2>Key Tips</h2>
+      <ul>
+        <li><strong>Class A (minor):</strong> A few are normal for older buildings</li>
+        <li><strong>Class B (hazardous):</strong> Multiple open = yellow flag</li>
+        <li><strong>Class C (immediately hazardous):</strong> ANY open = red flag</li>
+        <li><strong>Codes 729/730:</strong> Building chronically neglected — red flag</li>
+        <li><strong>Codes 759/760/765:</strong> Vacate orders — illegal if rented</li>
+        <li><strong>Age matters:</strong> 2001 violations matter less than 2025 ones</li>
+      </ul>
+    </div>
+    <div class="reference-section">
+      <h2>Quick Reference</h2>
+      <table class="reference-table">
+        <thead><tr><th>What You Find</th><th>What It Means</th></tr></thead>
+        <tbody>
+          <tr class="safe"><td>A few old Class A violations</td><td>Normal for older buildings</td></tr>
+          <tr class="warning"><td>Multiple open Class B violations</td><td>Yellow flag — investigate</td></tr>
+          <tr class="danger"><td>ANY open Class C violations</td><td>Red flag — avoid</td></tr>
+          <tr class="danger"><td>Codes 729/730</td><td>Red flag — chronically neglected</td></tr>
+          <tr class="danger"><td>Codes 759/760/765</td><td>Red flag — vacate orders</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="code-lookup">
+      <h2>Violation Code Lookup</h2>
+      <p class="lookup-intro">Search for any violation code to see what it means in plain English</p>
+      <div class="search-box">
+        <input type="text" id="code-search" placeholder="Search by code, description, or class (A/B/C)..." autocomplete="off">
+        <div class="filter-chips">
+          <button class="filter-chip active" data-class="all">All Classes</button>
+          <button class="filter-chip" data-class="A">Class A</button>
+          <button class="filter-chip" data-class="B">Class B</button>
+          <button class="filter-chip" data-class="C">Class C</button>
+        </div>
+      </div>
+      <div id="results-count" style="font-size:0.875rem;color:var(--color-text-secondary);margin:8px 0"></div>
+      <div id="violations-table"></div>
+    </div>
+  </div>
+  <footer><p>NYC Livability Index | Built for transplants, by a transplant</p><p class="footer-updated">Data last updated: 2026-04-21</p><a href="mailto:?subject=Data%20Issue" class="footer-report">Report a data issue</a></footer>
+  <script type="module">
+    import { hpdViolations } from "./data/hpd-violations.js";
+    document.getElementById("lookup-btn").addEventListener("click",()=>{
+      const addr=document.getElementById("address-lookup").value.trim();
+      if(!addr){alert("Please enter an address");return;}
+      const url=`https://hpdonline.nyc.gov/hpdonline/building/${encodeURIComponent(addr)}`;
+      document.getElementById("lookup-link-display").textContent="Opening: "+url;
+      window.open(url,"_blank","noopener");
+    });
+    document.getElementById("address-lookup").addEventListener("keypress",e=>{if(e.key==="Enter")document.getElementById("lookup-btn").click()});
+    let activeClass="all";
+    function render(q,cls){
+      const filtered=hpdViolations.filter(v=>{
+        const mc=cls==="all"||(v.Class||v["class"]||v["Violation Class"]||"")===cls;
+        const mq=!q||JSON.stringify(v).toLowerCase().includes(q.toLowerCase());
+        return mc&&mq;
+      });
+      document.getElementById("results-count").textContent=`${filtered.length} violation codes`;
+      const t=document.getElementById("violations-table");
+      if(!filtered.length){t.innerHTML="<p style='padding:20px;color:var(--color-text-secondary)'>No violations found.</p>";return;}
+      const keys=Object.keys(filtered[0]).slice(0,6);
+      t.innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:0.875rem"><thead><tr>${keys.map(k=>`<th style="background:var(--color-primary);color:white;padding:10px;text-align:left">${k}</th>`).join("")}</tr></thead><tbody>${filtered.map(v=>`<tr>${keys.map(k=>`<td style="padding:8px 10px;border-bottom:1px solid var(--color-border)">${v[k]??""}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+    }
+    document.getElementById("code-search").addEventListener("input",e=>render(e.target.value,activeClass));
+    document.querySelectorAll(".filter-chip").forEach(b=>b.addEventListener("click",function(){
+      document.querySelectorAll(".filter-chip").forEach(x=>x.classList.remove("active"));
+      this.classList.add("active");activeClass=this.dataset.class;
+      render(document.getElementById("code-search").value,activeClass);
+    }));
+    render("","all");
+    try{const f=JSON.parse(localStorage.getItem("nyc_favorites")||"[]");if(f.length>0)document.querySelectorAll(".fav-count").forEach(e=>e.textContent=`Favorites (${f.length})`)}catch{}
+    if("serviceWorker"in navigator)navigator.serviceWorker.register("/sw.js").catch(()=>{});
+  </script>
 </body>
 </html>

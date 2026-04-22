@@ -1,170 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NYC Livability Index - Find Your Perfect NYC Neighborhood</title>
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/homepage.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="last-updated" content="2026-04-21">
+  <meta name="description" content="Find your perfect NYC neighborhood. Compare safety, transit, rent, and livability scores across 111 neighborhoods.">
+  <title>NYC Livability Index — Find Your Perfect Neighborhood</title>
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="css/homepage.css">
 </head>
 <body>
-    <nav class="top-nav">
-        <div class="nav-container">
-            <a href="index.html" class="nav-logo">NYC Livability Index</a>
-            <div class="nav-links">
-                <a href="transportation.html">Transportation</a>
-                <a href="apartments.html">Searching for Apartments</a>
-                <a href="livability.html">Livability Mapping</a>
-                <a href="visitors.html">For Visitors</a>
-                <a href="social.html">The Social Index</a>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Photo Collage Background -->
-    <div class="photo-collage">
-        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=600" alt="NYC Skyline" loading="lazy"></div>
-        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1518391846015-55a9cc003b25?w=600" alt="NYC Street" loading="lazy"></div>
-        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=600" alt="NYC Coffee Shop" loading="lazy"></div>
-        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600" alt="NYC Brownstone" loading="lazy"></div>
-        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1532105956626-9569c03602f6?w=600" alt="NYC Subway" loading="lazy"></div>
-        
-        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1514539079130-25950c84af65?w=600" alt="NYC Park" loading="lazy"></div>
-        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?w=600" alt="NYC People" loading="lazy"></div>
-        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1568515387631-8b650bbcdb90?w=600" alt="NYC Mural" loading="lazy"></div>
-        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1605649487212-47bdab064df7?w=600" alt="NYC Street Food" loading="lazy"></div>
-        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1490644658840-3f2e3f8c5625?w=600" alt="NYC Bridge" loading="lazy"></div>
-        
-        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1485871981521-5b1fd3805eee?w=600" alt="NYC Store" loading="lazy"></div>
-        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1513407030348-c983a97b98d8?w=600" alt="NYC Architecture" loading="lazy"></div>
-        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1519331379826-f10be5486c6f?w=600" alt="NYC Night" loading="lazy"></div>
-        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1555109307-f7d9da25c244?w=600" alt="NYC Life" loading="lazy"></div>
-        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1514565131-fce0801e5785?w=600" alt="NYC Scene" loading="lazy"></div>
-        
-        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1546484396-fb3fc6f95f98?w=600" alt="NYC Taxi" loading="lazy"></div>
-        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1518391846015-55a9cc003b25?w=600" alt="NYC Street 2" loading="lazy"></div>
-        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1508739773434-c26b3d09e071?w=600" alt="NYC Central Park" loading="lazy"></div>
-        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1518391846015-55a9cc003b25?w=600" alt="NYC Buildings" loading="lazy"></div>
-        <div class="photo-tile"><img src="https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=600" alt="NYC Views" loading="lazy"></div>
+  <nav class="top-nav">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">NYC Livability Index</a>
+      <div class="nav-links">
+        <a href="search.html">Find a Neighborhood</a>
+        <a href="transportation.html">Subway Safety</a>
+        <a href="livability.html">Map</a>
+        <a href="address.html">Learn About An Address</a>
+        <a href="favorites.html" class="nav-favorites fav-count">Favorites</a>
+      </div>
     </div>
-
-    <!-- Main Content -->
-    <div class="content-wrapper">
-        <div class="hero-card">
-            <h1 class="hero-headline">Find your corner of the city.</h1>
-            
-            <div class="search-container">
-                <div class="input-group">
-                    <label class="input-label">Monthly Budget</label>
-                    <input type="text" class="budget-input" placeholder="$2,500" id="budgetInput">
-                </div>
-
-                <div class="input-group">
-                    <label class="input-label">What Matters Most</label>
-                    <div class="priority-chips">
-                        <div class="chip" data-priority="safety">
-                            <span class="chip-icon">🛡️</span>
-                            <span>Safety</span>
-                        </div>
-                        <div class="chip" data-priority="transit">
-                            <span class="chip-icon">🚇</span>
-                            <span>Transit</span>
-                        </div>
-                        <div class="chip" data-priority="nightlife">
-                            <span class="chip-icon">🌃</span>
-                            <span>Nightlife</span>
-                        </div>
-                        <div class="chip" data-priority="walkability">
-                            <span class="chip-icon">🚶</span>
-                            <span>Walkability</span>
-                        </div>
-                        <div class="chip" data-priority="parks">
-                            <span class="chip-icon">🌳</span>
-                            <span>Parks</span>
-                        </div>
-                    </div>
-                </div>
-
-                <button class="search-button" id="searchBtn">Search Neighborhoods</button>
-            </div>
-
-            <div class="tool-cards">
-                <a href="transportation.html" class="tool-card mta">
-                    <span class="tool-icon">🚇</span>
-                    <div class="tool-title">Subway Safety</div>
-                    <div class="tool-subtitle">Station Ratings</div>
-                </a>
-                <a href="apartments.html#hpd" class="tool-card taxi">
-                    <span class="tool-icon">⚠️</span>
-                    <div class="tool-title">HPD Violations</div>
-                    <div class="tool-subtitle">Building Reports</div>
-                </a>
-                <a href="livability.html" class="tool-card brick">
-                    <span class="tool-icon">🗺️</span>
-                    <div class="tool-title">Interactive Map</div>
-                    <div class="tool-subtitle">Explore NYC</div>
-                </a>
-            </div>
+  </nav>
+  <div class="photo-collage">
+    <div class="photo-tile"><img src="https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=800&q=80" srcset="https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=400 400w,https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=800 800w" alt="NYC Skyline" loading="lazy"></div>
+    <div class="photo-tile"><img src="https://images.unsplash.com/photo-1518391846015-55a9cc003b25?w=800&q=80" srcset="https://images.unsplash.com/photo-1518391846015-55a9cc003b25?w=400 400w,https://images.unsplash.com/photo-1518391846015-55a9cc003b25?w=800 800w" alt="NYC Street" loading="lazy"></div>
+    <div class="photo-tile"><img src="https://images.unsplash.com/photo-1534430480872-3498386e7856?w=800&q=80" srcset="https://images.unsplash.com/photo-1534430480872-3498386e7856?w=400 400w,https://images.unsplash.com/photo-1534430480872-3498386e7856?w=800 800w" alt="NYC Brownstone" loading="lazy"></div>
+    <div class="photo-tile"><img src="https://images.unsplash.com/photo-1532105956626-9569c03602f6?w=800&q=80" srcset="https://images.unsplash.com/photo-1532105956626-9569c03602f6?w=400 400w,https://images.unsplash.com/photo-1532105956626-9569c03602f6?w=800 800w" alt="NYC Subway" loading="lazy"></div>
+    <div class="photo-tile"><img src="https://images.unsplash.com/photo-1514539079130-25950c84af65?w=800&q=80" srcset="https://images.unsplash.com/photo-1514539079130-25950c84af65?w=400 400w,https://images.unsplash.com/photo-1514539079130-25950c84af65?w=800 800w" alt="NYC Park" loading="lazy"></div>
+    <div class="photo-tile"><img src="https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?w=800&q=80" srcset="https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?w=400 400w,https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?w=800 800w" alt="NYC People" loading="lazy"></div>
+    <div class="photo-tile"><img src="https://images.unsplash.com/photo-1568515387631-8b650bbcdb90?w=800&q=80" srcset="https://images.unsplash.com/photo-1568515387631-8b650bbcdb90?w=400 400w,https://images.unsplash.com/photo-1568515387631-8b650bbcdb90?w=800 800w" alt="NYC Mural" loading="lazy"></div>
+    <div class="photo-tile"><img src="https://images.unsplash.com/photo-1490644658840-3f2e3f8c5625?w=800&q=80" srcset="https://images.unsplash.com/photo-1490644658840-3f2e3f8c5625?w=400 400w,https://images.unsplash.com/photo-1490644658840-3f2e3f8c5625?w=800 800w" alt="NYC Bridge" loading="lazy"></div>
+    <div class="photo-tile"><img src="https://images.unsplash.com/photo-1485871981521-5b1fd3805eee?w=800&q=80" srcset="https://images.unsplash.com/photo-1485871981521-5b1fd3805eee?w=400 400w,https://images.unsplash.com/photo-1485871981521-5b1fd3805eee?w=800 800w" alt="NYC Store" loading="lazy"></div>
+    <div class="photo-tile"><img src="https://images.unsplash.com/photo-1519331379826-f10be5486c6f?w=800&q=80" srcset="https://images.unsplash.com/photo-1519331379826-f10be5486c6f?w=400 400w,https://images.unsplash.com/photo-1519331379826-f10be5486c6f?w=800 800w" alt="NYC Night" loading="lazy"></div>
+    <div class="photo-tile"><img src="https://images.unsplash.com/photo-1546484396-fb3fc6f95f98?w=800&q=80" srcset="https://images.unsplash.com/photo-1546484396-fb3fc6f95f98?w=400 400w,https://images.unsplash.com/photo-1546484396-fb3fc6f95f98?w=800 800w" alt="NYC Taxi" loading="lazy"></div>
+    <div class="photo-tile"><img src="https://images.unsplash.com/photo-1508739773434-c26b3d09e071?w=800&q=80" srcset="https://images.unsplash.com/photo-1508739773434-c26b3d09e071?w=400 400w,https://images.unsplash.com/photo-1508739773434-c26b3d09e071?w=800 800w" alt="NYC Central Park" loading="lazy"></div>
+  </div>
+  <div class="content-wrapper">
+    <div class="hero-card">
+      <h1 class="hero-headline">Find your corner of the city.</h1>
+      <div class="search-container">
+        <div class="input-group">
+          <label class="input-label">Monthly Budget</label>
+          <input type="text" class="budget-input" placeholder="$2,500" id="budgetInput">
         </div>
+        <div class="input-group">
+          <label class="input-label">What Matters Most</label>
+          <div class="priority-chips">
+            <div class="chip" data-priority="safety"><span class="chip-icon">🛡️</span><span>Safety</span></div>
+            <div class="chip" data-priority="transit"><span class="chip-icon">🚇</span><span>Transit</span></div>
+            <div class="chip" data-priority="nightlife"><span class="chip-icon">🌃</span><span>Nightlife</span></div>
+            <div class="chip" data-priority="walkability"><span class="chip-icon">🚶</span><span>Walkability</span></div>
+            <div class="chip" data-priority="parks"><span class="chip-icon">🌳</span><span>Parks</span></div>
+          </div>
+        </div>
+        <button class="search-button" id="searchBtn">Search Neighborhoods</button>
+      </div>
+      <div class="tool-cards">
+        <a href="transportation.html" class="tool-card mta"><span class="tool-icon">🚇</span><div class="tool-title">Subway Safety</div><div class="tool-subtitle">Station Ratings</div></a>
+        <a href="address.html" class="tool-card taxi"><span class="tool-icon">⚠️</span><div class="tool-title">HPD Violations</div><div class="tool-subtitle">Building Reports</div></a>
+        <a href="livability.html" class="tool-card brick"><span class="tool-icon">🗺️</span><div class="tool-title">Interactive Map</div><div class="tool-subtitle">Explore NYC</div></a>
+      </div>
+      <div style="text-align:center;margin-top:16px"><span class="data-badge">📅 Data updated: 2026-04-21</span></div>
     </div>
-
-    <script>
-        // Priority chip selection
-        const chips = document.querySelectorAll('.chip');
-        const selectedPriorities = new Set();
-
-        chips.forEach(chip => {
-            chip.addEventListener('click', () => {
-                const priority = chip.dataset.priority;
-                
-                if (chip.classList.contains('active')) {
-                    chip.classList.remove('active');
-                    selectedPriorities.delete(priority);
-                } else {
-                    chip.classList.add('active');
-                    selectedPriorities.add(priority);
-                }
-            });
-        });
-
-        // Search button - goes to apartments page with selected values
-        document.getElementById('searchBtn').addEventListener('click', () => {
-            const budgetRaw = document.getElementById('budgetInput').value.replace(/[^0-9]/g, '');
-            const priorities = Array.from(selectedPriorities);
-            
-            // Store in sessionStorage
-            if (budgetRaw) {
-                sessionStorage.setItem('quickSearchBudget', budgetRaw);
-            }
-            if (priorities.length > 0) {
-                // Take first priority as the main one
-                sessionStorage.setItem('quickSearchPriority', priorities[0]);
-            }
-            
-            // Navigate to apartments page
-            window.location.href = 'apartments.html';
-        });
-
-        // Budget input formatting
-        const budgetInput = document.getElementById('budgetInput');
-        
-        budgetInput.addEventListener('blur', (e) => {
-            let value = e.target.value.replace(/[^0-9]/g, '');
-            if (value) {
-                e.target.value = '$' + parseInt(value).toLocaleString();
-            }
-        });
-
-        budgetInput.addEventListener('focus', (e) => {
-            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-        });
-
-        // Enter key triggers search
-        budgetInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                document.getElementById('searchBtn').click();
-            }
-        });
-    </script>
+  </div>
+  <footer><p>NYC Livability Index | Built for transplants, by a transplant</p><p class="footer-updated">Data last updated: 2026-04-21</p></footer>
+  <script type="module">
+    const chips=document.querySelectorAll(".chip");const sel=new Set();
+    chips.forEach(c=>c.addEventListener("click",()=>{c.classList.toggle("active");const p=c.dataset.priority;if(c.classList.contains("active"))sel.add(p);else sel.delete(p);}));
+    document.getElementById("searchBtn").addEventListener("click",()=>{
+      const b=document.getElementById("budgetInput").value.replace(/[^0-9]/g,"");
+      const p=[...sel];
+      if(b)sessionStorage.setItem("quickSearchBudget",b);
+      if(p.length>0)sessionStorage.setItem("quickSearchPriority",p[0]);
+      window.location.href="search.html";
+    });
+    const bi=document.getElementById("budgetInput");
+    bi.addEventListener("blur",e=>{const v=e.target.value.replace(/[^0-9]/g,"");if(v)e.target.value="$"+parseInt(v).toLocaleString();});
+    bi.addEventListener("focus",e=>{e.target.value=e.target.value.replace(/[^0-9]/g,"");});
+    bi.addEventListener("keypress",e=>{if(e.key==="Enter")document.getElementById("searchBtn").click();});
+    try{const f=JSON.parse(localStorage.getItem("nyc_favorites")||"[]");if(f.length>0)document.querySelectorAll(".fav-count").forEach(e=>e.textContent=`Favorites (${f.length})`)}catch{}
+    if("serviceWorker"in navigator)navigator.serviceWorker.register("/sw.js").catch(()=>{});
+  </script>
 </body>
 </html>

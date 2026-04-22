@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="last-updated" content="2026-04-21">
+  <meta name="description" content="">
+  <title>Neighborhood — NYC Livability Index</title>
+  <link rel="canonical" href="">
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/neighborhood.css">
+  <script id="json-ld" type="application/ld+json"></script>
+</head>
+<body>
+  <nav class="top-nav">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">NYC Livability Index</a>
+      <div class="nav-links">
+        <a href="search.html">Find a Neighborhood</a>
+        <a href="transportation.html">Subway Safety</a>
+        <a href="livability.html">Map</a>
+        <a href="address.html">Learn About An Address</a>
+        <a href="favorites.html" class="nav-favorites fav-count">Favorites</a>
+      </div>
+    </div>
+  </nav>
+  <div class="neighborhood-page" id="nbhd-content">
+    <div id="back-link"></div>
+    <div class="nbhd-hero">
+      <div class="nbhd-hero-top">
+        <div>
+          <div class="nbhd-name" id="nbhd-name">Loading...</div>
+          <div class="nbhd-borough" id="nbhd-borough"></div>
+        </div>
+        <div class="nbhd-scores" id="nbhd-livability"></div>
+      </div>
+    </div>
+    <div class="flood-banner" id="flood-banner" style="display:none">
+      <span class="flood-icon">🌊</span>
+      <span>FEMA Flood Zone: This neighborhood is in a designated flood zone. <!-- TODO: Replace with real FEMA flood data --></span>
+    </div>
+    <div class="safety-banner" id="safety-banner"></div>
+    <div style="margin-bottom:24px">
+      <button class="btn-secondary" id="fav-btn" style="font-size:0.9rem">☆ Save to Favorites</button>
+    </div>
+    <div id="tab-overview" class="tab-panel" role="tabpanel">
+      <!-- Magazine layout (shown when CSV content exists for this neighborhood) -->
+      <div id="magazine-container" style="display:none"></div>
+      <!-- Fallback sections shown when no magazine content -->
+      <div class="nbhd-section" id="collage-section">
+        <div class="photo-collage" id="photo-collage"></div>
+      </div>
+      <div class="nbhd-section" id="narrative-section">
+        <h2>About This Neighborhood</h2>
+        <p id="nbhd-narrative" class="nbhd-narrative"></p>
+      </div>
+      <div class="nbhd-section" id="keystats-section">
+        <h2>Key Stats</h2>
+        <div class="stats-grid" id="stats-grid"></div>
+      </div>
+      <div class="nbhd-section" id="rent-section" style="display:none">
+        <h2>Rent Ranges</h2>
+        <table class="rent-table">
+          <thead><tr><th>Bedroom Type</th><th>Typical Range</th></tr></thead>
+          <tbody id="rent-table-body"></tbody>
+        </table>
+      </div>
+      <div class="nbhd-section" id="commute-section" style="display:none">
+        <h2>Average Commute Times</h2>
+        <div class="commute-grid" id="commute-grid"></div>
+        <div id="commute-note"></div>
+      </div>
+      <div class="nbhd-section" id="scores-section">
+        <h2>Scores &amp; Indices</h2>
+        <div style="margin-bottom:20px">
+          <div style="font-weight:600;margin-bottom:8px;font-size:0.95rem">Composite Livability Score</div>
+          <div id="livability-display"></div>
+        </div>
+        <div>
+          <div style="font-weight:600;margin-bottom:8px;font-size:0.95rem">Subway Sketchy Index
+            <span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-text">Custom perception metric. Methodology: [To be provided]</span></span>
+          </div>
+          <div id="sketchy-display"></div>
+        </div>
+      </div>
+      <div class="nbhd-section" id="noise-section" style="display:none">
+        <h2>311 Noise Complaints</h2>
+        <div class="data-row">
+          <span class="data-row-label">Annual noise complaints per 1,000 residents</span>
+          <span class="data-row-value" id="noise-value"></span>
+        </div>
+      </div>
+      <div class="nbhd-section" id="stations-section" style="display:none">
+        <h2>Nearby Subway Stations</h2>
+        <div class="high-risk-stations" id="high-risk-box" style="display:none">
+          <h3>⚠️ High-Risk Stations Nearby</h3>
+          <ul class="stations-list" id="high-risk-list"></ul>
+        </div>
+        <div style="margin:16px 0">
+          <div style="font-weight:600;margin-bottom:8px;font-size:0.9rem">♿ Accessible Stations</div>
+          <div id="ada-stations"></div>
+        </div>
+        <div style="font-weight:600;margin-bottom:8px;font-size:0.9rem">All Nearby Stations</div>
+        <ul class="stations-list" id="stations-list"></ul>
+      </div>
+      <div class="nbhd-section" id="demographics-section" style="display:none">
+        <h2>Demographics</h2>
+        <div id="demographics-content"></div>
+      </div>
+      <div class="nbhd-section" id="local-guides-section">
+        <h2>Local Favorites</h2>
+        <div class="local-guides-grid" id="local-guides"></div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <p>NYC Livability Index | Built for transplants, by a transplant</p>
+    <p class="footer-updated" id="data-updated-footer">Data last updated: 2026-04-21</p>
+    <a href="mailto:?subject=Data%20Issue%20-%20NYC%20Livability%20Index" class="footer-report">Report a data issue</a>
+  </footer>
+  <script type="module" src="js/neighborhood.js"></script>
+  <script type="module">if("serviceWorker"in navigator)navigator.serviceWorker.register("/sw.js").catch(()=>{})</script>
+</body>
+</html>

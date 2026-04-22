@@ -1,124 +1,346 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transportation - NYC Livability Index</title>
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/transportation.css">
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="NYC subway station safety map with all 423 stations and subway line overlays.">
+  <title>Subway Safety Map — NYC Livability Index</title>
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="css/transportation.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <style>
+    .map-wrap{position:relative;height:540px;border-radius:16px;overflow:hidden;border:1px solid var(--color-border);margin-bottom:28px}
+    #subway-map{height:100%;width:100%}
+    .map-legend{background:white;padding:12px 16px;border-radius:10px;box-shadow:0 2px 12px rgba(0,0,0,.15);font-size:.8rem;line-height:1.9}
+    .map-legend-title{font-weight:700;font-size:.85rem;margin-bottom:6px;color:#1a2233}
+    .legend-dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:middle}
+    .map-toggle-row{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+    .map-toggle-btn{padding:7px 16px;border-radius:8px;border:2px solid var(--color-border);background:white;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s}
+    .map-toggle-btn.active{background:var(--color-primary);color:white;border-color:var(--color-primary)}
+    .search-results{display:none;position:absolute;top:100%;left:0;right:0;background:white;border:1px solid var(--color-border);border-radius:10px;z-index:1000;max-height:280px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.12);margin-top:4px}
+    .search-results.show{display:block}
+    .search-result-item{padding:10px 16px;cursor:pointer;border-bottom:1px solid #f0f0f0;transition:background .15s}
+    .search-result-item:hover{background:#f5f7fa}
+    .result-station-name{font-weight:600;font-size:.9rem}
+    .metric-bar{height:8px;background:#e9ecef;border-radius:20px;overflow:hidden;margin:6px 0}
+    .metric-bar-fill{height:100%;border-radius:20px;transition:width .5s}
+    .line-legend{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;font-size:.78rem}
+    .line-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-weight:700;color:white;font-size:.75rem}
+  </style>
 </head>
 <body>
-    <nav class="top-nav">
-        <div class="nav-container">
-            <a href="index.html" class="nav-logo">NYC Livability Index</a>
-            <div class="nav-links">
-                <a href="transportation.html">Transportation</a>
-                <a href="apartments.html">Searching for Apartments</a>
-                <a href="livability.html">Livability Mapping</a>
-                <a href="visitors.html">For Visitors</a>
-                <a href="social.html">The Social Index</a>
-            </div>
-        </div>
-    </nav>
-
-    <div class="hero-image">
-        <div class="hero-overlay">
-            <h1>NYC Subway Safety</h1>
-            <p>Check the safety and perception ratings for any subway station</p>
-        </div>
+  <nav class="top-nav">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">NYC Livability Index</a>
+      <div class="nav-links">
+        <a href="search.html">Find a Neighborhood</a>
+        <a href="transportation.html" class="active">Subway Safety</a>
+        <a href="livability.html">Map</a>
+        <a href="address.html">Learn About An Address</a>
+        <a href="favorites.html" class="nav-favorites fav-count">Favorites</a>
+      </div>
     </div>
-
-    <main class="page-content">
-        <div class="search-panel">
-            <h2>Find Your Station</h2>
-            <div class="search-box">
-                <input 
-                    type="text" 
-                    id="station-search" 
-                    placeholder="Start typing a station name... (e.g., Union Square, 14 St, Times Sq)"
-                    autocomplete="off"
-                >
-                <div id="search-results" class="search-results"></div>
-            </div>
+  </nav>
+  <div class="hero-image">
+    <div class="hero-overlay">
+      <h1>NYC Subway Safety Map</h1>
+      <p>All stations color-coded by risk — with subway line overlays</p>
+    </div>
+  </div>
+  <div style="max-width:980px;margin:0 auto;padding:32px 24px 64px">
+    <div style="background:var(--color-surface,#f8f9fa);border:1px solid var(--color-border);border-radius:12px;padding:14px 20px;margin-bottom:16px;font-size:.85rem;color:var(--color-text-secondary);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px">
+      <span>🔴 Red = higher risk &nbsp;|&nbsp; 🟡 Yellow = moderate &nbsp;|&nbsp; 🟢 Green = lower risk &nbsp;|&nbsp; Lines shown as colored paths</span>
+      <span>📅 Data: 2026-04-21</span>
+    </div>
+    <div class="line-legend" id="line-legend"></div>
+    <div class="map-toggle-row">
+      <span style="font-weight:600;font-size:.875rem;color:var(--color-text-secondary)">Color stations by:</span>
+      <button class="map-toggle-btn active" data-metric="total">Overall Risk</button>
+      <button class="map-toggle-btn" data-metric="crime">Crime Index</button>
+      <button class="map-toggle-btn" data-metric="sketchy">Sketchy Index</button>
+      <label style="margin-left:auto;font-size:.82rem;font-weight:600;display:flex;align-items:center;gap:6px;cursor:pointer">
+        <input type="checkbox" id="show-lines" checked> Show subway lines
+      </label>
+      <span id="map-status" style="font-size:.78rem;color:var(--color-text-secondary)"></span>
+    </div>
+    <div class="map-wrap"><div id="subway-map"></div></div>
+    <h2 style="font-size:1.2rem;font-weight:700;color:var(--color-primary);margin-bottom:14px">🔍 Search a Station</h2>
+    <div style="position:relative;margin-bottom:28px">
+      <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:1.1rem;pointer-events:none">🔍</span>
+      <input type="text" id="station-search" placeholder="Type station name (e.g. Bedford, 14 St, Times Sq)..." autocomplete="off" style="width:100%;padding:14px 16px 14px 44px;border:2px solid var(--color-border);border-radius:12px;font-size:1rem;background:white;box-sizing:border-box">
+      <div id="search-results" class="search-results"></div>
+    </div>
+    <div id="station-result" style="display:none">
+      <div style="background:var(--color-primary);color:white;border-radius:16px;padding:24px;margin-bottom:20px">
+        <div id="station-name" style="font-size:1.6rem;font-weight:800;margin-bottom:4px"></div>
+        <div id="station-meta" style="opacity:.75;font-size:.875rem"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:20px">
+        <div style="background:white;border:1px solid var(--color-border);border-radius:12px;padding:18px">
+          <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;color:var(--color-text-secondary);font-weight:700">Overall Safety</div>
+          <div id="safety-score" style="font-size:2.2rem;font-weight:800;color:var(--color-primary)"></div>
+          <div class="metric-bar"><div id="safety-fill" class="metric-bar-fill" style="background:linear-gradient(90deg,#388e3c,#1b5e20)"></div></div>
+          <div id="safety-desc" style="font-size:.78rem;color:var(--color-text-secondary)"></div>
         </div>
-
-        <div class="info-panel">
-            <h2>Understanding the Scores</h2>
-            <div class="info-grid">
-                <div class="info-card">
-                    <h3>Safety Index</h3>
-                    <p>This number evaluates both the actual safety and the perception of safety at any given station. Both are heavily influenced by ridership, safety of the surrounding area, isolation, and presence of law enforcement.</p>
-                </div>
-                
-                <div class="info-card">
-                    <h3>Crime Index</h3>
-                    <p>While the NYC subway system is overwhelmingly safe, some stations have higher rates of crime. This number shows the safety of your chosen station relative to others: a value of 100 means that station is among the highest in terms of crime incidence, <strong>not</strong> that you have a 100% chance of experiencing a crime.</p>
-                </div>
-                
-                <div class="info-card">
-                    <h3>Sketchy Index</h3>
-                    <p>This number evaluates the perception of safety, calculated primarily by isolation and online reports. Since this combines both nighttime and daytime perception, a station may be perfectly fine during the day but feel less safe at night.</p>
-                </div>
-            </div>
+        <div style="background:white;border:1px solid var(--color-border);border-radius:12px;padding:18px">
+          <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;color:var(--color-text-secondary);font-weight:700">Crime Index</div>
+          <div id="crime-score" style="font-size:2.2rem;font-weight:800;color:#d32f2f"></div>
+          <div class="metric-bar"><div id="crime-fill" class="metric-bar-fill" style="background:linear-gradient(90deg,#ef5350,#b71c1c)"></div></div>
+          <div id="crime-desc" style="font-size:.78rem;color:var(--color-text-secondary)"></div>
         </div>
-
-        <div class="station-result" id="station-result" style="display: none;">
-            <div class="result-header">
-                <h2 id="station-name"></h2>
-                <div id="station-precinct" class="precinct-badge"></div>
-            </div>
-            
-            <div class="scores-grid">
-                <div class="score-card safety">
-                    <div class="score-label">Overall Safety Index</div>
-                    <div class="score-value" id="safety-score">--</div>
-                    <div class="score-bar">
-                        <div class="score-fill" id="safety-fill"></div>
-                    </div>
-                    <div class="score-description" id="safety-desc"></div>
-                </div>
-                
-                <div class="score-card crime">
-                    <div class="score-label">Crime Index</div>
-                    <div class="score-value" id="crime-score">--</div>
-                    <div class="score-bar">
-                        <div class="score-fill" id="crime-fill"></div>
-                    </div>
-                    <div class="score-description" id="crime-desc"></div>
-                </div>
-                
-                <div class="score-card sketchy">
-                    <div class="score-label">Sketchy Index</div>
-                    <div class="score-value" id="sketchy-score">--</div>
-                    <div class="score-bar">
-                        <div class="score-fill" id="sketchy-fill"></div>
-                    </div>
-                    <div class="score-description" id="sketchy-desc"></div>
-                </div>
-            </div>
-
-            <div class="additional-info">
-                <h3>Additional Details</h3>
-                <div class="detail-grid">
-                    <div class="detail-item">
-                        <span class="detail-label">Average Daily Ridership</span>
-                        <span class="detail-value" id="ridership">--</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Precinct</span>
-                        <span class="detail-value" id="precinct-detail">--</span>
-                    </div>
-                </div>
-            </div>
+        <div style="background:white;border:1px solid var(--color-border);border-radius:12px;padding:18px">
+          <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;color:var(--color-text-secondary);font-weight:700">Sketchy Index <span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-text">Perception metric. Methodology: [To be provided]</span></span></div>
+          <div id="sketchy-score" style="font-size:2.2rem;font-weight:800;color:#e65100"></div>
+          <div class="metric-bar"><div id="sketchy-fill" class="metric-bar-fill" style="background:linear-gradient(90deg,#ffab00,#e65100)"></div></div>
+          <div id="sketchy-desc" style="font-size:.78rem;color:var(--color-text-secondary)"></div>
         </div>
-    </main>
+      </div>
+      <div style="background:var(--color-surface,#f8f9fa);border:1px solid var(--color-border);border-radius:12px;padding:16px;display:flex;gap:28px;flex-wrap:wrap">
+        <div><div style="font-size:.75rem;color:var(--color-text-secondary)">Avg Daily Ridership</div><div id="ridership" style="font-weight:700"></div></div>
+        <div><div style="font-size:.75rem;color:var(--color-text-secondary)">NYPD Precinct</div><div id="precinct-detail" style="font-weight:700"></div></div>
+        <div><div style="font-size:.75rem;color:var(--color-text-secondary)">ADA Accessible</div><div id="ada-detail" style="font-weight:700"></div></div>
+      </div>
+    </div>
+    <h2 style="font-size:1.2rem;font-weight:700;color:var(--color-primary);margin:32px 0 14px">⚠️ Highest Risk Stations</h2>
+    <div id="top-risky-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px"></div>
+  </div>
+  <footer><p>NYC Livability Index | Built for transplants, by a transplant</p><p class="footer-updated">Data last updated: 2026-04-21</p></footer>
 
-    <footer>
-        <p>NYC Livability Index | Built for transplants, by a transplant</p>
-        <p class="feedback-note">If you find any information to be inaccurate, please reach out. I'm open to feedback.</p>
-    </footer>
+  <script type="module">
+    import { subwayStations } from "./data/subway-stations.js";
+    try{const f=JSON.parse(localStorage.getItem("nyc_favorites")||"[]");if(f.length>0)document.querySelectorAll(".fav-count").forEach(e=>e.textContent=`Favorites (${f.length})`)}catch{}
+    if("serviceWorker"in navigator)navigator.serviceWorker.register("/sw.js").catch(()=>{});
 
-    <script src="data/subway-stations.js"></script>
-    <script src="js/subway.js"></script>
+    // MTA subway line colors
+    const LINE_COLORS = {
+      "1":"#EE352E","2":"#EE352E","3":"#EE352E",
+      "4":"#00933C","5":"#00933C","6":"#00933C",
+      "7":"#B933AD","A":"#0039A6","C":"#0039A6","E":"#0039A6",
+      "B":"#FF6319","D":"#FF6319","F":"#FF6319","M":"#FF6319",
+      "G":"#6CBE45","J":"#996633","Z":"#996633",
+      "L":"#A7A9AC","N":"#FCCC0A","Q":"#FCCC0A","R":"#FCCC0A","W":"#FCCC0A",
+      "S":"#808183","SIR":"#0039A6"
+    };
+
+    function riskColor(r){
+      if(r>=60)return"#dc3535";
+      if(r>=35)return"#e6a808";
+      return"#388e3c";
+    }
+    function safetyDesc(s){return s>=80?"Excellent — Very safe":s>=60?"Good — Generally safe":s>=40?"Fair — Use caution at night":s>=20?"Below Average — Stay alert":"Poor — Extra caution"}
+    function crimeDesc(s){return s>=70?"High crime incidence":s>=50?"Moderate crime":s>=30?"Below average":"Low crime"}
+    function sketchyDesc(s){return s>=70?"May feel uncomfortable at night":s>=50?"Some reports of feeling unsafe":s>=30?"Generally OK during the day":"Feels safe"}
+
+    const map = L.map("subway-map",{center:[40.7128,-74.006],zoom:11});
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",{attribution:"© OpenStreetMap © CARTO",maxZoom:19}).addTo(map);
+
+    let markerLayer=L.layerGroup().addTo(map);
+    let lineLayer=L.layerGroup().addTo(map);
+    let currentMetric="total";
+    let mtaData=[]; // full MTA records with coords
+    let coordMap={}; // our station name -> {lat,lng}
+
+    const statusEl=document.getElementById("map-status");
+
+    // Hardcoded coords for stations that don't match the MTA API names
+    const MANUAL_COORDS = {
+      "39 Av (N,W)": {lat:40.7527,lng:-73.9325},
+      "4 Av (F,G)/9 St (R)": {lat:40.6706,lng:-73.9890},
+      "110th st (6)": {lat:40.7954,lng:-73.9445},
+      "5 Av-59 St (N,R,W)": {lat:40.7641,lng:-73.9734},
+      "5 Av-53 St (E,M)": {lat:40.7604,lng:-73.9753},
+      "14 St (A,C,E)/8 Av (L)": {lat:40.7408,lng:-74.0003},
+      "14 St (F,M,1,2,3)/6 Av (L)": {lat:40.7381,lng:-73.9967}
+    };
+
+    // Strip line codes: "Bedford Av (L)" -> "bedford av"
+    function cleanName(n){
+      return n.replace(/\s*\([^)]+\)\s*/g," ").replace(/\s*\/[^\s]*/g,"").trim().toLowerCase().replace(/\s+/g," ").replace(/[.']/g,"").replace(/st\.?\s/g,"st ").replace(/av\.?\b/g,"av").replace(/–|-/g," ");
+    }
+
+    async function loadMTA(){
+      statusEl.textContent="Loading station data...";
+      try{
+        const url="https://data.ny.gov/resource/39hk-dx4f.json?$limit=600&$select=stop_name,gtfs_latitude,gtfs_longitude,ada,daytime_routes,gtfs_stop_id";
+        const res=await fetch(url);
+        mtaData=await res.json();
+
+        // Build name->coords map
+        const coords={};
+        mtaData.forEach(s=>{
+          if(s.gtfs_latitude&&s.gtfs_longitude){
+            const k=cleanName(s.stop_name);
+            if(!coords[k]) coords[k]={lat:parseFloat(s.gtfs_latitude),lng:parseFloat(s.gtfs_longitude),ada:s.ada==="1",routes:(s.daytime_routes||"").trim()};
+          }
+        });
+
+        // Match our 423 stations (API match + manual fallback)
+        subwayStations.forEach(s=>{
+          // Check manual coords first
+          if(MANUAL_COORDS[s.Station]){coordMap[s.Station]=MANUAL_COORDS[s.Station];return;}
+          const clean=cleanName(s.Station);
+          let found=coords[clean];
+          if(!found){
+            const words=clean.split(" ").filter(w=>w.length>2);
+            for(const[k,v]of Object.entries(coords)){
+              if(words.some(w=>k.startsWith(w)||k.includes(" "+w))){found=v;break;}
+            }
+          }
+          if(found) coordMap[s.Station]=found;
+        });
+
+        statusEl.textContent=`${Object.keys(coordMap).length}/${subwayStations.length} stations mapped`;
+        drawLines();
+        renderMarkers(currentMetric);
+      }catch(e){
+        statusEl.textContent="API unavailable — showing estimated positions";
+        renderFallback();
+      }
+    }
+
+    // Draw subway lines — sort stations along each route using GTFS stop ID
+    function drawLines(){
+      lineLayer.clearLayers();
+      // Group by route, keeping stop_id for sorting
+      const routeStations={};
+      mtaData.forEach(s=>{
+        if(!s.gtfs_latitude) return;
+        const routes=(s.daytime_routes||"").split(" ").map(r=>r.trim()).filter(Boolean);
+        const lat=parseFloat(s.gtfs_latitude), lng=parseFloat(s.gtfs_longitude);
+        const id=s.gtfs_stop_id||"";
+        routes.forEach(r=>{
+          if(!routeStations[r]) routeStations[r]=[];
+          routeStations[r].push({lat,lng,id});
+        });
+      });
+
+      // East-west lines: sort by longitude. Others: sort by GTFS stop ID (which follows route order)
+      const ewLines=new Set(["L","G","S","SIR"]);
+      const legendEl=document.getElementById("line-legend");
+      legendEl.innerHTML="";
+      Object.entries(routeStations).forEach(([route,stops])=>{
+        if(stops.length<2) return;
+        stops.sort((a,b)=> a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
+        const pts=stops.map(s=>[s.lat,s.lng]);
+        const col=LINE_COLORS[route]||"#999";
+        L.polyline(pts,{color:col,weight:3,opacity:.55,smoothFactor:1.5}).addTo(lineLayer);
+        const textCol=(route==="N"||route==="Q"||route==="R"||route==="W")?"#333":"white";
+        legendEl.innerHTML+=`<span class="line-badge" style="background:${col};color:${textCol}">${route}</span>`;
+      });
+    }
+
+    function renderMarkers(metric){
+      markerLayer.clearLayers();
+      subwayStations.forEach(s=>{
+        const coords=coordMap[s.Station];
+        const risk=metric==="crime"?parseFloat(s["Crime Index"])||0:metric==="sketchy"?parseFloat(s["sketchy index"])||0:parseFloat(s["total index"])||0;
+        const col=riskColor(risk);
+        const safety=Math.round(100-(parseFloat(s["total index"])||0));
+        const lat=coords?coords.lat:null,lng=coords?coords.lng:null;
+        if(!lat) return; // skip truly unmatched
+        const c=L.circleMarker([lat,lng],{radius:7,fillColor:col,color:"#fff",weight:1.5,fillOpacity:.9});
+        c.bindPopup(`<div style="font-family:inherit;min-width:180px"><div style="font-weight:800;font-size:.95rem;color:#1a2233;margin-bottom:4px">${s.Station}</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin:8px 0"><div style="background:#f5f7fa;border-radius:5px;padding:5px"><div style="font-size:.62rem;color:#888;font-weight:700">SAFETY</div><div style="font-weight:800">${safety}</div></div><div style="background:#f5f7fa;border-radius:5px;padding:5px"><div style="font-size:.62rem;color:#888;font-weight:700">CRIME IDX</div><div style="font-weight:800">${Math.round(parseFloat(s["Crime Index"])||0)}</div></div><div style="background:#f5f7fa;border-radius:5px;padding:5px"><div style="font-size:.62rem;color:#888;font-weight:700">SKETCHY</div><div style="font-weight:800">${Math.round(parseFloat(s["sketchy index"])||0)}</div></div><div style="background:#f5f7fa;border-radius:5px;padding:5px"><div style="font-size:.62rem;color:#888;font-weight:700">PRECINCT</div><div style="font-weight:800">${s.Precinct||"N/A"}</div></div></div><button onclick="window.__show('${s.Station.replace(/'/g,"\\'")}')" style="width:100%;padding:7px;background:#1a2233;color:white;border:none;border-radius:7px;font-weight:700;font-size:.82rem;cursor:pointer">View Details ↓</button></div>`,{maxWidth:220});
+        c.addTo(markerLayer);
+      });
+    }
+
+    function renderFallback(){
+      const C={Manhattan:[40.7831,-73.9712],Brooklyn:[40.6501,-73.9496],Queens:[40.7282,-73.7949],Bronx:[40.8448,-73.8648],"Staten Island":[40.5795,-74.1502]};
+      markerLayer.clearLayers();
+      subwayStations.forEach(s=>{
+        const risk=parseFloat(s["total index"])||0,h=s.Station.split("").reduce((a,c)=>a+c.charCodeAt(0),0);
+        const b=["Bronx","Brooklyn","Queens","Staten Island","Manhattan"][h%5];
+        const c=C[b]||C.Manhattan,angle=(h%360)*Math.PI/180,dist=0.015+(h%40)/600;
+        const circ=L.circleMarker([c[0]+Math.sin(angle)*dist,c[1]+Math.cos(angle)*dist],{radius:6,fillColor:riskColor(risk),color:"#fff",weight:1,fillOpacity:.85});
+        circ.bindPopup(`<b>${s.Station}</b><br>Risk: ${Math.round(risk)}<br><small>⚠ Estimated position</small>`);
+        circ.addTo(markerLayer);
+      });
+    }
+
+    // Legend
+    const legend=L.control({position:"bottomright"});
+    legend.onAdd=()=>{
+      const d=L.DomUtil.create("div","map-legend");
+      d.innerHTML=`<div class="map-legend-title">Station Risk</div><div><span class="legend-dot" style="background:#388e3c"></span>Low</div><div><span class="legend-dot" style="background:#e6a808"></span>Moderate</div><div><span class="legend-dot" style="background:#dc3535"></span>High</div>`;
+      return d;
+    };
+    legend.addTo(map);
+
+    // Toggle buttons
+    document.querySelectorAll(".map-toggle-btn").forEach(btn=>{
+      btn.addEventListener("click",function(){
+        document.querySelectorAll(".map-toggle-btn").forEach(b=>b.classList.remove("active"));
+        this.classList.add("active");
+        currentMetric=this.dataset.metric;
+        renderMarkers(currentMetric);
+      });
+    });
+
+    // Lines toggle
+    document.getElementById("show-lines").addEventListener("change",function(){
+      if(this.checked) lineLayer.addTo(map); else map.removeLayer(lineLayer);
+    });
+
+    // Display station detail
+    function displayStation(s){
+      const el=document.getElementById("station-result");
+      el.style.display="block";
+      document.getElementById("station-name").textContent=s.Station;
+      document.getElementById("station-meta").textContent=s.Precinct?`Precinct ${s.Precinct}`:"";
+      const safety=Math.round(100-(parseFloat(s["total index"])||0));
+      const crime=Math.round(parseFloat(s["Crime Index"])||0);
+      const sketchy=Math.round(parseFloat(s["sketchy index"])||0);
+      document.getElementById("safety-score").textContent=safety;
+      document.getElementById("safety-fill").style.width=safety+"%";
+      document.getElementById("safety-desc").textContent=safetyDesc(safety);
+      document.getElementById("crime-score").textContent=crime;
+      document.getElementById("crime-fill").style.width=crime+"%";
+      document.getElementById("crime-desc").textContent=crimeDesc(crime);
+      document.getElementById("sketchy-score").textContent=sketchy;
+      document.getElementById("sketchy-fill").style.width=sketchy+"%";
+      document.getElementById("sketchy-desc").textContent=sketchyDesc(sketchy);
+      const r=s["Average Ridership"]||"N/A";
+      document.getElementById("ridership").textContent=r!=="N/A"?r+" passengers":"N/A";
+      document.getElementById("precinct-detail").textContent=s.Precinct||"N/A";
+      document.getElementById("ada-detail").textContent=s.hasElevator?"♿ Yes":"No";
+      el.scrollIntoView({behavior:"smooth",block:"start"});
+      const c=coordMap[s.Station];
+      if(c) map.setView([c.lat,c.lng],15);
+    }
+    window.__show=name=>{const s=subwayStations.find(x=>x.Station===name);if(s)displayStation(s);};
+
+    // Search
+    const inp=document.getElementById("station-search"),res=document.getElementById("search-results");
+    inp.addEventListener("input",e=>{
+      const q=e.target.value.toLowerCase().trim();
+      if(q.length<2){res.classList.remove("show");return;}
+      const matches=subwayStations.filter(s=>s.Station.toLowerCase().includes(q)).slice(0,10);
+      if(!matches.length){res.innerHTML=`<div class="search-result-item" style="color:#999">No stations found</div>`;res.classList.add("show");return;}
+      res.innerHTML=matches.map(s=>{
+        const risk=Math.round(parseFloat(s["total index"])||0);
+        const col=risk>=60?"#dc3535":risk>=35?"#e6a808":"#388e3c";
+        return`<div class="search-result-item" data-name="${s.Station.replace(/"/g,"&quot;")}"><div class="result-station-name">${s.Station}</div><div style="font-size:.75rem;color:#999;margin-top:2px">Risk: <span style="color:${col};font-weight:700">${risk}</span> · Precinct ${s.Precinct||"N/A"}</div></div>`;
+      }).join("");
+      res.classList.add("show");
+      res.querySelectorAll(".search-result-item").forEach(item=>{
+        item.addEventListener("click",()=>{
+          const s=subwayStations.find(x=>x.Station===item.dataset.name);
+          if(s){displayStation(s);inp.value=s.Station;res.classList.remove("show");}
+        });
+      });
+    });
+    document.addEventListener("click",e=>{if(!inp.contains(e.target)&&!res.contains(e.target))res.classList.remove("show");});
+
+    // Top risky cards
+    const top=[...subwayStations].sort((a,b)=>(parseFloat(b["total index"])||0)-(parseFloat(a["total index"])||0)).slice(0,9);
+    document.getElementById("top-risky-list").innerHTML=top.map(s=>{
+      const risk=Math.round(parseFloat(s["total index"])||0);
+      const bg=risk>=60?"#fff5f5":risk>=35?"#fffbf0":"#f5fbf5";
+      const tc=risk>=60?"#dc3535":risk>=35?"#b45309":"#166534";
+      return`<div style="background:${bg};border:1px solid var(--color-border);border-radius:10px;padding:14px;cursor:pointer;transition:all .2s" onclick="window.__show('${s.Station.replace(/'/g,"\\'")}')" onmouseenter="this.style.transform='translateY(-2px)'" onmouseleave="this.style.transform=''"><div style="font-weight:700;font-size:.875rem;color:#1a2233;margin-bottom:4px">${s.Station}</div><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:.75rem;color:#888">Precinct ${s.Precinct||"N/A"}</span><span style="font-size:.8rem;font-weight:800;color:${tc}">Risk: ${risk}</span></div></div>`;
+    }).join("");
+
+    loadMTA();
+  </script>
 </body>
 </html>
