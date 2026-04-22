@@ -92,7 +92,9 @@ function fuzzyMatch(name, query) {
 
 export function scoreAndFilter(params) {
   const {
-    weights, thresholds, budget, bedrooms, borough,
+    weights, thresholds, budget, bedrooms,
+    borough = 'all',   // legacy single-select fallback
+    boroughs,          // multi-select array; takes precedence when provided
     nameQuery, commuteDest, excludeFlood, requireADA,
   } = params;
 
@@ -108,7 +110,13 @@ export function scoreAndFilter(params) {
   return neighborhoods
     .filter(n => {
       try {
-        if (borough !== 'all' && n.borough !== borough) return false;
+        // Multi-borough filter (boroughs array) takes precedence
+        if (boroughs && boroughs.length > 0) {
+          if (!boroughs.includes(n.borough)) return false;
+        } else if (borough !== 'all' && n.borough !== borough) {
+          return false;
+        }
+
         if (nameQuery && !fuzzyMatch(n.name, nameQuery)) return false;
         if (excludeFlood && n.floodZone) return false;
 
@@ -286,4 +294,4 @@ export function runTests() {
 // Export constants
 export { LS_KEYS, PAGE_SIZE, MAX_COMPARE, DATA_LAST_UPDATED };
 export { neighborhoods };
-export { selectedBorough, currentSort };
+

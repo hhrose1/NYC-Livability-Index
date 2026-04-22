@@ -32,37 +32,36 @@
       </div>
     </div>
   </nav>
-  <div class="page-content">
-    <section class="page-header">
-      <h1>Find Your Perfect Neighborhood</h1>
-      <p>Compare 111 neighborhoods across safety, rent, transit, and more</p>
-      <span class="data-badge">📅 Data updated: <span data-last-updated>2026-04-21</span></span>
-    </section>
+</div>
 
-    <div class="budget-disclaimer">
-      <h3>Understanding Your Budget</h3>
-      <p>Rent ranges shown are typical asking prices. If your budget falls at the lower end, expect trade-offs. Consider walking neighborhoods to find postings.</p>
+  <!-- ── Hero Header ── -->
+  <div class="search-hero">
+    <div class="search-hero-bg"></div>
+    <div class="search-hero-content">
+      <h1 class="search-hero-headline">Find your future home here.</h1>
+      <span class="data-badge">📅 Data updated: <span data-last-updated>2026-04-21</span></span>
     </div>
+  </div>
+
+  <div class="page-content">
+
     <div class="controls-panel">
-      <div class="controls-header-row">
-        <h2 class="controls-header">Search Filters</h2>
-        <button class="toggle-advanced" id="toggleAdvanced">Advanced Options</button>
-      </div>
-      <div class="name-search-wrap">
-        <span class="name-search-icon">🔍</span>
-        <input type="text" id="name-search" placeholder="Search by neighborhood name..." autocomplete="off" aria-label="Search by name">
-      </div>
-      <div class="rent-disclaimer"><strong>Note:</strong> Rent values are typical asking prices and vary widely within neighborhoods.</div>
-      <div class="budget-section">
-        <div class="budget-row">
-          <label for="budget">Max Monthly Rent:</label>
-          <input type="number" id="budget" placeholder="e.g. 2500" step="100" min="0">
-          <select id="bedrooms" aria-label="Bedroom type">
-            <option value="studio">Studio</option>
-            <option value="1br">1 Bedroom</option>
-            <option value="2br">2 Bedrooms</option>
-          </select>
+      <!-- Top row: compact name search + budget inline -->
+      <div class="controls-top-row">
+        <div class="name-search-wrap compact">
+          <span class="name-search-icon">🔍</span>
+          <input type="text" id="name-search" placeholder="Search by name..." autocomplete="off" aria-label="Search by name">
         </div>
+        <div class="budget-inline">
+          <label for="budget">Max Rent:</label>
+          <input type="number" id="budget" placeholder="e.g. 2500" step="100" min="0">
+          <label class="bedroom-chip"><input type="checkbox" name="bedrooms" value="studio" checked> Studio</label>
+          <label class="bedroom-chip"><input type="checkbox" name="bedrooms" value="1br"> 1 BR</label>
+          <label class="bedroom-chip"><input type="checkbox" name="bedrooms" value="2br"> 2 BR</label>
+        </div>
+      </div>
+      <!-- Commute + checkboxes row -->
+      <div class="filters-row">
         <div class="commute-row">
           <label for="commute-dest">Commute to:</label>
           <select id="commute-dest">
@@ -80,14 +79,13 @@
         </div>
       </div>
       <div class="borough-section">
-        <label class="borough-label">Borough:</label>
-        <div class="borough-chips">
-          <button class="borough-chip active" data-borough="all">All</button>
-          <button class="borough-chip" data-borough="Manhattan">Manhattan</button>
-          <button class="borough-chip" data-borough="Brooklyn">Brooklyn</button>
-          <button class="borough-chip" data-borough="Queens">Queens</button>
-          <button class="borough-chip" data-borough="Bronx">Bronx</button>
-          <button class="borough-chip" data-borough="Staten Island">Staten Island</button>
+        <label class="borough-label">Borough (select multiple):</label>
+        <div class="borough-chips" id="borough-chips">
+          <button class="borough-chip active" data-borough="Manhattan">Manhattan</button>
+          <button class="borough-chip active" data-borough="Brooklyn">Brooklyn</button>
+          <button class="borough-chip active" data-borough="Queens">Queens</button>
+          <button class="borough-chip active" data-borough="Bronx">Bronx</button>
+          <button class="borough-chip active" data-borough="Staten Island">Staten Island</button>
         </div>
       </div>
       <div id="simple-mode" class="search-mode">
@@ -105,20 +103,7 @@
           <div class="slider-group"><div class="slider-label"><span>🔇 Quiet</span><span class="slider-value" id="noise-value">0</span></div><input type="range" id="noise" min="0" max="100" value="0"><div class="threshold-row"><span class="threshold-label">Min:</span><input type="range" id="thresh-noise" min="0" max="10" value="0" class="threshold-slider"><span class="threshold-value" id="thresh-noise-value">0</span></div></div>
         </div>
       </div>
-      <div id="advanced-mode" class="search-mode" style="display:none">
-        <h3 class="mode-title">Advanced — Custom Weight Distribution</h3>
-        <p class="mode-description">Set relative importance. Weights are normalized automatically.</p>
-        <div class="weight-sliders-grid">
-          <div class="weight-slider-group"><div class="weight-label"><span>🛡️ Safety</span><span class="weight-value" id="weight-safety-value">20%</span></div><input type="range" id="weight-safety" min="0" max="100" value="20" class="weight-slider"></div>
-          <div class="weight-slider-group"><div class="weight-label"><span>🚇 Transit</span><span class="weight-value" id="weight-transit-value">15%</span></div><input type="range" id="weight-transit" min="0" max="100" value="15" class="weight-slider"></div>
-          <div class="weight-slider-group"><div class="weight-label"><span>💰 Affordability</span><span class="weight-value" id="weight-affordability-value">15%</span></div><input type="range" id="weight-affordability" min="0" max="100" value="15" class="weight-slider"></div>
-          <div class="weight-slider-group"><div class="weight-label"><span>🎉 Nightlife</span><span class="weight-value" id="weight-nightlife-value">10%</span></div><input type="range" id="weight-nightlife" min="0" max="100" value="10" class="weight-slider"></div>
-          <div class="weight-slider-group"><div class="weight-label"><span>🚶 Walkability</span><span class="weight-value" id="weight-walkability-value">15%</span></div><input type="range" id="weight-walkability" min="0" max="100" value="15" class="weight-slider"></div>
-          <div class="weight-slider-group"><div class="weight-label"><span>🏫 Schools</span><span class="weight-value" id="weight-schools-value">10%</span></div><input type="range" id="weight-schools" min="0" max="100" value="10" class="weight-slider"></div>
-          <div class="weight-slider-group"><div class="weight-label"><span>🛒 Groceries</span><span class="weight-value" id="weight-groceries-value">10%</span></div><input type="range" id="weight-groceries" min="0" max="100" value="10" class="weight-slider"></div>
-          <div class="weight-slider-group"><div class="weight-label"><span>🌳 Parks</span><span class="weight-value" id="weight-parks-value">5%</span></div><input type="range" id="weight-parks" min="0" max="100" value="5" class="weight-slider"></div>
-        </div>
-      </div>
+      <!-- Advanced mode removed; sliders always visible -->
       <div class="button-group">
         <button class="btn-primary" id="find-btn">🔍 Find My Neighborhoods</button>
         <button class="btn-secondary" id="reset-btn">✕ Clear All</button>
