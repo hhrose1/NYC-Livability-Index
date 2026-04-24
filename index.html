@@ -8,6 +8,17 @@
   <title>NYC Livability Index — Find Your Perfect Neighborhood</title>
   <link rel="stylesheet" href="styles/base.css">
   <link rel="stylesheet" href="css/homepage.css">
+  <style>
+    /* ── Override homepage yellows with navy theme ── */
+    .budget-input:focus { border-color: #001f3f; box-shadow: 0 0 0 3px rgba(0,31,63,0.12); }
+    .chip.active { background: #001f3f; border-color: #001f3f; color: white; }
+    .search-button { background: #001f3f; color: white; box-shadow: 0 4px 12px rgba(0,31,63,0.3); }
+    .search-button:hover { background: #003366; box-shadow: 0 6px 16px rgba(0,31,63,0.4); }
+    .tool-card.mta  { --accent-color: #001f3f; }
+    .tool-card.taxi { --accent-color: #003366; }
+    .tool-card.brick{ --accent-color: #0056a3; }
+    .hero-headline { color: #001f3f; }
+  </style>
 </head>
 <body>
   <nav class="top-nav">
