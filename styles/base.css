@@ -255,7 +255,7 @@ footer p { margin-bottom: var(--spacing-sm); }
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 31, 63, 0.4);
+  background: rgba(51, 67, 44, 0.4);
   backdrop-filter: blur(4px);
   z-index: var(--z-modal);
   align-items: center;
