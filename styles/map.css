@@ -3,6 +3,7 @@
 /* ══════════════════════════════
    Leaflet Map Page — map.css
    ══════════════════════════════ */
+body { background-color: #33432c90; }
 
 .map-page-content { max-width: var(--max-width); margin: 0 auto; padding: var(--spacing-xl) var(--spacing-xl) var(--spacing-3xl); }
 
