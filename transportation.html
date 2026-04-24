@@ -170,12 +170,6 @@
       <span>📅 Data: 2026-04-21</span>
     </div>
 
-    <!-- Line filter -->
-    <div class="line-filter-bar">
-      <div class="line-filter-title">Filter by Line — click to show/hide</div>
-      <div class="line-filter-badges" id="line-filter-badges"></div>
-    </div>
-
     <!-- Controls -->
     <div class="controls-bar">
       <span class="controls-label">Color by:</span>
@@ -184,9 +178,6 @@
         <button class="metric-btn" data-metric="crime">Crime Index</button>
         <button class="metric-btn" data-metric="sketchy">Sketchy Index</button>
       </div>
-      <label class="lines-toggle-wrap">
-        <input type="checkbox" id="show-lines" checked> Show subway lines
-      </label>
       <span id="map-status" class="map-status"></span>
     </div>
 
@@ -272,26 +263,6 @@
       "S":"#808183"
     };
 
-    // Lines grouped for correct MTA line sets (shares color = same group, but treated independently)
-    const LINE_GROUPS = [
-      { lines: ["1","2","3"], color: "#EE352E", textColor: "white",  label: "1 2 3" },
-      { lines: ["4","5","6"], color: "#00933C", textColor: "white",  label: "4 5 6" },
-      { lines: ["7"],         color: "#B933AD", textColor: "white",  label: "7" },
-      { lines: ["A","C","E"], color: "#0039A6", textColor: "white",  label: "A C E" },
-      { lines: ["B","D","F","M"], color: "#FF6319", textColor: "white", label: "B D F M" },
-      { lines: ["G"],         color: "#6CBE45", textColor: "white",  label: "G" },
-      { lines: ["J","Z"],     color: "#996633", textColor: "white",  label: "J Z" },
-      { lines: ["L"],         color: "#A7A9AC", textColor: "#333",   label: "L" },
-      { lines: ["N","Q","R","W"], color: "#FCCC0A", textColor: "#333", label: "N Q R W" },
-      { lines: ["S"],         color: "#808183", textColor: "white",  label: "S" },
-    ];
-
-    // ── Station lines derived from name parenthetical ─────────────────
-    function stationLines(name) {
-      const m = name.match(/\(([^)]+)\)/g);
-      if (!m) return [];
-      return m.flatMap(g => g.replace(/[()]/g,"").split(",").map(s=>s.trim()));
-    }
 
     // ── Coords for stations that don't match MTA API names ────────────
     const MANUAL_COORDS = {
@@ -309,7 +280,6 @@
     let currentMetric = "total";
     let mtaData = [];
     let coordMap = {};
-    let visibleLines = new Set(Object.keys(LINE_COLORS)); // all on by default
     const statusEl = document.getElementById("map-status");
 
     function cleanName(n) {
@@ -331,7 +301,6 @@
     L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", { attribution:"© OpenStreetMap © CARTO", maxZoom:19 }).addTo(map);
 
     const markerLayer = L.layerGroup().addTo(map);
-    const lineLayer   = L.layerGroup().addTo(map);
 
     // Legend
     const legend = L.control({ position:"bottomright" });
@@ -341,30 +310,6 @@
       return d;
     };
     legend.addTo(map);
-
-    // ── Build line filter badges ───────────────────────────────────────
-    const badgesEl = document.getElementById("line-filter-badges");
-    LINE_GROUPS.forEach(group => {
-      const badge = document.createElement("span");
-      badge.className = "line-badge";
-      badge.textContent = group.label;
-      badge.style.cssText = `background:${group.color};color:${group.textColor};border-color:${group.color}`;
-      badge.dataset.lines = group.lines.join(",");
-      badge.addEventListener("click", () => {
-        const lines = group.lines;
-        const anyVisible = lines.some(l => visibleLines.has(l));
-        if (anyVisible) {
-          lines.forEach(l => visibleLines.delete(l));
-          badge.classList.add("hidden-line");
-        } else {
-          lines.forEach(l => visibleLines.add(l));
-          badge.classList.remove("hidden-line");
-        }
-        drawLines();
-        renderMarkers(currentMetric);
-      });
-      badgesEl.appendChild(badge);
-    });
 
     // ── Load MTA data ─────────────────────────────────────────────────
     async function loadMTA() {
@@ -400,7 +345,6 @@
         Object.entries(MANUAL_COORDS).forEach(([name, c]) => { coordMap[name] = c; });
 
         statusEl.textContent = `${Object.keys(coordMap).length}/${subwayStations.length} stations mapped`;
-        drawLines();
         renderMarkers(currentMetric);
       } catch(e) {
         statusEl.textContent = "API unavailable — showing estimated positions";
@@ -408,40 +352,10 @@
       }
     }
 
-    // ── Draw lines filtered by visibleLines ───────────────────────────
-    function drawLines() {
-      lineLayer.clearLayers();
-      const routeStations = {};
-      mtaData.forEach(s => {
-        if (!s.gtfs_latitude) return;
-        const routes = (s.daytime_routes||"").split(" ").map(r=>r.trim()).filter(Boolean);
-        const lat = parseFloat(s.gtfs_latitude), lng = parseFloat(s.gtfs_longitude);
-        const id = s.gtfs_stop_id || "";
-        routes.forEach(r => {
-          if (!routeStations[r]) routeStations[r] = [];
-          routeStations[r].push({ lat, lng, id });
-        });
-      });
-
-      Object.entries(routeStations).forEach(([route, stops]) => {
-        if (stops.length < 2) return;
-        if (!visibleLines.has(route)) return; // filtered out
-        if (!LINE_COLORS[route]) return; // skip SIR or unknown
-        stops.sort((a,b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
-        const pts = stops.map(s => [s.lat, s.lng]);
-        const col = LINE_COLORS[route];
-        L.polyline(pts, { color:col, weight:3, opacity:.55, smoothFactor:1.5 }).addTo(lineLayer);
-      });
-    }
-
     // ── Render station markers ─────────────────────────────────────────
     function renderMarkers(metric) {
       markerLayer.clearLayers();
       subwayStations.forEach(s => {
-        const sLines = stationLines(s.Station);
-        // Show station if ANY of its lines is currently visible (or if no lines parsed)
-        if (sLines.length > 0 && !sLines.some(l => visibleLines.has(l))) return;
-
         const coords = coordMap[s.Station];
         if (!coords) return;
 
@@ -470,8 +384,6 @@
       const C = { Manhattan:[40.7831,-73.9712], Brooklyn:[40.6501,-73.9496], Queens:[40.7282,-73.7949], Bronx:[40.8448,-73.8648] };
       markerLayer.clearLayers();
       subwayStations.forEach(s => {
-        const sLines = stationLines(s.Station);
-        if (sLines.length > 0 && !sLines.some(l => visibleLines.has(l))) return;
         const risk = parseFloat(s["total index"])||0;
         const h = s.Station.split("").reduce((a,c)=>a+c.charCodeAt(0),0);
         const b = ["Bronx","Brooklyn","Queens","Manhattan"][h%4];
@@ -490,11 +402,6 @@
         currentMetric = this.dataset.metric;
         renderMarkers(currentMetric);
       });
-    });
-
-    // Lines overlay toggle
-    document.getElementById("show-lines").addEventListener("change", function() {
-      if (this.checked) lineLayer.addTo(map); else map.removeLayer(lineLayer);
     });
 
     // ── Station detail ─────────────────────────────────────────────────

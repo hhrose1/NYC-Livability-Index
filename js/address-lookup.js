@@ -1,12 +1,11 @@
-import { MAPBOX_TOKEN } from './config.js';
 import { haversineKm, nearestStation } from './geo-utils.js';
 import { subwayCoords } from '../data/subway-coords.js';
 import { neighborhoodEnvironment } from '../data/neighborhood-environment.js';
 import { parkRatings } from '../data/park-ratings.js';
 import { neighborhoods } from '../data/neighborhoods.js';
 
-const MAPBOX_GEOCODE = 'https://api.mapbox.com/geocoding/v5/mapbox.places';
-const NYC_BBOX = '-74.26,40.49,-73.70,40.92';
+// NYC Geosearch — free, no API key required
+const NYC_GEOCODE = 'https://geosearch.planninglabs.nyc/v2/autocomplete';
 
 // slug may be null on the standalone address page; inferred from geocoding in that case
 export function initAddressLookup(slug = null) {
@@ -49,10 +48,8 @@ export function initAddressLookup(slug = null) {
 }
 
 function inferSlugFromFeature(feature) {
-  const ctx = feature.context || [];
-  const nbhdCtx = ctx.find(c => c.id?.startsWith('neighborhood'));
-  const localCtx = ctx.find(c => c.id?.startsWith('locality') || c.id?.startsWith('place'));
-  const raw = (nbhdCtx?.text || localCtx?.text || '').toLowerCase().trim();
+  const p = feature.properties || {};
+  const raw = (p.neighbourhood || p.locality || p.borough || '').toLowerCase().trim();
   if (!raw) return null;
   return neighborhoods.find(n =>
     n.name.toLowerCase().includes(raw) || raw.includes(n.name.toLowerCase().split('/')[0].split('(')[0].trim())
@@ -60,7 +57,7 @@ function inferSlugFromFeature(feature) {
 }
 
 async function fetchSuggestions(query, listEl, onSelect) {
-  const url = `${MAPBOX_GEOCODE}/${encodeURIComponent(query)}.json?types=address&country=US&bbox=${NYC_BBOX}&limit=5&access_token=${MAPBOX_TOKEN}`;
+  const url = `${NYC_GEOCODE}?text=${encodeURIComponent(query)}&size=5`;
   try {
     const res = await fetch(url);
     if (!res.ok) return;
@@ -69,7 +66,7 @@ async function fetchSuggestions(query, listEl, onSelect) {
     if (!features.length) { listEl.hidden = true; return; }
 
     listEl.innerHTML = features.map((f, i) =>
-      `<li class="suggestion-item" data-index="${i}">${f.place_name}</li>`
+      `<li class="suggestion-item" data-index="${i}">${f.properties.label}</li>`
     ).join('');
     listEl.hidden = false;
 
@@ -77,9 +74,9 @@ async function fetchSuggestions(query, listEl, onSelect) {
       li.addEventListener('mousedown', e => {
         e.preventDefault();
         const f = features[i];
-        document.getElementById('address-input').value = f.place_name;
+        document.getElementById('address-input').value = f.properties.label;
         listEl.hidden = true;
-        const [lng, lat] = f.center;
+        const [lng, lat] = f.geometry.coordinates;
         const inferredSlug = inferSlugFromFeature(f);
         onSelect({ lat, lng }, inferredSlug);
       });
@@ -90,13 +87,13 @@ async function fetchSuggestions(query, listEl, onSelect) {
 }
 
 async function geocodeAndRun(query, presetSlug) {
-  const url = `${MAPBOX_GEOCODE}/${encodeURIComponent(query)}.json?types=address&country=US&bbox=${NYC_BBOX}&limit=1&access_token=${MAPBOX_TOKEN}`;
+  const url = `${NYC_GEOCODE}?text=${encodeURIComponent(query)}&size=1`;
   try {
     const res = await fetch(url);
     const json = await res.json();
     const f = json.features?.[0];
     if (!f) { renderError('Address not found. Try a more specific NYC address.'); return; }
-    const [lng, lat] = f.center;
+    const [lng, lat] = f.geometry.coordinates;
     const slug = presetSlug ?? inferSlugFromFeature(f);
     runDashboard(lat, lng, slug);
   } catch {

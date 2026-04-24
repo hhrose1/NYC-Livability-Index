@@ -7,7 +7,7 @@
  * Also intercepts old neighborhood HTML URLs and redirects to neighborhood.html?slug=...
  */
 
-const CACHE_NAME = 'nyc-livability-v9';
+const CACHE_NAME = 'nyc-livability-v10';
 
 const PRECACHE_URLS = [
   '/',
