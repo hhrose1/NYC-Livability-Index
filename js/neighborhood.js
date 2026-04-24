@@ -35,23 +35,8 @@ function set(id, html) {
   const el = document.getElementById(id);
   if (el) el.innerHTML = html;
 }
-function setText(id, text) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = text;
-}
 function show(id) { const el = document.getElementById(id); if (el) el.style.display = ''; }
 function hide(id) { const el = document.getElementById(id); if (el) el.style.display = 'none'; }
-
-function safetyClass(score) {
-  if (score >= 70) return 'green';
-  if (score >= 50) return 'yellow';
-  return 'red';
-}
-function safetyLabel(score) {
-  if (score >= 70) return '✓ Safe';
-  if (score >= 50) return '⚠ Caution';
-  return '✗ Alert';
-}
 
 function scoreBar(score) {
   const pct = Math.round(Math.max(0, Math.min(100, score || 0)));
@@ -269,50 +254,6 @@ async function render() {
   // ── Back link ───────────────────────────────────────────────
   const backHref = sessionStorage.getItem('searchReturnUrl') || 'search.html';
   set('back-link', `<a href="${backHref}" class="back-link">← Back to Results</a>`);
-
-  // ── Hero ────────────────────────────────────────────────────
-  const livScore = n.livabilityScore ? Math.round(n.livabilityScore) : '—';
-  const safeScore = n.safetyScore != null ? Math.round(n.safetyScore) : '—';
-  setText('nbhd-name', n.name);
-  setText('nbhd-borough', n.borough);
-  set('nbhd-livability', `
-    <div class="score-pill">
-      <span class="score-pill-value">${livScore}</span>
-      <span class="score-pill-label">Livability
-        <span class="tooltip-wrap">
-          <span class="tooltip-icon">?</span>
-          <span class="tooltip-text">Composite Livability Score (0–100): Weighted combination of Safety (30%), Transit Access (20%), Walk Score (15%), Restaurant Density (10%), Nightlife (10%), School Quality (5%), and Amenities — medical, grocery, parks (10% combined). Affordability is excluded so you can filter by budget and rank by quality separately.</span>
-        </span>
-      </span>
-    </div>
-    <div class="score-pill">
-      <span class="score-pill-value">${safeScore}</span>
-      <span class="score-pill-label">Safety
-        <span class="tooltip-wrap">
-          <span class="tooltip-icon">?</span>
-          <span class="tooltip-text">Neighborhood Safety Score (0–10 scale, shown here /100): Crime per 1k residents (60%), transit crime per 1k (20%), avg Subway Sketchy Index (20%). Manhattan below 110th St and Downtown Brooklyn use ambient/daytime population instead of residential to avoid skewing scores in high-commuter areas.</span>
-        </span>
-      </span>
-    </div>`);
-
-  // ── Flood Zone Banner ───────────────────────────────────────
-  if (n.floodZone) {
-    show('flood-banner');
-  } else {
-    hide('flood-banner');
-  }
-
-  // ── Safety Banner ───────────────────────────────────────────
-  const sc = safetyClass(n.safetyScore || 0);
-  const sl = safetyLabel(n.safetyScore || 0);
-  const sb = document.getElementById('safety-banner');
-  if (sb) {
-    sb.className = `safety-banner ${sc}`;
-    sb.innerHTML = `
-      <span class="safety-icon">${sc === 'green' ? '✅' : sc === 'yellow' ? '⚠️' : '🚨'}</span>
-      <span class="safety-text">${sl}</span>
-      <span class="safety-score-badge">Safety: ${safeScore}/100</span>`;
-  }
 
   // ── Rent Table ──────────────────────────────────────────────
   if (n.studioRentRange || n.rent1BR || n.rent2BR) {
