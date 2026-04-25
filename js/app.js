@@ -14,6 +14,7 @@ import {
   runTests,
 } from './search.js';
 import { neighborhoodContent } from '../data/neighborhood-content.js';
+import { commuteTimes, COMMUTE_HUBS } from '../data/commute-times.js';
 
 
 // ── State ──────────────────────────────────────────────────────
@@ -259,6 +260,7 @@ function buildCard(n) {
           <div class="stat-row"><span class="stat-label">Livability:</span><span class="stat-value">${n.livabilityScore ? Math.round(n.livabilityScore) : 'N/A'}/100</span></div>
           <div class="stat-row"><span class="stat-label">Transit:</span><span class="stat-value">${n.transitScore != null ? n.transitScore : 'N/A'}/100</span></div>
           <div class="stat-row"><span class="stat-label">Walk:</span><span class="stat-value">${n.walkScore != null ? n.walkScore : 'N/A'}</span></div>
+          ${(() => { const dest = document.getElementById('commute-dest')?.value; if (!dest || dest === 'none') return ''; const mins = commuteTimes[n.slug]?.[dest]; if (mins == null) return ''; return `<div class="stat-row"><span class="stat-label">Commute (${COMMUTE_HUBS[dest]}):</span><span class="stat-value">${mins} min</span></div>`; })()}
         </div>
         <div class="card-footer-row">
           <label class="compare-check-wrap">
@@ -334,7 +336,7 @@ function openCompareModal() {
       { label: 'Park Score', fn: n => n.parkScore != null ? `${n.parkScore}/100` : 'N/A' },
       { label: 'Studio Rent', fn: n => n.studioRentRange ? `$${n.studioRentRange}` : 'N/A' },
       { label: '1BR Rent', fn: n => n.rent1BR ? `$${n.rent1BR}` : 'N/A' },
-      { label: 'Commute (Midtown)', fn: n => n.commuteTimes?.midtown ? `${n.commuteTimes.midtown} min` : 'N/A' },
+      { label: `Commute (${COMMUTE_HUBS[document.getElementById('commute-dest')?.value] || 'Midtown'})`, fn: n => { const dest = document.getElementById('commute-dest')?.value; const mins = dest && dest !== 'none' ? commuteTimes[n.slug]?.[dest] : commuteTimes[n.slug]?.midtown; return mins != null ? `${mins} min` : 'N/A'; } },
       { label: 'Noise Complaints', fn: n => n.noiseComplaintsPer1000 != null ? `${n.noiseComplaintsPer1000}/1k` : 'N/A' },
       { label: 'Flood Zone', fn: n => n.floodZone ? '🌊 Yes' : '✓ No' },
     ];

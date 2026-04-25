@@ -11,6 +11,7 @@
  */
 
 import { neighborhoods, DATA_LAST_UPDATED } from '../data/neighborhoods.js';
+import { commuteTimes } from '../data/commute-times.js';
 
 // ── Constants ──────────────────────────────────────────────────
 const PAGE_SIZE = 20;
@@ -69,8 +70,8 @@ function normalizeScore(value, min, max, reverse = false) {
 }
 
 function commuteScore(n, destination) {
-  if (!destination || destination === 'none' || !n.commuteTimes) return 50;
-  const minutes = n.commuteTimes[destination];
+  if (!destination || destination === 'none') return 50;
+  const minutes = commuteTimes[n.slug]?.[destination];
   if (minutes == null) return 50;
   // Lower time = higher score. 15 min = 100, 90 min = 0
   return Math.max(0, Math.min(100, 100 - ((minutes - 15) / 75) * 100));
