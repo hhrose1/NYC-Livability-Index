@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Everything you need to know about renting in NYC — broker fees, paperwork, tenant rights, and more.">
+  <title>Moving to NYC Guide — NYC Livability Index</title>
+  <link rel="stylesheet" href="styles/base.css">
+  <style>
+    body { background-color: #33432c90; }
+
+    .guide-page {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 48px 32px 80px;
+    }
+
+    /* ── Chapter sections ── */
+    .chapter {
+      margin-bottom: 12px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(51,67,44,0.18);
+    }
+
+    .chapter-header {
+      background: #4a6741;
+      color: white;
+      padding: 18px 24px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+      transition: background 0.15s;
+    }
+    .chapter-header:hover { background: #3d5836; }
+    .chapter-header.open { background: #33432c; }
+
+    .chapter-chevron {
+      font-size: 0.85rem;
+      transition: transform 0.25s;
+      flex-shrink: 0;
+    }
+    .chapter-header.open .chapter-chevron { transform: rotate(180deg); }
+
+    .chapter-body {
+      display: none;
+      background: rgba(255,255,255,0.97);
+      padding: 0 28px 8px;
+    }
+    .chapter-body.open { display: block; }
+
+    /* ── FAQ items inside a chapter ── */
+    .faq-item {
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .faq-item:last-child { border-bottom: none; }
+
+    .faq-question {
+      padding: 16px 0;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #33432c;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      user-select: none;
+    }
+    .faq-question:hover { color: #4a6741; }
+
+    .faq-chevron {
+      color: #4a6741;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      transition: transform 0.2s;
+    }
+    .faq-question.open .faq-chevron { transform: rotate(180deg); }
+
+    .faq-answer {
+      display: none;
+      padding: 0 0 16px;
+      font-size: 0.9rem;
+      line-height: 1.75;
+      color: #374151;
+    }
+    .faq-answer.open { display: block; }
+    .faq-answer p { margin-bottom: 12px; }
+    .faq-answer p:last-child { margin-bottom: 0; }
+
+    /* ── Tip / warning callouts inside answers ── */
+    .tip {
+      background: #e8f5e9;
+      border-left: 4px solid #4a6741;
+      border-radius: 0 8px 8px 0;
+      padding: 12px 16px;
+      margin: 12px 0;
+      font-size: 0.875rem;
+      color: #33432c;
+    }
+    .warning {
+      background: #fff8e1;
+      border-left: 4px solid #f59e0b;
+      border-radius: 0 8px 8px 0;
+      padding: 12px 16px;
+      margin: 12px 0;
+      font-size: 0.875rem;
+      color: #6d4c00;
+    }
+    .danger {
+      background: #ffebee;
+      border-left: 4px solid #ef5350;
+      border-radius: 0 8px 8px 0;
+      padding: 12px 16px;
+      margin: 12px 0;
+      font-size: 0.875rem;
+      color: #7f0000;
+    }
+
+    /* ── Intro blurb ── */
+    .guide-intro {
+      background: rgba(255,255,255,0.97);
+      border-radius: 12px;
+      padding: 28px 32px;
+      margin-bottom: 28px;
+      box-shadow: 0 2px 8px rgba(51,67,44,0.18);
+      font-size: 0.95rem;
+      line-height: 1.7;
+      color: #374151;
+    }
+    .guide-intro strong { color: #33432c; }
+
+    @media (max-width: 640px) {
+      .guide-page { padding: 32px 16px 60px; }
+      .chapter-header { font-size: 1rem; padding: 15px 18px; }
+      .chapter-body { padding: 0 18px 8px; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="top-nav">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">NYC Livability Index</a>
+      <div class="nav-links">
+        <a href="search.html">Find a Neighborhood</a>
+        <a href="transportation.html">Subway Safety</a>
+        <a href="livability.html">Map</a>
+        <a href="address.html">Learn About An Address</a>
+        <a href="moving-to-nyc.html" class="active">Moving to NYC</a>
+        <a href="favorites.html" class="nav-favorites fav-count">Favorites</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page-hero">
+    <div class="page-hero-bg" style="background-image:url('https://images.ctfassets.net/1aemqu6a6t65/4SHQ5vwxscAoq4GX449sTT/677d56b33ca72ef8df123c2da25699eb/Marina-Brookfield-Place-Manhattan-NYC-Photo-Courtesy-Brookfield-Place.jpg')"></div>
+    <div class="page-hero-content">
+      <h1 class="page-hero-headline">Moving to NYC Guide</h1>
+      <p class="page-hero-sub">Everything transplants need to know — from broker fees to tenant rights</p>
+    </div>
+  </div>
+
+  <div class="guide-page">
+    <div class="guide-intro">
+      <strong>Built for transplants, by a transplant.</strong> Renting in New York City is unlike anywhere else in the country. The rules are different, the costs are higher, and the pace is faster. Click any section below to expand it — everything is organized by the stage of your move.
+    </div>
+
+    <!-- ── Chapter 1: I'm New to NYC ── -->
+    <div class="chapter">
+      <div class="chapter-header" onclick="toggleChapter(this)">
+        I'm New to NYC
+        <span class="chapter-chevron">▼</span>
+      </div>
+      <div class="chapter-body">
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Understanding broker fees
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>When you're looking at apartments on StreetEasy or Zillow, you'll see two types of listings: <strong>no fee</strong> and <strong>fee</strong>. A no-fee apartment means the landlord pays the broker, or there's no broker involved at all. A fee apartment means you pay the broker, and that fee is typically one month's rent or 10–15% of your annual rent. For a $2,500/month apartment with a 15% broker fee, you'd pay $4,500 on top of your first month's rent and security deposit.</p>
+            <div class="warning">Be wary of brokers who show you multiple buildings but won't tell you which management company owns them. They're often farming your information to sell to other brokers. Always ask upfront: who owns this building? A legitimate broker will tell you immediately. If they dodge the question, walk away.</div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            What paperwork do I need?
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Most NYC landlords require that your annual income is at least <strong>40× the monthly rent</strong>. For a $2,000/month apartment, you'd need to make $80,000/year. You'll prove this with your last two paystubs plus an offer letter, or your last two years of tax returns if you're self-employed.</p>
+            <p>Beyond income, landlords typically want a credit score of 650+, and will run a background check for evictions or violent crimes. You'll also need your previous landlord's contact info as a reference.</p>
+            <div class="tip">Get all of your documents together before you start seriously looking. Apartments move fast and you don't want to lose your top choice because you're scrambling for paperwork.</div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Guarantor requirements
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>If you don't meet the 40× income requirement, you'll need a guarantor — someone who agrees to pay your rent if you can't. Guarantors typically need to make <strong>80× the monthly rent</strong> annually. For a $2,000/month apartment, that's $160,000/year.</p>
+            <p>In-state guarantors usually need 80× monthly rent. Out-of-state guarantors often need 100×, and some landlords require they own property. Corporate landlords are stricter about this — smaller landlords are your better bet if you have an out-of-state guarantor.</p>
+            <p>If you have no guarantor, you have two options: a third-party guarantor service like <strong>Insurent</strong> or <strong>TheGuarantors</strong> (costs 70–90% of one month's rent), or prepaying 6–12 months of rent upfront if you have significant savings.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            How much should I save before moving?
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>At minimum: first month's rent + security deposit (usually one month's rent). For a $2,500/month apartment, that's $5,000 before you've even touched a box.</p>
+            <p>Add a broker fee if applicable ($2,500–$3,750 for that same apartment), a $20 application fee (the legal max — more on that below), and moving costs ($500–$2,000 depending on your situation).</p>
+            <div class="tip">A good rule of thumb: save at least 3–4 months of rent before you start your search. This covers upfront costs and gives you a buffer for furnishing and unexpected expenses.</div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Scams to watch out for
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>The most common scam is the too-good-to-be-true listing. A spacious one-bedroom in Manhattan for $1,200 is fake. Never send money before you've physically toured an apartment and verified that the person showing it has the authority to rent it.</p>
+            <p>Red flag: a landlord who refuses to meet in person, or claims to be out of the country and will mail you keys after you send a deposit. That's a scam.</p>
+            <div class="danger">Application fees in NYC are legally capped at $20 (for non-co-op buildings). If anyone asks for $50, $100, or more — they're breaking the law. Walk away and report them. Never pay via wire transfer, Venmo, or cash.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Chapter 2: Moving Within NYC ── -->
+    <div class="chapter">
+      <div class="chapter-header" onclick="toggleChapter(this)">
+        Moving Within NYC
+        <span class="chapter-chevron">▼</span>
+      </div>
+      <div class="chapter-body">
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Breaking your lease early
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>First, check your lease for an <strong>early termination clause</strong> — this lets you break it by paying a penalty (usually 1–2 months of rent). Without one, you're technically on the hook for rent until the lease ends.</p>
+            <p>That said, New York law requires landlords to make a reasonable effort to re-rent the apartment (the "duty to mitigate damages"). Finding a qualified replacement tenant yourself can get you out without owing the remaining rent.</p>
+            <div class="tip">If you're breaking the lease because of uninhabitable conditions — no heat, rodent infestation, serious code violations — you may have legal grounds to leave without penalty. Document everything and consider consulting a tenant lawyer. Many offer free consultations.</div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Getting your security deposit back
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>New York law requires landlords to return your deposit within <strong>14 days</strong> of moving out, minus legitimate deductions for damage beyond normal wear and tear. Normal wear and tear — scuffs on walls, worn carpet, faded paint — cannot be charged to you.</p>
+            <p>Take detailed photos on both move-in and move-out day. Request a joint final walkthrough with your landlord. Get everything in writing.</p>
+            <div class="tip">If your landlord doesn't return the deposit within 14 days, send a demand letter via certified mail. If that fails, sue in small claims court (up to $10,000). Bring photos, your lease, and the demand letter — small claims court is designed to be accessible without a lawyer.</div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Rent-stabilized vs. market rate
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p><strong>Rent-stabilized</strong> apartments have rent increases capped by law (usually 2–3%/year). Buildings built before 1974 with 6+ units are generally stabilized. Your landlord cannot refuse to renew your lease without a legal reason, and can only raise rent by the Rent Guidelines Board's approved percentage.</p>
+            <p><strong>Market rate</strong> apartments have no limits. Your landlord can raise rent to whatever the market will bear at renewal, and has more freedom not to renew.</p>
+            <div class="tip">Many tenants don't know they're in a rent-stabilized apartment — landlords don't advertise it. Ask your landlord for your lease rider, which should state whether it's stabilized. You can also check using our <a href="address.html" style="color:#4a6741;font-weight:600">Address Lookup tool</a>.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Chapter 3: Co-ops and Sponsored Co-ops ── -->
+    <div class="chapter">
+      <div class="chapter-header" onclick="toggleChapter(this)">
+        Co-ops and Sponsored Co-ops
+        <span class="chapter-chevron">▼</span>
+      </div>
+      <div class="chapter-body">
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Understanding co-ops
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>A co-op is a building where residents own shares in a corporation rather than individual units. When you rent in a co-op, you're renting from a shareholder who has gotten board permission to sublet. The board has significant power over who can rent — and can reject your application for almost any non-discriminatory reason without explaining why.</p>
+            <div class="warning">Co-op application fees can run $250–$1,000 per person, and are completely nonrefundable even if rejected. The application process is more invasive than a typical rental: tax returns, bank statements, pay stubs, personal references, sometimes an interview. Budget for these costs if applying to multiple co-ops.</div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            What are sponsored co-ops?
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>A sponsored co-op is a building converting from rental to co-op, where the original developer/sponsor still owns unsold units. The sponsor can rent those units without board approval — making the process much more like a standard rental.</p>
+            <p>Application fees are usually just the standard $20. The downside: these buildings are often older and in varying states of maintenance, and there's uncertainty about what happens if the sponsor sells your unit to someone who doesn't want to keep renting.</p>
+            <div class="tip">For short-to-medium-term rentals, sponsored co-ops can be a good option with less bureaucratic hassle.</div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Dealing with rent increases
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>In a <strong>market rate</strong> apartment, you have limited options at renewal. Try to negotiate — finding a new tenant costs your landlord time and money, and offering a longer lease in exchange for a smaller increase can work in your favor.</p>
+            <p>In a <strong>rent-stabilized</strong> apartment, your landlord can only raise rent by the percentage approved by the Rent Guidelines Board (recently ~2–3% for 1-year renewals, ~5% for 2-year). If they charge more, they're breaking the law — file a complaint with the Division of Housing and Community Renewal.</p>
+            <div class="tip">Before accepting any increase, check comparable apartments using StreetEasy or our <a href="search.html" style="color:#4a6741;font-weight:600">neighborhood search tool</a>. If the market is softer than what your landlord is asking, you have leverage.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Chapter 4: Finding Roommates ── -->
+    <div class="chapter">
+      <div class="chapter-header" onclick="toggleChapter(this)">
+        Finding Roommates
+        <span class="chapter-chevron">▼</span>
+      </div>
+      <div class="chapter-body">
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Where to find roommates safely
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>The most popular app is <strong>Roomi</strong> (verification features, active community). <strong>SpareRoom NYC</strong> is a solid alternative. Facebook groups are hit or miss — the <em>Gypsy Housing</em> group is particularly active for NYC. Check that profiles have an established history and mutual friends.</p>
+            <p>If you're a student or new to a company, check for a Slack channel or internal housing board. The r/NYCapartments subreddit is also worth a look, though vet people more carefully since it's anonymous.</p>
+            <div class="danger">Red flags: won't video chat before meeting, asking for a deposit before you've seen the place, "just Venmo me the deposit and I'll add you to the lease later." If someone is evasive about lease details, move on.</div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Should I be on the lease?
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Yes — always try to be on the lease. If you're not, you're a subtenant with very limited legal protections. The master tenant can kick you out with 30 days notice, no reason required. Your security deposit is held by them, not the landlord.</p>
+            <p>If the master tenant stops paying rent, you get evicted too — even if you've been paying your share on time.</p>
+            <div class="warning">Only consider subletting if you're staying 3–6 months while apartment hunting and fully understand the risks. If planning to stay long-term, push to be on the lease. If refused, that itself is a red flag.</div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Splitting costs fairly
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Equal-sized rooms: split rent evenly. Different-sized rooms: charge proportionally by square footage. Living room conversion: about 60–70% of what a bedroom person pays. Couples sharing a room: ~1.5× the single-person rate for that room.</p>
+            <p>Utilities are usually split evenly regardless of room size. Use <strong>Splitwise</strong> to track ongoing shared expenses — it keeps everyone honest and prevents resentment.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Red flags in roommate situations
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Biggest red flag: vague or evasive about lease details. Won't show you the lease, won't say when it expires, or keeps changing the story about whether the landlord knows about the sublet. You could end up in an illegal sublet and face eviction.</p>
+            <p>A room that's suspiciously cheap for the neighborhood usually has a catch. Pay attention to how roommates communicate during the search — flakiness about viewings predicts flakiness as a roommate. If current roommates seem tense during your visit, that conflict is what you're walking into.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Getting out of a roommate situation
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>If you're on the lease, you're jointly and severally liable — each roommate is responsible for the full rent. To leave early, find a qualified replacement and get the landlord's approval. Get everything in writing: when your financial responsibility ends and confirmation your portion of the security deposit will be returned.</p>
+            <p>If subletting, give 30 days written notice to the master tenant. Take photos when you move out and request your deposit back in writing with a specific deadline.</p>
+            <div class="danger">If your roommate situation is dangerous or threatening, contact a tenant lawyer immediately. Many organizations offer free consultations for situations involving domestic violence or harassment. Document everything.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Chapter 5: Affordable/Income-Based Housing ── -->
+    <div class="chapter">
+      <div class="chapter-header" onclick="toggleChapter(this)">
+        Affordable &amp; Income-Based Housing
+        <span class="chapter-chevron">▼</span>
+      </div>
+      <div class="chapter-body">
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            NYCHA public housing
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>NYCHA manages public housing where rent is ~30% of your income. The waitlist has been closed since 2022 with 200,000+ people already waiting, and average wait times are 7–10 years. To qualify, a single person generally needs to make under $50,000/year.</p>
+            <div class="warning">NYCHA is only worth pursuing if you're already low-income and committed to staying in NYC for the long term. If you qualify, apply when the waitlist reopens — it's free. But don't count on it as a near-term solution.</div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            HPD affordable housing lottery
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>The NYC Department of Housing Preservation and Development runs lotteries for below-market apartments in new developments. Apartments are typically 30–60% below market rate, with income limits based on Area Median Income (AMI). Find current lotteries at <strong>housingconnect.nyc.gov</strong> — new ones post weekly.</p>
+            <p>The odds aren't great — some lotteries get tens of thousands of applications for a handful of units. But it's completely free to apply, and if you win, you'd wait 2–6 months for an interview and then move-in.</p>
+            <div class="tip">No downside to throwing your name in if you meet the income requirements. Check the site regularly and apply to every lottery you qualify for.</div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Mitchell-Lama buildings
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Mitchell-Lama is a middle-income housing program from the 1950s–70s offering below-market rent. Most remaining buildings have closed waitlists or 5+ year waits. Rents are below market but not drastically so — you'll still pay substantial rent, just less than comparable market-rate buildings nearby.</p>
+            <p>Like NYCHA, this is a long-term strategy rather than a quick solution.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Rent-stabilized apartments
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Buildings built before 1974 with 6+ units are generally rent-stabilized unless exempted. Stabilized apartments aren't advertised as such — you often don't find out until after you move in. Ask your landlord for your <strong>lease rider</strong>, which should state if the apartment is stabilized. You can also check DHCR records or use our <a href="address.html" style="color:#4a6741;font-weight:600">Address Lookup tool</a>.</p>
+            <div class="tip">If you're in a stabilized apartment and your landlord has been illegally overcharging you, you can file a complaint and potentially get a refund for overcharges going back several years.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Chapter 6: Vetting a Building ── -->
+    <div class="chapter">
+      <div class="chapter-header" onclick="toggleChapter(this)">
+        Vetting a Building
+        <span class="chapter-chevron">▼</span>
+      </div>
+      <div class="chapter-body">
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            How to check HPD violations
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Before signing any lease, check the building's HPD violation history. Our <a href="address.html" style="color:#4a6741;font-weight:600">Address Lookup tool</a> links directly to HPD Online.</p>
+            <p><strong>Class A</strong> — Minor (missing light fixture, peeling paint). A few are normal for older buildings.<br>
+            <strong>Class B</strong> — Hazardous (no heat/hot water, broken locks, rat infestation). Multiple open = yellow flag.<br>
+            <strong>Class C</strong> — Immediately hazardous. Any open Class C = red flag, reconsider renting there.</p>
+            <div class="danger">Also watch for violation codes 729/730 (chronically neglected building) and 759/760/765 (vacate orders — if active and the landlord is still renting units, that's illegal).</div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Google the landlord and management company
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Once you know who owns the building and which management company runs it, spend 20 minutes googling them. Search their name plus "lawsuit," "HPD violations," or "tenant complaints." Check r/AskNYC and r/NYCapartments — tenants often post about specific landlords.</p>
+            <p>Look for patterns rather than one-off complaints. "Never returns security deposits" or "ignored mold for months" appearing repeatedly tells you something important.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Bedbug red flags
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>NYC landlords must provide a bedbug history for the past year when you apply. If the unit had bedbugs recently, that's a red flag even if they claim it's been treated. Check the Bedbug Registry for tenant-submitted reports.</p>
+            <p>During viewings, look for small brown spots on the mattress, bed frame, or baseboards. Check behind electrical outlets and in wall-floor corners.</p>
+            <div class="warning">A building with ongoing bedbug problems across multiple units has a landlord not addressing the root cause. If they're cheap about pest control, you'll deal with recurring infestations.</div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            What to look for during viewings
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Bring a friend — they'll notice things you miss when you're excited. Test everything: every light switch, water pressure, stove, refrigerator, all windows. Check for water damage (ceiling stains, warped floors), signs of mold under the sink, and obvious patch jobs on walls.</p>
+            <p>Pay attention to common areas too. Filthy hallways and a broken front door predict how the landlord will treat your unit when something breaks.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Chapter 7: The Application Process ── -->
+    <div class="chapter">
+      <div class="chapter-header" onclick="toggleChapter(this)">
+        The Application Process
+        <span class="chapter-chevron">▼</span>
+      </div>
+      <div class="chapter-body">
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            What landlords ask for
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Completed rental application, proof of income (last 2 paystubs + offer letter, or 2 years of tax returns if self-employed), authorization for a credit check (Social Security number required), background check, and previous landlord contact info.</p>
+            <p>If using a guarantor, they'll need the same documentation. Some landlords also want to see bank statements to verify savings.</p>
+            <div class="tip">Have everything ready before you start applying. Landlords often operate first-come, first-served — you don't want to lose your top choice because you're scrambling for documents.</div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Application fees and what's legal
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>New York State law caps rental application fees at <strong>$20</strong>. That's the maximum for non-co-op buildings. If a landlord or broker asks for more, they are breaking the law.</p>
+            <div class="danger">If someone asks for $50, $100, or any amount over $20, refuse to pay and report them to the New York State Attorney General's office or the Division of Housing and Community Renewal. Never pay application fees via wire transfer, Venmo, or cash.</div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            How long does approval take?
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Typically a few days to two weeks. Larger management companies are faster; smaller landlords doing everything themselves may take longer. Guarantors add time, especially out-of-state ones. Third-party guarantor services like Insurent can actually speed things up with their streamlined processes.</p>
+            <div class="warning">Don't assume you have the apartment until you have a signed lease in hand. Keep looking at backups. Some landlords will verbally approve you while still considering other applicants. Follow up every few days and keep your options open until the lease is signed.</div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            What if you get rejected?
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>The landlord is required to tell you why. Common reasons: insufficient income, low credit score, negative landlord reference, or background check issues. If rejected based on your credit or background report, you have the right to a free copy of that report.</p>
+            <div class="danger">If the rejection seems discriminatory — based on race, religion, national origin, or family status — that's illegal under fair housing laws. Document everything and consider filing a complaint with the NY State Division of Human Rights or HUD.</div>
+            <p>If the rejection was legitimate, adjust your approach: look for cheaper apartments, get a guarantor, or target smaller landlords who are more flexible about income verification.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Chapter 8: Upfront Costs ── -->
+    <div class="chapter">
+      <div class="chapter-header" onclick="toggleChapter(this)">
+        Upfront Costs
+        <span class="chapter-chevron">▼</span>
+      </div>
+      <div class="chapter-body">
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Breaking down what you'll pay
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Absolute minimum: first month's rent + security deposit (usually one month's rent). At $2,000/month, that's $4,000 before you've touched a box.</p>
+            <p>Add broker fee if applicable ($2,000–$3,600 for that apartment), $20 application fee, and moving costs ($500–$2,000+). First-month utilities (Con Ed, internet setup) and renter's insurance add more.</p>
+            <div class="tip">Save at least 3–4 months of rent before starting your search. The upfront costs of moving to NYC catch a lot of people off guard.</div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            First, last, and security deposit rules
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>In New York, landlords can only ask for <strong>one month's security deposit</strong>. They cannot ask for last month's rent on top of first month + security. Maximum upfront rent-related costs: two months total.</p>
+            <p>The security deposit must be held in a separate account and returned within 14 days of moving out. Get a receipt stating clearly how much you paid and that it's being held as a security deposit.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Broker fees explained
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>If a landlord hires a broker to find a tenant, the landlord pays the broker's fee. If you hire a broker to help you find an apartment, you pay. In practice, many "fee" listings on StreetEasy mean the tenant pays — the broker was technically hired by the landlord, but it's structured so you pay.</p>
+            <p>Fees are typically one month's rent or 10–15% of annual rent. For a $2,500/month apartment: $2,500 or $3,750–$4,500. Ask if it's negotiable, especially in a slow market.</p>
+            <div class="tip">Look only at "no fee" listings to avoid broker fees entirely — they're increasingly common, especially in larger buildings and with management companies.</div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Moving costs and hidden expenses
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Professional movers: $100–$200/hour for a 2-person team; a move takes 3–8 hours depending on apartment size, stairs, and truck parking. Out-of-state moves: several thousand dollars.</p>
+            <p>DIY U-Haul: cheaper but physically demanding. Factor in truck rental, gas, tolls, and moving supplies.</p>
+            <div class="warning">Hidden expenses people miss: utility deposits (Con Edison may require one if you have poor credit), internet installation fees ($50–$100), and furniture if your apartment doesn't come with appliances. Budget for these on top of your upfront rent costs.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Chapter 9: Move-In Day ── -->
+    <div class="chapter">
+      <div class="chapter-header" onclick="toggleChapter(this)">
+        Move-In Day
+        <span class="chapter-chevron">▼</span>
+      </div>
+      <div class="chapter-body">
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            What to document before you move in
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Before a single box goes in: take detailed photos and videos of every room from multiple angles. Document every flaw, no matter how minor — scuffs, scratches, stains, broken tiles, anything. These photos are your insurance policy against losing your security deposit.</p>
+            <p>Open every cabinet and closet and photograph inside. Test everything. Email all photos to your landlord and keep the chain. If they provide a move-in inspection form, fill it out thoroughly and keep a copy.</p>
+            <div class="tip">If they don't provide an inspection form, create your own written list and email it to the landlord. This protects you from being charged for damage that was already there.</div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Utilities setup checklist
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p><strong>Con Edison</strong> (electricity &amp; gas) — set up before move-in day; have your lease ready. Major internet providers: Spectrum, Verizon Fios, Optimum — schedule installation early, it can take 1–2 weeks.</p>
+            <p>Renter's insurance: typically $15–$30/month, covers belongings against theft, fire, and water damage. Most landlords require it.</p>
+            <div class="tip">Understand which utilities are included in your rent before you move in — some buildings include heat and hot water, others don't.</div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Changing your address
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Within a few days of moving in: set up USPS mail forwarding at USPS.com (~$1, lasts one year). Update your address with the DMV (legally required within 10 days for NYS license holders). Register to vote at your new address through the NYS Board of Elections.</p>
+            <p>Also update: bank, credit cards, employer, health insurance, and any subscriptions. Missing mail can cause real problems with bills and important documents.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Chapter 10: Know Your Rights ── -->
+    <div class="chapter">
+      <div class="chapter-header" onclick="toggleChapter(this)">
+        Know Your Rights
+        <span class="chapter-chevron">▼</span>
+      </div>
+      <div class="chapter-body">
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Your landlord must provide heat and hot water
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>NYC law requires heat year-round. During heat season (Oct 1–May 31), landlords must maintain at least 68°F during the day when it's below 55°F outside, and 62°F at night. Hot water must be provided 365 days a year at minimum 120°F.</p>
+            <p>If your landlord fails: file a complaint with 311. The city will send an inspector and can fine the landlord.</p>
+            <div class="warning">You can withhold rent for heat/hot water failures, but this is risky and should only be done with guidance from a lawyer. Done wrong, the landlord can start eviction proceedings. Always communicate in writing and document dates and times of any failures.</div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Lockouts and illegal evictions
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Your landlord cannot lock you out, even if you're behind on rent. The only legal way to evict a tenant in New York is through housing court with a court order. Changing locks, shutting off utilities, or removing belongings without a court order is an illegal eviction.</p>
+            <div class="danger">If illegally locked out, call 311 immediately. You can go to housing court and request an emergency order to be let back in. You can also sue your landlord for damages. Even if you've violated your lease, they must go through the legal process — which takes months.</div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Security deposit return timeline
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>When you move out, your landlord has <strong>14 days</strong> to return your full deposit or send an itemized list of deductions. Deductions are only legal for damage beyond normal wear and tear, unpaid rent, or cleaning costs.</p>
+            <p>Normal wear and tear (faded paint, minor scuffs, small nail holes) cannot be charged to you. They can't charge for repainting unless you painted without permission or caused damage beyond normal use.</p>
+            <div class="tip">If they don't return the deposit or provide an itemized list within 14 days, they lose the right to any deductions, and you can sue in small claims court for the full amount plus interest.</div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            When your landlord can enter your apartment
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Your landlord must give you <strong>reasonable notice</strong> (typically 24 hours) before entering, except in emergencies (burst pipe, gas leak, fire). Routine maintenance, inspections, and showings require advance notice at a reasonable hour.</p>
+            <div class="warning">Repeated entry without notice is harassment. Document every instance with dates and times, and tell your landlord in writing they need to provide proper notice. If it continues, file a harassment complaint with HPD.</div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Resources for tenant help
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p><strong>Housing Court Answers</strong> — free assistance for tenants in housing court.<br>
+            <strong>Legal Aid Society</strong> and <strong>Legal Services NYC</strong> — free legal representation for low-income tenants facing eviction.<br>
+            <strong>Met Council on Housing</strong> — tenant rights hotline and workshops on tenant organizing.<br>
+            <strong>Right to Counsel</strong> — if facing eviction and income is below a certain level, you're entitled to free legal representation in NYC. Don't go to housing court without a lawyer if you qualify.</p>
+            <div class="tip">Consider starting or joining a tenant association in your building. Collective bargaining makes it much harder for landlords to ignore problems or retaliate against individual tenants.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <p>NYC Livability Index | Built for transplants, by a transplant</p>
+    <p class="footer-updated">Data last updated: 2026-04-21</p>
+  </footer>
+
+  <script>
+    function toggleChapter(header) {
+      const body = header.nextElementSibling;
+      const isOpen = header.classList.contains('open');
+      header.classList.toggle('open', !isOpen);
+      body.classList.toggle('open', !isOpen);
+    }
+
+    function toggleFaq(question) {
+      const answer = question.nextElementSibling;
+      const isOpen = question.classList.contains('open');
+      question.classList.toggle('open', !isOpen);
+      answer.classList.toggle('open', !isOpen);
+    }
+
+    try {
+      const f = JSON.parse(localStorage.getItem('nyc_favorites') || '[]');
+      if (f.length > 0) document.querySelectorAll('.fav-count').forEach(e => e.textContent = `Favorites (${f.length})`);
+    } catch {}
+
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
+  </script>
+</body>
+</html>
