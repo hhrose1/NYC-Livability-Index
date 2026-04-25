@@ -255,14 +255,14 @@ input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; border-radius
 
 /* Card bottom stats */
 .card-bottom { margin-top: auto; padding-top: var(--spacing-sm); }
-.safety-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: var(--radius-md); font-weight: 700; font-size: var(--font-size-xs); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; backdrop-filter: blur(4px); }
+.safety-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: var(--radius-md); font-weight: 600; font-size: var(--font-size-xs); margin-bottom: 8px; backdrop-filter: blur(4px); }
 .safety-badge.green { background: rgba(34,113,59,0.85); color: #d4f4de; }
 .safety-badge.yellow { background: rgba(120,90,0,0.85); color: #fff3cd; }
 .safety-badge.red { background: rgba(150,30,30,0.85); color: #fde8e8; }
-.card-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px 12px; font-size: var(--font-size-xs); margin-bottom: 8px; }
-.stat-row { display: flex; justify-content: space-between; align-items: baseline; gap: 4px; }
-.stat-label { color: rgba(255,255,255,0.68); }
-.stat-value { font-weight: 600; color: #ffffff; text-align: right; }
+.card-stats { display: grid; grid-template-columns: 1fr; gap: 4px; font-size: var(--font-size-xs); margin-bottom: 8px; }
+.stat-row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.stat-label { color: rgba(255,255,255,0.68); white-space: nowrap; }
+.stat-value { font-weight: 600; color: #ffffff; text-align: right; white-space: nowrap; }
 
 /* Budget indicator with tooltip icon */
 .budget-indicator {
@@ -278,7 +278,7 @@ input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; border-radius
   grid-column: 1 / -1;
 }
 .budget-indicator.comfortable { background: rgba(34,113,59,0.78); color: #d4f4de; }
-.budget-indicator.good        { background: rgba(30,80,140,0.78); color: #dbeafe; }
+.budget-indicator.high        { background: rgba(34,113,59,0.78); color: #d4f4de; }
 .budget-indicator.mid         { background: rgba(120,90,0,0.78);  color: #fff3cd; }
 .budget-indicator.low,
 .budget-indicator.below       { background: rgba(150,30,30,0.78); color: #fde8e8; }

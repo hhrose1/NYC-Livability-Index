@@ -200,7 +200,7 @@ function displayResults() {
 function buildCard(n) {
   const sc = n.safetyScore || 0;
   const cls = sc >= 70 ? 'green' : sc >= 50 ? 'yellow' : 'red';
-  const label = sc >= 70 ? '\u2713 Safe' : sc >= 50 ? '\u26a0 Caution' : '\u2717 Alert';
+  const label = sc >= 70 ? 'Minimal safety concerns' : sc >= 50 ? 'Moderate safety concerns' : 'Heightened safety concerns';
   const rent = n.displayRent ? `$${n.displayRent}` : 'N/A';
   const isFav = isFavorite(n.slug);
 
