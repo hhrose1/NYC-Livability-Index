@@ -54,11 +54,30 @@
           <input type="text" id="name-search" placeholder="Search by name..." autocomplete="off" aria-label="Search by name">
         </div>
         <div class="budget-inline">
-          <label for="budget">Max Rent:</label>
+          <label for="budget">Max Rent (your share):</label>
           <input type="number" id="budget" placeholder="e.g. 2500" step="100" min="0">
           <label class="bedroom-chip"><input type="checkbox" name="bedrooms" value="studio" checked> Studio</label>
           <label class="bedroom-chip"><input type="checkbox" name="bedrooms" value="1br"> 1 BR</label>
           <label class="bedroom-chip"><input type="checkbox" name="bedrooms" value="2br"> 2 BR</label>
+        </div>
+        <div class="living-situation-row">
+          <label class="living-sit-label">Living situation:</label>
+          <div class="living-sit-options">
+            <label class="living-sit-radio"><input type="radio" name="living-situation" value="alone" checked> Living alone</label>
+            <label class="living-sit-radio"><input type="radio" name="living-situation" value="roommates"> Splitting with roommate(s)</label>
+          </div>
+          <div class="roommate-controls" id="roommate-controls" style="display:none">
+            <label for="roommate-count">Number of roommates:</label>
+            <select id="roommate-count">
+              <option value="1">1 roommate (2 people total)</option>
+              <option value="2">2 roommates (3 people total)</option>
+              <option value="3">3 roommates (4 people total)</option>
+              <option value="4">4 roommates (5 people total)</option>
+              <option value="5">5 roommates (6 people total)</option>
+              <option value="6">6 roommates (7 people total)</option>
+            </select>
+            <span class="total-budget-preview" id="total-budget-preview"></span>
+          </div>
         </div>
       </div>
       <!-- Commute + checkboxes row -->

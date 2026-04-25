@@ -38,6 +38,7 @@ function parseRentMin(range) {
   const v = parseFloat(parts[0].replace(/[^0-9.]/g, ''));
   return isNaN(v) ? null : v;
 }
+export { parseRentMin as parseRentMinExport };
 
 function parseRentMax(range) {
   if (!range || range === '') return null;
@@ -45,11 +46,41 @@ function parseRentMax(range) {
   const v = parseFloat((parts[1] || parts[0]).replace(/[^0-9.]/g, ''));
   return isNaN(v) ? null : v;
 }
+export { parseRentMax as parseRentMaxExport };
 
 function getRentRange(n, bedrooms) {
   if (bedrooms === '1br') return n.rent1BR;
   if (bedrooms === '2br') return n.rent2BR;
+  if (bedrooms === '3br') return n.rent3BR;
+  if (bedrooms === '4br') return n.rent4BR;
   return n.studioRentRange;
+}
+
+// Returns the best-fitting rent range(s) for a given total-people count.
+// roommates = number of additional people (0 = living alone).
+// Returns an array of rent fields to check, in preference order.
+export function getRoommateRentFields(totalPeople) {
+  if (totalPeople <= 1) return ['studioRentRange', 'rent1BR'];
+  if (totalPeople === 2) return ['rent1BR', 'rent2BR'];
+  if (totalPeople === 3) return ['rent2BR', 'rent3BR'];
+  if (totalPeople === 4) return ['rent3BR', 'rent4BR'];
+  return ['rent4BR'];
+}
+
+// Given a neighborhood and roommate params, pick the best rent range that fits the total budget.
+export function getBestRentRange(n, totalBudget, totalPeople) {
+  const fields = getRoommateRentFields(totalPeople);
+  for (const field of fields) {
+    const range = n[field];
+    if (!range) continue;
+    const min = parseRentMin(range);
+    if (min != null && totalBudget >= min) return { range, field };
+  }
+  // Fallback: return the smallest applicable range even if over budget
+  for (const field of fields) {
+    if (n[field]) return { range: n[field], field };
+  }
+  return { range: null, field: null };
 }
 
 function getBudgetPosition(budget, range) {
@@ -96,12 +127,17 @@ export function scoreAndFilter(params) {
     weights, thresholds, budget, bedrooms,
     borough = 'all',   // legacy single-select fallback
     boroughs,          // multi-select array; takes precedence when provided
-    nameQuery, commuteDest, excludeFlood, requireADA,
+    nameQuery, commuteDest, excludeFlood,
+    roommates = 0,     // number of additional roommates (0 = living alone)
   } = params;
 
-  // Pre-compute rent normalization range
+  const totalPeople = roommates + 1;
+  const totalBudget = budget ? parseFloat(budget) * totalPeople : null;
+
+  // Pre-compute rent normalization range using the appropriate fields
+  const fields = getRoommateRentFields(totalPeople);
   const rentVals = neighborhoods
-    .map(nb => parseRentMin(getRentRange(nb, bedrooms)))
+    .map(nb => parseRentMin(nb[fields[0]] || getRentRange(nb, bedrooms)))
     .filter(v => v != null && v > 0);
   const minRent = Math.min(...rentVals);
   const maxRent = Math.max(...rentVals);
@@ -121,10 +157,11 @@ export function scoreAndFilter(params) {
         if (nameQuery && !fuzzyMatch(n.name, nameQuery)) return false;
         if (excludeFlood && n.floodZone) return false;
 
-        // Budget filter
-        if (budget) {
-          const rentMin = parseRentMin(getRentRange(n, bedrooms));
-          if (rentMin && rentMin > budget) return false;
+        // Budget filter — uses total budget against appropriate room size
+        if (totalBudget) {
+          const { range } = getBestRentRange(n, totalBudget, totalPeople);
+          const rentMin = parseRentMin(range);
+          if (rentMin && rentMin > totalBudget) return false;
         }
 
         // Minimum thresholds — each threshold is 0-10, scores are 0-100
@@ -146,12 +183,18 @@ export function scoreAndFilter(params) {
         for (const [dim, w] of Object.entries(weights)) {
           weighted += (scoreMap[dim] || 0) * (w / totalWeight);
         }
-        const rentRange = getRentRange(n, bedrooms);
+        const { range: rentRange, field: rentField } = totalBudget
+          ? getBestRentRange(n, totalBudget, totalPeople)
+          : { range: getRentRange(n, bedrooms), field: null };
         return {
           ...n,
           matchScore: Math.round(Math.max(0, Math.min(100, weighted))),
-          budgetPosition: budget ? getBudgetPosition(parseFloat(budget), rentRange) : null,
+          budgetPosition: totalBudget ? getBudgetPosition(totalBudget, rentRange) : null,
           displayRent: rentRange,
+          rentField,
+          roommates,
+          totalPeople,
+          perPersonBudget: budget ? parseFloat(budget) : null,
         };
       } catch (e) {
         console.error('[Score error]', n?.name, e);

@@ -11,7 +11,7 @@ import {
   getFavorites, toggleFavorite, isFavorite,
   getSavedSearches, saveSearch,
   LS_KEYS, PAGE_SIZE, MAX_COMPARE, DATA_LAST_UPDATED,
-  runTests,
+  runTests, parseRentMinExport, parseRentMaxExport,
 } from './search.js';
 import { neighborhoodContent } from '../data/neighborhood-content.js';
 import { commuteTimes, COMMUTE_HUBS } from '../data/commute-times.js';
@@ -115,7 +115,10 @@ function getSearchParams() {
     nameQuery: $('name-search')?.value || '',
     commuteDest: $('commute-dest')?.value || 'none',
     excludeFlood: $('exclude-flood')?.checked || false,
-    requireADA: $('require-ada')?.checked || false,
+    roommates: (() => {
+      const livingAlone = document.querySelector('input[name="living-situation"]:checked')?.value === 'alone';
+      return livingAlone ? 0 : parseInt($('roommate-count')?.value || 0);
+    })(),
   };
 }
 
@@ -201,22 +204,34 @@ function buildCard(n) {
   const sc = n.safetyScore || 0;
   const cls = sc >= 70 ? 'green' : sc >= 50 ? 'yellow' : 'red';
   const label = sc >= 70 ? 'Minimal safety concerns' : sc >= 50 ? 'Moderate safety concerns' : 'Heightened safety concerns';
-  const rent = n.displayRent ? `$${n.displayRent}` : 'N/A';
   const isFav = isFavorite(n.slug);
 
   // Pull card background image from neighborhoodContent
   const content = neighborhoodContent?.[n.slug];
   const imgUrl = content?.img1 || '';
 
-  const rentRow = n.displayRent
-    ? `<div class="stat-row"><span class="stat-label">Rent:</span><span class="stat-value">${rent}</span></div>` : '';
+  // Rent display — show apt label and per-person share when splitting
+  const FIELD_LABELS = { studioRentRange: 'Studio', rent1BR: '1BR', rent2BR: '2BR', rent3BR: '3BR', rent4BR: '4BR' };
+  const aptLabel = n.rentField ? FIELD_LABELS[n.rentField] || '' : '';
+  const rentRow = (() => {
+    if (!n.displayRent) return '';
+    const totalLabel = aptLabel ? `Rent (${aptLabel}):` : 'Rent:';
+    const totalRow = `<div class="stat-row"><span class="stat-label">${totalLabel}</span><span class="stat-value">$${n.displayRent}</span></div>`;
+    if (n.roommates > 0 && n.perPersonBudget) {
+      const rangeMin = Math.round(parseRentMinExport(n.displayRent) / n.totalPeople);
+      const rangeMax = Math.round(parseRentMaxExport(n.displayRent) / n.totalPeople);
+      const shareRow = `<div class="stat-row roommate-share-row"><span class="stat-label">Your share:</span><span class="stat-value">$${rangeMin.toLocaleString()}–$${rangeMax.toLocaleString()}/mo</span></div>`;
+      return totalRow + shareRow;
+    }
+    return totalRow;
+  })();
 
   // Budget indicator with inline tooltip icon
   const BUDGET_LABELS = {
     comfortable: '\u2713 Comfortable budget',
     high: 'Good budget position',
     mid: 'Mid-range budget',
-    low: '\u26a0 Lower end',
+    low: '\u26a0 Lower end budget',
     below: 'Below range'
   };
   const BUDGET_TIPS = {
@@ -408,6 +423,28 @@ document.addEventListener('DOMContentLoaded', () => {
     sessionStorage.removeItem('quickSearchPriority');
   }
   if (quickBudget || quickPriority) setTimeout(findNeighborhoods, 100);
+
+  // Living situation — show/hide roommate controls and update budget preview
+  function updateRoommateUI() {
+    const isRoommates = document.querySelector('input[name="living-situation"]:checked')?.value === 'roommates';
+    const controls = $('roommate-controls');
+    if (controls) controls.style.display = isRoommates ? 'flex' : 'none';
+    updateTotalBudgetPreview();
+  }
+  function updateTotalBudgetPreview() {
+    const preview = $('total-budget-preview');
+    if (!preview) return;
+    const isRoommates = document.querySelector('input[name="living-situation"]:checked')?.value === 'roommates';
+    const budget = parseFloat($('budget')?.value || '0');
+    if (!isRoommates || !budget) { preview.textContent = ''; return; }
+    const roommates = parseInt($('roommate-count')?.value || 1);
+    const total = budget * (roommates + 1);
+    preview.textContent = `Total apartment budget: $${total.toLocaleString()} · Your share: $${budget.toLocaleString()}/mo`;
+  }
+  $$('input[name="living-situation"]').forEach(r => r.addEventListener('change', updateRoommateUI));
+  $('roommate-count')?.addEventListener('change', updateTotalBudgetPreview);
+  $('budget')?.addEventListener('input', updateTotalBudgetPreview);
+  updateRoommateUI();
 
   // Slider event listeners
   $$('input[type="range"]').forEach(slider => {

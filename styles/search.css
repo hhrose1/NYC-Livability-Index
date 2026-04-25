@@ -135,6 +135,19 @@ body { background-color: #33432c90; }
 .filter-check-item { display: flex; align-items: center; gap: var(--spacing-sm); font-size: var(--font-size-sm); font-weight: 500; color: var(--color-text); cursor: pointer; }
 .filter-check-item input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: #4a6741; }
 
+/* ── Living situation / roommate controls ── */
+.living-situation-row { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; margin-bottom: 4px; }
+.living-sit-label { font-size: var(--font-size-sm); font-weight: 600; color: var(--color-text); }
+.living-sit-options { display: flex; gap: var(--spacing-lg); flex-wrap: wrap; }
+.living-sit-radio { display: flex; align-items: center; gap: 6px; font-size: var(--font-size-sm); cursor: pointer; }
+.living-sit-radio input[type="radio"] { accent-color: #4a6741; width: 15px; height: 15px; cursor: pointer; }
+.roommate-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 14px; background: rgba(74,103,65,0.07); border-radius: var(--radius-md); border: 1px solid rgba(74,103,65,0.2); }
+.roommate-controls label { font-size: var(--font-size-sm); font-weight: 600; color: var(--color-text); white-space: nowrap; }
+.roommate-controls select { padding: 6px 10px; font-size: var(--font-size-sm); border: 2px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-white); cursor: pointer; }
+.roommate-controls select:focus { outline: none; border-color: #4a6741; }
+.total-budget-preview { font-size: var(--font-size-xs); color: #4a6741; font-weight: 600; }
+.roommate-share-row .stat-value { color: #a3d9a5; }
+
 /* ── Borough multi-select ── */
 .borough-section { margin-bottom: var(--spacing-lg); }
 .borough-label { display: block; font-weight: 600; margin-bottom: var(--spacing-sm); color: var(--color-text); font-size: var(--font-size-sm); }
