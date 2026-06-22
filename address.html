@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Address Dashboard - NYC Livability Index</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/address.css">
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">NYC Livability Index</a>
+            <div class="nav-links">
+                <a href="transportation.html">Transportation</a>
+                <a href="apartments.html">Searching for Apartments</a>
+                <a href="livability.html">Livability Mapping</a>
+                <a href="visitors.html">For Visitors</a>
+                <a href="social.html">The Social Index</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-content">
+        <section class="page-header">
+            <h1>Building Report Card</h1>
+            <p>Enter any NYC address to pull live violation data, 311 complaint history, eviction filings, and more — all from city databases.</p>
+        </section>
+
+        <div class="search-section">
+            <div class="address-search-box">
+                <input
+                    type="text"
+                    id="address-input"
+                    placeholder="123 Main St, Brooklyn"
+                    autocomplete="off"
+                    autocorrect="off"
+                    spellcheck="false"
+                >
+                <button id="search-btn" onclick="runAddressLookup()">Check Building</button>
+            </div>
+            <p class="search-hint">Works for any NYC address — Manhattan, Brooklyn, Queens, the Bronx, or Staten Island.</p>
+        </div>
+
+        <!-- Error state -->
+        <div id="error-banner" class="error-banner hidden">
+            <span id="error-msg"></span>
+        </div>
+
+        <!-- Dashboard — hidden until a search runs -->
+        <div id="dashboard" class="dashboard hidden">
+
+            <!-- Building header + risk grade -->
+            <div class="building-header">
+                <div class="building-meta">
+                    <h2 id="building-address-display"></h2>
+                    <p id="building-bbl" class="bbl-label"></p>
+                </div>
+                <div class="risk-badge" id="risk-badge">
+                    <div class="risk-grade" id="risk-grade">—</div>
+                    <div class="risk-label">Building Grade</div>
+                </div>
+            </div>
+
+            <!-- Quick-stat row -->
+            <div class="stat-row" id="stat-row">
+                <div class="stat-card" id="stat-hpd">
+                    <div class="stat-skeleton"></div>
+                </div>
+                <div class="stat-card" id="stat-311">
+                    <div class="stat-skeleton"></div>
+                </div>
+                <div class="stat-card" id="stat-dob">
+                    <div class="stat-skeleton"></div>
+                </div>
+                <div class="stat-card" id="stat-eviction">
+                    <div class="stat-skeleton"></div>
+                </div>
+            </div>
+
+            <!-- HPD Violations -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h3>HPD Violations</h3>
+                    <span class="section-tag" id="hpd-tag"></span>
+                </div>
+                <div id="hpd-content">
+                    <div class="skeleton-block"></div>
+                </div>
+            </div>
+
+            <!-- 311 Complaints -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h3>311 Complaints <span class="date-range">(last 24 months)</span></h3>
+                    <span class="section-tag" id="complaints-tag"></span>
+                </div>
+                <div id="complaints-content">
+                    <div class="skeleton-block"></div>
+                </div>
+            </div>
+
+            <!-- DOB Complaints -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h3>DOB Complaints</h3>
+                    <span class="section-tag" id="dob-tag"></span>
+                </div>
+                <div id="dob-content">
+                    <div class="skeleton-block"></div>
+                </div>
+            </div>
+
+            <!-- Eviction Filings -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h3>Eviction Filings</h3>
+                    <span class="section-tag" id="eviction-tag"></span>
+                </div>
+                <div id="eviction-content">
+                    <div class="skeleton-block"></div>
+                </div>
+            </div>
+
+            <!-- Rent Stabilization -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h3>Rent Stabilization</h3>
+                </div>
+                <div id="rent-stab-content">
+                    <div class="skeleton-block"></div>
+                </div>
+            </div>
+
+            <!-- WhoOwnsWhat / Landlord -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h3>Landlord Portfolio</h3>
+                </div>
+                <div id="wow-content">
+                    <div class="skeleton-block"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <footer>
+        <p>NYC Livability Index | Built for transplants, by a transplant</p>
+        <p class="feedback-note">Data sourced from NYC Open Data, Planning Labs, and JustFix WhoOwnsWhat. Refreshed in real time.</p>
+    </footer>
+
+    <script src="js/address.js"></script>
+</body>
+</html>
