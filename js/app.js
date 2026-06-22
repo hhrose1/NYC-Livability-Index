@@ -1,302 +1,572 @@
-// Check if coming from quick search on homepage
-window.addEventListener('DOMContentLoaded', function() {
-    const quickBudget = sessionStorage.getItem('quickSearchBudget');
-    const quickPriority = sessionStorage.getItem('quickSearchPriority');
-    
-    if (quickBudget || quickPriority) {
-        // Set budget
-        if (quickBudget) {
-            document.getElementById('budget').value = quickBudget;
-        }
-        
-        // Set priority slider to 100, others to default
-        if (quickPriority) {
-            const priorityMap = {
-                'safety': 'safety',
-                'transit': 'transit',
-                'affordability': 'affordability',
-                'nightlife': 'nightlife',
-                'walkability': 'walkability',
-                'parks': 'parks'
-            };
-            
-            const prioritySlider = priorityMap[quickPriority];
-            if (prioritySlider) {
-                document.getElementById(prioritySlider).value = 100;
-                document.getElementById(prioritySlider + '-value').textContent = 100;
-            }
-        }
-        
-        // Clear session storage
-        sessionStorage.removeItem('quickSearchBudget');
-        sessionStorage.removeItem('quickSearchPriority');
-        
-        // Auto-run search
-        setTimeout(() => {
-            findNeighborhoods();
-        }, 100);
-    }
-});
+/**
+ * app.js — Search Page Coordinator
+ * NYC Livability Index
+ *
+ * Orchestrates the search UI: sliders, filters, results, pagination,
+ * compare modal, favorites, saved searches, shareable URLs.
+ */
 
-// Update slider value displays
-document.querySelectorAll('input[type="range"]').forEach(slider => {
-    if (!slider.classList.contains('weight-slider')) {
-        slider.addEventListener('input', function() {
-            document.getElementById(this.id + '-value').textContent = this.value;
-        });
-    }
-});
+import {
+  scoreAndFilter, sortResults, encodeSearchParams, decodeSearchParams,
+  getFavorites, toggleFavorite, isFavorite,
+  getSavedSearches, saveSearch,
+  LS_KEYS, PAGE_SIZE, MAX_COMPARE, DATA_LAST_UPDATED,
+  runTests, parseRentMinExport, parseRentMaxExport,
+} from './search.js';
+import { neighborhoodContent } from '../data/neighborhood-content.js';
+import { commuteTimes, COMMUTE_HUBS } from '../data/commute-times.js';
 
-function normalizeScore(value, min, max, reverse = false) {
-    if (max === min) return 50;
-    let normalized = ((value - min) / (max - min)) * 100;
-    return reverse ? 100 - normalized : normalized;
+
+// ── State ──────────────────────────────────────────────────────
+let allResults = [];
+let shownCount = 0;
+let compareSet = new Set();
+// Multi-select: empty = show all boroughs
+let selectedBoroughs = new Set();
+let currentSort = 'match';
+
+
+// ── DOM helpers ────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const $$ = sel => document.querySelectorAll(sel);
+
+function showToast(msg) {
+  let t = document.querySelector('.toast');
+  if (!t) { t = document.createElement('div'); t.className = 'toast'; document.body.appendChild(t); }
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-function parseRent(rentRange) {
-    if (!rentRange || rentRange === '') return null;
-    if (typeof rentRange === 'number') return rentRange;
-    
-    // If it's a range like "3600-5200", take the minimum value
-    const parts = rentRange.toString().split('-');
-    return parseFloat(parts[0]);
+function showSpinner(show) {
+  const sp = document.querySelector('.spinner-overlay');
+  if (sp) sp.classList.toggle('visible', show);
 }
 
-function getBudgetPosition(budget, rentRange) {
-    if (!budget || !rentRange) return null;
-    
-    const parts = rentRange.toString().split('-');
-    if (parts.length !== 2) return null;
-    
-    const minRent = parseFloat(parts[0]);
-    const maxRent = parseFloat(parts[1]);
-    
-    if (budget < minRent) return 'below';
-    if (budget >= maxRent) return 'comfortable';
-    
-    const position = (budget - minRent) / (maxRent - minRent);
-    if (position < 0.33) return 'low';
-    if (position < 0.67) return 'mid';
-    return 'high';
+// ── Slider persistence ─────────────────────────────────────────
+function getSliderIds() {
+  return ['safety', 'transit', 'affordability', 'nightlife', 'walkability', 'schools', 'groceries', 'parks', 'commute', 'noise',
+    'weight-safety', 'weight-transit', 'weight-affordability', 'weight-nightlife', 'weight-walkability', 'weight-schools', 'weight-groceries', 'weight-parks'];
 }
 
+function getThresholdIds() {
+  return ['safety', 'transit', 'affordability', 'nightlife', 'walkability', 'schools', 'groceries', 'parks', 'commute', 'noise']
+    .map(k => `thresh-${k}`);
+}
+
+function saveSliderState() {
+  const vals = {};
+  getSliderIds().forEach(id => { const el = $(id); if (el) vals[id] = el.value; });
+  getThresholdIds().forEach(id => { const el = $(id); if (el) vals[id] = el.value; });
+  try { localStorage.setItem(LS_KEYS.weights, JSON.stringify(vals)); } catch { }
+}
+
+function restoreSliderState(vals) {
+  if (!vals) return;
+  Object.entries(vals).forEach(([id, val]) => {
+    const el = $(id);
+    if (el) { el.value = val; updateSliderDisplay(el); }
+  });
+}
+
+function updateSliderDisplay(slider) {
+  const id = slider.id;
+  const valueEl = $(`${id}-value`);
+  if (valueEl) {
+    const isWeight = id.startsWith('weight-');
+    const isThresh = id.startsWith('thresh-');
+    valueEl.textContent = isWeight ? slider.value + '%' : (isThresh ? slider.value : slider.value);
+  }
+}
+
+// ── Read current search params from UI ─────────────────────────
+function getSearchParams() {
+  const isAdvanced = $('advanced-mode') && $('advanced-mode').style.display !== 'none';
+  let weights = {};
+
+  if (isAdvanced) {
+    const dims = ['safety', 'transit', 'affordability', 'nightlife', 'walkability', 'schools', 'groceries', 'parks'];
+    const raw = {};
+    dims.forEach(d => { raw[d] = parseInt($(`weight-${d}`)?.value || 50); });
+    const total = Object.values(raw).reduce((a, b) => a + b, 0) || 1;
+    dims.forEach(d => { weights[d] = Math.round((raw[d] / total) * 100); });
+    weights.commute = parseInt($('commute')?.value || 0);
+    weights.noise = parseInt($('noise')?.value || 0);
+  } else {
+    ['safety', 'transit', 'affordability', 'nightlife', 'walkability', 'schools', 'groceries', 'parks', 'commute', 'noise']
+      .forEach(d => { weights[d] = parseInt($(d)?.value || 50); });
+  }
+
+  const thresholds = {};
+  ['safety', 'transit', 'affordability', 'nightlife', 'walkability', 'schools', 'groceries', 'parks', 'commute', 'noise']
+    .forEach(d => { thresholds[d] = parseInt($(`thresh-${d}`)?.value || 0); });
+
+  return {
+    weights,
+    thresholds,
+    budget: $('budget')?.value || '',
+    // Read multi-select bedroom checkboxes
+    bedrooms: (() => {
+      const checked = [...document.querySelectorAll('input[name="bedrooms"]:checked')].map(el => el.value);
+      return checked.length ? checked[0] : 'studio';
+    })(),
+    boroughs: selectedBoroughs.size === 0 ? null : [...selectedBoroughs],
+    borough: 'all', // legacy fallback; scoring uses boroughs array
+    nameQuery: $('name-search')?.value || '',
+    commuteDest: $('commute-dest')?.value || 'none',
+    excludeFlood: $('exclude-flood')?.checked || false,
+    roommates: (() => {
+      const livingAlone = document.querySelector('input[name="living-situation"]:checked')?.value === 'alone';
+      return livingAlone ? 0 : parseInt($('roommate-count')?.value || 0);
+    })(),
+  };
+}
+
+
+// ── Apply URL params to UI ─────────────────────────────────────
+function applyParamsToUI(decoded) {
+  Object.entries(decoded.weights).forEach(([dim, val]) => {
+    const el = $(dim);
+    if (el) { el.value = val; updateSliderDisplay(el); }
+  });
+  if (decoded.budget && $('budget')) $('budget').value = decoded.budget;
+  // Restore bedroom checkboxes
+  if (decoded.bedrooms) {
+    document.querySelectorAll('input[name="bedrooms"]').forEach(cb => { cb.checked = cb.value === decoded.bedrooms; });
+  }
+  if (decoded.commuteDest && $('commute-dest')) $('commute-dest').value = decoded.commuteDest;
+  if (decoded.excludeFlood && $('exclude-flood')) $('exclude-flood').checked = true;
+  if (decoded.borough && decoded.borough !== 'all') {
+    // Restore single-borough selection from URL into multi-select
+    selectedBoroughs.clear();
+    selectedBoroughs.add(decoded.borough);
+    $$('.borough-chip').forEach(c => {
+      c.classList.toggle('active', c.dataset.borough === decoded.borough);
+    });
+  }
+}
+
+// ── Main search ────────────────────────────────────────────────
 function findNeighborhoods() {
-    const isAdvancedMode = document.getElementById('advanced-mode').style.display === 'block';
-    
-    let weights;
-    
-    if (isAdvancedMode) {
-        // Use custom weights from advanced mode
-        const rawWeights = {
-            safety: parseInt(document.getElementById('weight-safety').value),
-            transit: parseInt(document.getElementById('weight-transit').value),
-            affordability: parseInt(document.getElementById('weight-affordability').value),
-            nightlife: parseInt(document.getElementById('weight-nightlife').value),
-            walkability: parseInt(document.getElementById('weight-walkability').value),
-            schools: parseInt(document.getElementById('weight-schools').value),
-            groceries: parseInt(document.getElementById('weight-groceries').value),
-            parks: parseInt(document.getElementById('weight-parks').value)
-        };
-        
-        // Normalize weights to sum to 1
-        const total = Object.values(rawWeights).reduce((a, b) => a + b, 0);
-        weights = {};
-        for (let key in rawWeights) {
-            weights[key] = total > 0 ? rawWeights[key] / total : 0.125;
-        }
-    } else {
-        // Use simple mode - convert slider values to weights
-        weights = {
-            safety: parseInt(document.getElementById('safety').value) / 100,
-            transit: parseInt(document.getElementById('transit').value) / 100,
-            affordability: parseInt(document.getElementById('affordability').value) / 100,
-            nightlife: parseInt(document.getElementById('nightlife').value) / 100,
-            walkability: parseInt(document.getElementById('walkability').value) / 100,
-            schools: parseInt(document.getElementById('schools').value) / 100,
-            groceries: parseInt(document.getElementById('groceries').value) / 100,
-            parks: parseInt(document.getElementById('parks').value) / 100
-        };
+  showSpinner(true);
+  setTimeout(() => {
+    try {
+      const params = getSearchParams();
+      saveSliderState();
+      sessionStorage.setItem('searchReturnUrl', location.href.split('?')[0] + '?' + encodeSearchParams(params));
+
+      const raw = scoreAndFilter(params);
+      allResults = sortResults(raw, currentSort);
+      shownCount = 0;
+      compareSet.clear();
+      updateCompareBar();
+      displayResults();
+    } catch (e) {
+      console.error('[Search]', e);
+    } finally {
+      showSpinner(false);
     }
+  }, 600);
 
-    const budget = document.getElementById('budget').value;
-    const maxRent = budget ? parseFloat(budget) : Infinity;
-
-    // Calculate min/max for normalization
-    const rentValues = NEIGHBORHOODS.map(n => parseRent(n['Studio Rent Range'])).filter(r => r !== null && r > 0);
-    const minRent = Math.min(...rentValues);
-    const maxRent_data = Math.max(...rentValues);
-
-    // Filter and score neighborhoods
-    // Filter and score neighborhoods
-    let scoredNeighborhoods = NEIGHBORHOODS
-        .filter(n => {
-            // Borough filter
-            if (selectedBorough !== 'all' && n.Borough !== selectedBorough) {
-                return false;
-            }
-            
-            // Budget filter
-            const rent = parseRent(n['Studio Rent Range']);
-            if (!rent) return true;
-            return rent <= maxRent;
-        })
-        .map(n => {
-            const safetyScore = (n['Safety Score (/10)'] || 0) * 10;
-            const transitScore = n['Transit Access Score'] || 0;
-            
-            const rent = parseRent(n['Studio Rent Range']);
-            const affordabilityScore = rent ? normalizeScore(rent, minRent, maxRent_data, true) : 50;
-            
-            const nightlifeScore = (n['Nightlife/Social Score'] || 0) * 20;
-            const walkabilityScore = n['Walk Score'] || 0;
-            const schoolsScore = n['School Quality Score'] || 0;
-            const groceriesScore = (n['Grocery Store Density'] || 0) * 20;
-            const parksScore = (n['Park Access Score'] || 0) * 20;
-
-            const totalWeight = Object.values(weights).reduce((a, b) => a + b, 0);
-            
-            const matchScore = totalWeight > 0 ? (
-                safetyScore * weights.safety +
-                transitScore * weights.transit +
-                affordabilityScore * weights.affordability +
-                nightlifeScore * weights.nightlife +
-                walkabilityScore * weights.walkability +
-                schoolsScore * weights.schools +
-                groceriesScore * weights.groceries +
-                parksScore * weights.parks
-            ) / totalWeight : 0;
-
-            return {
-                ...n,
-                matchScore: Math.round(matchScore),
-                budgetPosition: budget ? getBudgetPosition(parseFloat(budget), n['Studio Rent Range']) : null
-            };
-        })
-        .sort((a, b) => b.matchScore - a.matchScore);
-
-    displayResults(scoredNeighborhoods);
 }
 
-function displayResults(neighborhoods) {
-    const resultsSection = document.getElementById('results-section');
-    const cardsContainer = document.getElementById('cards-container');
-    const resultsCount = document.getElementById('results-count');
+function displayResults() {
+  const section = $('results-section');
+  const container = $('cards-container');
+  if (!section || !container) return;
 
-    if (neighborhoods.length === 0) {
-        resultsSection.style.display = 'none';
+  if (allResults.length === 0) {
+    section.style.display = 'block';
+    container.innerHTML = `
+      <div class="empty-state" style="grid-column:1/-1">
+        <div class="empty-state-icon">🗺️</div>
+        <h3>No neighborhoods match your criteria</h3>
+        <p>Try adjusting your minimum thresholds or expanding your filters.</p>
+      </div>`;
+    $('results-count') && ($('results-count').textContent = '0 neighborhoods');
+    $('pagination-section') && ($('pagination-section').style.display = 'none');
+    return;
+  }
+
+  section.style.display = 'block';
+  $('results-count') && ($('results-count').textContent = `${allResults.length} neighborhoods`);
+
+  const batch = allResults.slice(shownCount, shownCount + PAGE_SIZE);
+  if (shownCount === 0) container.innerHTML = '';
+  batch.forEach(n => container.appendChild(buildCard(n)));
+  shownCount += batch.length;
+
+  const pag = $('pagination-section');
+  if (pag) pag.style.display = shownCount < allResults.length ? 'block' : 'none';
+}
+
+function buildCard(n) {
+  const sc = n.safetyScore || 0;
+  const cls = sc >= 70 ? 'green' : sc >= 50 ? 'yellow' : 'red';
+  const label = sc >= 70 ? 'Minimal safety concerns' : sc >= 50 ? 'Moderate safety concerns' : 'Heightened safety concerns';
+  const isFav = isFavorite(n.slug);
+
+  // Pull card background image from neighborhoodContent
+  const content = neighborhoodContent?.[n.slug];
+  const imgUrl = content?.img1 || '';
+
+  // Rent display — show apt label and per-person share when splitting
+  const FIELD_LABELS = { studioRentRange: 'Studio', rent1BR: '1BR', rent2BR: '2BR', rent3BR: '3BR', rent4BR: '4BR' };
+  const aptLabel = n.rentField ? FIELD_LABELS[n.rentField] || '' : '';
+  const rentRow = (() => {
+    if (!n.displayRent) return '';
+    const totalLabel = aptLabel ? `Rent (${aptLabel}):` : 'Rent:';
+    const totalRow = `<div class="stat-row"><span class="stat-label">${totalLabel}</span><span class="stat-value">$${n.displayRent}</span></div>`;
+    if (n.roommates > 0 && n.perPersonBudget) {
+      const rangeMin = Math.round(parseRentMinExport(n.displayRent) / n.totalPeople);
+      const rangeMax = Math.round(parseRentMaxExport(n.displayRent) / n.totalPeople);
+      const shareRow = `<div class="stat-row roommate-share-row"><span class="stat-label">Your share:</span><span class="stat-value">$${rangeMin.toLocaleString()}–$${rangeMax.toLocaleString()}/mo</span></div>`;
+      return totalRow + shareRow;
+    }
+    return totalRow;
+  })();
+
+  // Budget indicator with inline tooltip icon
+  const BUDGET_LABELS = {
+    comfortable: '\u2713 Comfortable budget',
+    high: 'Good budget position',
+    mid: 'Mid-range budget',
+    low: '\u26a0 Lower end budget',
+    below: 'Below range'
+  };
+  const BUDGET_TIPS = {
+    comfortable: 'Your budget is well above typical rents \u2014 plenty of options.',
+    high: 'Your budget comfortably covers most listings here.',
+    mid: 'Your budget covers mid-range options. Some trade-offs expected.',
+    low: 'At the lower end. Competition for available units may be high.',
+    below: 'Your budget is below typical rents here. Very limited options.'
+  };
+  const budgetHtml = n.budgetPosition ? `
+    <div class="budget-indicator ${n.budgetPosition}">
+      ${BUDGET_LABELS[n.budgetPosition] || n.budgetPosition}
+      <span class="budget-info-icon" data-tip="${BUDGET_TIPS[n.budgetPosition] || ''}">i</span>
+    </div>` : '';
+
+  const card = document.createElement('div');
+  card.className = 'neighborhood-card';
+  card.dataset.slug = n.slug;
+  card.innerHTML = `
+    <div class="card-bg" style="background-image:url('${imgUrl}')"></div>
+    <div class="card-overlay"></div>
+    <div class="card-content">
+      <div class="card-header">
+        <div class="card-title-wrap">
+          <div class="card-title">${n.name}</div>
+          <div class="card-borough">${n.borough}</div>
+        </div>
+        <div class="card-actions">
+          <button class="fav-btn${isFav ? ' active' : ''}" data-slug="${n.slug}" title="Save to favorites" aria-label="Toggle favorite">${isFav ? '\u2605' : '\u2606'}</button>
+          <div class="match-score" title="Match Score: Personalized to your priorities">
+            ${n.matchScore}
+            <span class="match-score-label">match</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <div class="safety-badge ${cls}">${label}</div>
+        <div class="card-stats">
+          ${rentRow}
+          ${budgetHtml}
+          <div class="stat-row"><span class="stat-label">Livability:</span><span class="stat-value">${n.livabilityScore ? Math.round(n.livabilityScore) : 'N/A'}/100</span></div>
+          <div class="stat-row"><span class="stat-label">Transit:</span><span class="stat-value">${n.transitScore != null ? n.transitScore : 'N/A'}/100</span></div>
+          <div class="stat-row"><span class="stat-label">Walk:</span><span class="stat-value">${n.walkScore != null ? n.walkScore : 'N/A'}</span></div>
+          ${(() => { const dest = document.getElementById('commute-dest')?.value; if (!dest || dest === 'none') return ''; const mins = commuteTimes[n.slug]?.[dest]; if (mins == null) return ''; return `<div class="stat-row"><span class="stat-label">Commute (${COMMUTE_HUBS[dest]}):</span><span class="stat-value">${mins} min</span></div>`; })()}
+        </div>
+        <div class="card-footer-row">
+          <label class="compare-check-wrap">
+            <input type="checkbox" class="compare-check" data-slug="${n.slug}"> Compare
+          </label>
+          <a href="neighborhood.html?slug=${n.slug}" class="card-view-link">View details \u2192</a>
+        </div>
+      </div>
+    </div>`;
+
+  // Image fallback: if the neighborhood image fails, use an Unsplash NYC photo
+  if (imgUrl) {
+    const bg = card.querySelector('.card-bg');
+    const probe = new Image();
+    probe.onerror = () => { bg.style.backgroundImage = `url('https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=600&q=70')`; };
+    probe.src = imgUrl;
+  }
+
+  // Favorite button
+  card.querySelector('.fav-btn').addEventListener('click', e => {
+    e.stopPropagation();
+    const favs = toggleFavorite(n.slug);
+    const btn = e.currentTarget;
+    const now = isFavorite(n.slug);
+    btn.textContent = now ? '\u2605' : '\u2606';
+    btn.classList.toggle('active', now);
+    updateNavFavCount();
+    showToast(now ? `\u2605 ${n.name} saved to favorites` : `${n.name} removed from favorites`);
+  });
+
+  // Compare checkbox
+  card.querySelector('.compare-check').addEventListener('change', e => {
+    const slug = e.target.dataset.slug;
+    if (e.target.checked) {
+      if (compareSet.size >= MAX_COMPARE) {
+        e.target.checked = false;
+        showToast(`Max ${MAX_COMPARE} neighborhoods to compare`);
         return;
+      }
+      compareSet.add(slug);
+    } else {
+      compareSet.delete(slug);
     }
+    updateCompareBar();
+  });
 
-    resultsSection.style.display = 'block';
-    resultsCount.textContent = `${neighborhoods.length} neighborhoods found`;
-    cardsContainer.innerHTML = '';
-
-    const topResults = neighborhoods.slice(0, 20);
-
-    topResults.forEach(n => {
-        const card = document.createElement('a');
-        card.className = 'neighborhood-card';
-        card.href = `${n.Neighborhood.toLowerCase().replace(/\s+/g, '-')}.html`;
-
-        // Safety badge
-        const safetyScore = n['Safety Score (/10)'] || 0;
-        let safetyClass = 'red';
-        if (safetyScore >= 7) safetyClass = 'green';
-        else if (safetyScore >= 5) safetyClass = 'yellow';
-
-        // Rent display with budget position
-        const rentRange = n['Studio Rent Range'] ? `$${n['Studio Rent Range']}` : 'N/A';
-        let budgetIndicator = '';
-        
-        if (n.budgetPosition) {
-            const indicators = {
-                'comfortable': '<span class="budget-indicator comfortable">✓ Comfortable budget</span>',
-                'high': '<span class="budget-indicator good">Good budget position</span>',
-                'mid': '<span class="budget-indicator mid">Mid-range budget</span>',
-                'low': '<span class="budget-indicator low">⚠ Lower end - expect trade-offs</span>',
-                'below': '<span class="budget-indicator below">Below range minimum</span>'
-            };
-            budgetIndicator = indicators[n.budgetPosition] || '';
-        }
-
-        // Composite Livability Score
-        const compositeScore = n['Composite Livability Score'] ? Math.round(n['Composite Livability Score']) : 'N/A';
-
-        card.innerHTML = `
-            <div class="card-header">
-                <div>
-                    <div class="card-title">${n.Neighborhood}</div>
-                    <div class="card-borough">${n.Borough}</div>
-                </div>
-                <div class="match-score">${n.matchScore}</div>
-            </div>
-            <div class="safety-badge ${safetyClass}">
-                Safety: ${safetyScore}/10
-            </div>
-            <div class="card-stats">
-                <div class="stat-row">
-                    <span class="stat-label">Rent Range:</span>
-                    <span class="stat-value">${rentRange}</span>
-                </div>
-                ${budgetIndicator}
-                <div class="stat-row">
-                    <span class="stat-label">Livability Index:</span>
-                    <span class="stat-value">${compositeScore}/100</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-label">Transit:</span>
-                    <span class="stat-value">${n['Transit Access Score'] || 'N/A'}/100</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-label">Walk Score:</span>
-                    <span class="stat-value">${n['Walk Score'] || 'N/A'}</span>
-                </div>
-            </div>
-        `;
-
-        cardsContainer.appendChild(card);
-    });
+  return card;
 }
 
-function resetFilters() {
-    document.getElementById('budget').value = '';
-    
-    // Reset simple mode sliders
-    document.querySelectorAll('#simple-mode input[type="range"]').forEach(slider => {
-        slider.value = 50;
-        document.getElementById(slider.id + '-value').textContent = 50;
-    });
-    
-    // Reset advanced mode weights
-    const defaultWeights = {
-        'weight-safety': 20,
-        'weight-transit': 15,
-        'weight-affordability': 15,
-        'weight-nightlife': 10,
-        'weight-walkability': 15,
-        'weight-schools': 10,
-        'weight-groceries': 10,
-        'weight-parks': 5
-    };
-    
-    for (let id in defaultWeights) {
-        const slider = document.getElementById(id);
-        if (slider) {
-            slider.value = defaultWeights[id];
-            document.getElementById(id + '-value').textContent = defaultWeights[id] + '%';
-        }
-    }
-    
-    document.getElementById('results-section').style.display = 'none';
+// ── Compare ────────────────────────────────────────────────────
+function updateCompareBar() {
+  const bar = document.querySelector('.compare-bar');
+  if (!bar) return;
+  const count = compareSet.size;
+  bar.classList.toggle('visible', count >= 2);
+  const label = bar.querySelector('.compare-label');
+  if (label) label.textContent = `Compare Selected (${count}/${MAX_COMPARE})`;
 }
 
-// Borough filter
-let selectedBorough = 'all';
+function openCompareModal() {
+  import('./search.js').then(({ neighborhoods: nbs }) => {
+    const items = [...compareSet].map(slug => nbs.find(n => n.slug === slug)).filter(Boolean);
+    if (items.length < 2) return;
 
-document.querySelectorAll('.borough-chip').forEach(chip => {
-    chip.addEventListener('click', function() {
-        document.querySelectorAll('.borough-chip').forEach(c => c.classList.remove('active'));
+    const fields = [
+      { label: 'Borough', fn: n => n.borough },
+      { label: 'Safety Score', fn: n => `${n.safetyScore}/100` },
+      { label: 'Livability', fn: n => n.livabilityScore ? `${Math.round(n.livabilityScore)}/100` : 'N/A' },
+      { label: 'Transit Score', fn: n => n.transitScore != null ? `${n.transitScore}/100` : 'N/A' },
+      { label: 'Walk Score', fn: n => n.walkScore != null ? `${n.walkScore}/100` : 'N/A' },
+      { label: 'School Score', fn: n => n.schoolScore != null ? `${Math.round(n.schoolScore)}/100` : 'N/A' },
+      { label: 'Nightlife', fn: n => n.nightlifeScore != null ? `${n.nightlifeScore}/100` : 'N/A' },
+      { label: 'Park Score', fn: n => n.parkScore != null ? `${n.parkScore}/100` : 'N/A' },
+      { label: 'Studio Rent', fn: n => n.studioRentRange ? `$${n.studioRentRange}` : 'N/A' },
+      { label: '1BR Rent', fn: n => n.rent1BR ? `$${n.rent1BR}` : 'N/A' },
+      { label: `Commute (${COMMUTE_HUBS[document.getElementById('commute-dest')?.value] || 'Midtown'})`, fn: n => { const dest = document.getElementById('commute-dest')?.value; const mins = dest && dest !== 'none' ? commuteTimes[n.slug]?.[dest] : commuteTimes[n.slug]?.midtown; return mins != null ? `${mins} min` : 'N/A'; } },
+      { label: 'Noise Complaints', fn: n => n.noiseComplaintsPer1000 != null ? `${n.noiseComplaintsPer1000}/1k` : 'N/A' },
+      { label: 'Flood Zone', fn: n => n.floodZone ? '🌊 Yes' : '✓ No' },
+    ];
+
+    const headers = `<th></th>${items.map(n => `<th>${n.name}</th>`).join('')}`;
+    const rows = fields.map(f => {
+      const vals = items.map(n => f.fn(n));
+      // Find best numeric value
+      const nums = vals.map(v => parseFloat(v));
+      const maxNum = Math.max(...nums.filter(x => !isNaN(x)));
+      return `<tr><td>${f.label}</td>${vals.map((v, i) => {
+        const isBest = !isNaN(nums[i]) && nums[i] === maxNum && nums.filter(x => !isNaN(x)).length > 1;
+        return `<td class="${isBest ? 'compare-best' : ''}">${v}</td>`;
+      }).join('')}</tr>`;
+    }).join('');
+
+    const modal = $('compare-modal');
+    if (modal) {
+      modal.querySelector('.compare-table-wrap').innerHTML = `
+        <table class="compare-table"><thead><tr>${headers}</tr></thead><tbody>${rows}</tbody></table>`;
+      modal.classList.add('visible');
+    }
+  });
+}
+
+// ── Saved searches ─────────────────────────────────────────────
+function updateSavedSearchDropdown() {
+  const sel = $('load-saved-search');
+  if (!sel) return;
+  const saved = getSavedSearches();
+  sel.innerHTML = '<option value="">Load saved search...</option>' +
+    saved.map((s, i) => `<option value="${i}">${s.name}</option>`).join('');
+}
+
+// ── Nav favorites count ────────────────────────────────────────
+function updateNavFavCount() {
+  const count = getFavorites().length;
+  $$('.nav-favorites').forEach(el => {
+    el.textContent = count > 0 ? `Favorites (${count})` : 'Favorites';
+  });
+}
+
+// ── Init ───────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  // Set data timestamp
+  $$('[data-last-updated]').forEach(el => { el.textContent = DATA_LAST_UPDATED; });
+
+  // Initialise multi-borough Set: starts empty (user must select manually)
+  // Empty set = no filter applied (all boroughs shown)
+
+  // Restore from URL params first, then localStorage
+  const urlParams = location.search;
+  if (urlParams) {
+    applyParamsToUI(decodeSearchParams(urlParams));
+  } else {
+    try {
+      const saved = JSON.parse(localStorage.getItem(LS_KEYS.weights) || 'null');
+      if (saved) restoreSliderState(saved);
+    } catch { }
+  }
+
+  // Restore from sessionStorage (quick search on homepage)
+  const quickBudget = sessionStorage.getItem('quickSearchBudget');
+  const quickPriority = sessionStorage.getItem('quickSearchPriority');
+  if (quickBudget) { const el = $('budget'); if (el) el.value = quickBudget; sessionStorage.removeItem('quickSearchBudget'); }
+  if (quickPriority) {
+    const el = $(quickPriority);
+    if (el) { el.value = 100; updateSliderDisplay(el); }
+    sessionStorage.removeItem('quickSearchPriority');
+  }
+  if (quickBudget || quickPriority) setTimeout(findNeighborhoods, 100);
+
+  // Living situation — show/hide roommate controls and update budget preview
+  function updateRoommateUI() {
+    const isRoommates = document.querySelector('input[name="living-situation"]:checked')?.value === 'roommates';
+    const controls = $('roommate-controls');
+    if (controls) controls.style.display = isRoommates ? 'flex' : 'none';
+    updateTotalBudgetPreview();
+  }
+  function updateTotalBudgetPreview() {
+    const preview = $('total-budget-preview');
+    if (!preview) return;
+    const isRoommates = document.querySelector('input[name="living-situation"]:checked')?.value === 'roommates';
+    const budget = parseFloat($('budget')?.value || '0');
+    if (!isRoommates || !budget) { preview.textContent = ''; return; }
+    const roommates = parseInt($('roommate-count')?.value || 1);
+    const total = budget * (roommates + 1);
+    preview.textContent = `Total apartment budget: $${total.toLocaleString()} · Your share: $${budget.toLocaleString()}/mo`;
+  }
+  $$('input[name="living-situation"]').forEach(r => r.addEventListener('change', updateRoommateUI));
+  $('roommate-count')?.addEventListener('change', updateTotalBudgetPreview);
+  $('budget')?.addEventListener('input', updateTotalBudgetPreview);
+  updateRoommateUI();
+
+  // Slider event listeners
+  $$('input[type="range"]').forEach(slider => {
+    slider.addEventListener('input', function () {
+      updateSliderDisplay(this);
+      saveSliderState();
+    });
+  });
+
+  // Borough chips — multi-select toggle (starts unselected; empty = all shown)
+  $$('.borough-chip').forEach(chip => {
+    chip.addEventListener('click', function () {
+      const b = this.dataset.borough;
+      if (selectedBoroughs.has(b)) {
+        selectedBoroughs.delete(b);
+        this.classList.remove('active');
+      } else {
+        selectedBoroughs.add(b);
         this.classList.add('active');
-        selectedBorough = this.dataset.borough;
+      }
     });
+  });
+
+  // Find neighborhoods button
+  $('find-btn')?.addEventListener('click', findNeighborhoods);
+
+  // Reset button
+  $('reset-btn')?.addEventListener('click', () => {
+    $$('input[type="range"]').forEach(s => {
+      s.value = s.id.startsWith('weight-') ? 10 : (s.id.startsWith('thresh-') ? 0 : 50);
+      updateSliderDisplay(s);
+    });
+    $('budget') && ($('budget').value = '');
+    $('name-search') && ($('name-search').value = '');
+    // Reset bedroom checkboxes — studio only
+    document.querySelectorAll('input[name="bedrooms"]').forEach(cb => { cb.checked = cb.value === 'studio'; });
+    $('commute-dest') && ($('commute-dest').value = 'none');
+    $('exclude-flood') && ($('exclude-flood').checked = false);
+    $('require-ada') && ($('require-ada').checked = false);
+    // Reset boroughs: clear all selections (empty = all shown)
+    selectedBoroughs.clear();
+    $$('.borough-chip').forEach(c => c.classList.remove('active'));
+
+    if ($('results-section')) $('results-section').style.display = 'none';
+    showToast('Filters reset');
+  });
+
+
+  // Share button
+  $('share-btn')?.addEventListener('click', () => {
+    const params = getSearchParams();
+    const url = location.origin + location.pathname + '?' + encodeSearchParams(params);
+    navigator.clipboard?.writeText(url).then(() => showToast('📋 Link copied!')).catch(() => {
+      prompt('Copy this URL:', url);
+    });
+  });
+
+  // Save search
+  $('save-search-btn')?.addEventListener('click', () => {
+    const name = $('save-search-name')?.value.trim();
+    if (!name) { showToast('Enter a name for this search'); return; }
+    const params = getSearchParams();
+    saveSearch(name, params.weights, { budget: params.budget, bedrooms: params.bedrooms, borough: params.borough });
+    if ($('save-search-name')) $('save-search-name').value = '';
+    updateSavedSearchDropdown();
+    showToast(`💾 Saved "${name}"`);
+  });
+
+  // Load saved search
+  $('load-saved-search')?.addEventListener('change', function () {
+    const idx = parseInt(this.value);
+    if (isNaN(idx)) return;
+    const saved = getSavedSearches()[idx];
+    if (!saved) return;
+    Object.entries(saved.weights || {}).forEach(([dim, val]) => {
+      const el = $(dim);
+      if (el) { el.value = val; updateSliderDisplay(el); }
+    });
+    if (saved.extra?.budget && $('budget')) $('budget').value = saved.extra.budget;
+    if (saved.extra?.bedrooms && $('bedrooms')) $('bedrooms').value = saved.extra.bedrooms;
+    showToast(`Loaded "${saved.name}"`);
+    this.value = '';
+  });
+
+  // Sort dropdown
+  $('sort-select')?.addEventListener('change', function () {
+    currentSort = this.value;
+    allResults = sortResults(allResults, currentSort);
+    shownCount = 0;
+    displayResults();
+  });
+
+  // Load more button
+  $('load-more-btn')?.addEventListener('click', displayResults);
+
+  // Compare bar
+  document.querySelector('.compare-bar')?.addEventListener('click', openCompareModal);
+
+  // Compare modal close
+  $('compare-modal-close')?.addEventListener('click', () => $('compare-modal')?.classList.remove('visible'));
+  $('compare-modal')?.addEventListener('click', e => {
+    if (e.target === $('compare-modal')) $('compare-modal').classList.remove('visible');
+  });
+
+  // Name search — debounced live filter (waits 350ms after typing stops)
+  let nameSearchTimer = null;
+  $('name-search')?.addEventListener('input', () => {
+    clearTimeout(nameSearchTimer);
+    nameSearchTimer = setTimeout(() => findNeighborhoods(), 350);
+  });
+
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') $$('.modal-overlay.visible').forEach(m => m.classList.remove('visible'));
+    if (e.key === 'Enter' && document.activeElement?.tagName !== 'BUTTON') findNeighborhoods();
+  });
+
+  updateSavedSearchDropdown();
+  updateNavFavCount();
+  runTests();
 });
+
+// Expose for inline HTML onclick (backwards compat)
+window.findNeighborhoods = findNeighborhoods;

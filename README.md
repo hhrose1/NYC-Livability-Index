@@ -1,84 +1,92 @@
-# NYC Neighborhood Livability Index
+# NYC Livability Index
 
-A data-driven web tool to help you find the perfect NYC neighborhood based on your priorities.
+A data-driven, client-side NYC apartment search tool comparing 111 neighborhoods across safety, transit, rent, schools, nightlife, and more.
 
-## Features
+## 🚀 Running Locally
 
-### Tier 1: Neighborhood Explorer ✅
-- **8 customizable priority sliders**: Safety, Transit Access, Affordability, Nightlife, Walkability, School Quality, Grocery Access, Park Access
-- **Budget filtering**: Set your max monthly rent
-- **Smart ranking algorithm**: Calculates personalized match scores based on your priorities
-- **111 NYC neighborhoods** with comprehensive data on:
-  - Safety scores and crime statistics
-  - Transit access and subway quality
-  - Rent prices and affordability
-  - Walkability and bike scores
-  - School quality ratings
-  - Restaurant, nightlife, and grocery density
-  - Park access
-  - And more!
+ES modules require an HTTP server (not `file://` protocol):
 
-### Tier 2: Address Lookup (Coming Soon)
-- Detailed address-level reports
-- NYC Open Data API integration (HPD violations, DOB complaints, 311 data)
-- Subway station "sketchy index" for nearby stations
-
-## How to Use
-
-1. Open `index.html` in your browser
-2. Adjust the priority sliders based on what matters most to you
-3. Enter your budget (optional)
-4. Click "Find My Neighborhoods"
-5. Browse your top matches with detailed stats
-
-## Project Structure
-
-```
-nyc-livability-index/
-├── index.html              # Main HTML page
-├── css/
-│   └── style.css          # All styling
-├── js/
-│   └── app.js             # Application logic
-└── data/
-    └── neighborhoods.js   # Neighborhood dataset (111 neighborhoods)
+```bash
+python3 -m http.server 8080
 ```
 
-## Data Sources
+Then open: http://localhost:8080
 
-- NYC Open Data
-- Walk Score API
-- Crime statistics from NYPD
-- School quality ratings
-- Transit data
-- Custom neighborhood analysis
+## 📁 Project Structure
 
-## GitHub Pages Setup
+```
+├── index.html          — Homepage with quick search
+├── search.html         — Full neighborhood search with sliders
+├── neighborhood.html   — Dynamic neighborhood template (?slug=chelsea)
+├── favorites.html      — Saved/favorited neighborhoods
+├── livability.html     — Interactive Leaflet.js map
+├── hpd-guide.html      — HPD violation guide + building lookup
+├── transportation.html — Subway safety ratings
+├── sw.js               — Service worker (cache-first + URL redirects)
+├── sitemap.xml         — SEO sitemap for all 111 neighborhoods
+│
+├── styles/             — CSS design system
+│   ├── variables.css   — All CSS custom properties
+│   ├── base.css        — Base styles + nav + footer
+│   ├── search.css      — Search page styles
+│   ├── neighborhood.css — Neighborhood page styles
+│   └── map.css         — Leaflet map styles
+│
+├── css/                — Legacy CSS (homepage, transportation, etc.)
+│
+├── data/               — ES module data files
+│   ├── neighborhoods.js    — 111 neighborhoods, all scores normalized 0-100
+│   ├── subway-stations.js  — 423 stations with risk indices
+│   └── hpd-violations.js  — 383 HPD violation codes
+│
+├── js/                 — ES module JavaScript
+│   ├── search.js       — Scoring engine, URL params, localStorage
+│   ├── app.js          — Search page coordinator
+│   └── neighborhood.js — Dynamic neighborhood page logic
+│
+└── scripts/            — Build/data scripts
+    └── transform_neighborhoods.py
+```
 
-1. Push this repo to GitHub
-2. Go to Settings → Pages
-3. Select "Deploy from a branch"
-4. Choose `main` branch and `/ (root)` folder
-5. Save and wait a few minutes
-6. Your site will be live at `https://[your-username].github.io/[repo-name]/`
+## 📊 Data Field Reference
 
-## Local Development
+All numeric scores are **0-100 scale**:
 
-Just open `index.html` in your browser. No build process or server required!
+| Field | Original Scale | Notes |
+|-------|---------------|-------|
+| `safetyScore` | /10 → ×10 | From NYPD precinct data |
+| `transitScore` | 0-100 | Direct |
+| `walkScore` | 0-100 | Walk Score® |
+| `bikeScore` | 0-100 | Direct |
+| `schoolScore` | 0-100 | NYC school quality |
+| `nightlifeScore` | 1-5 → ×20 | Normalized |
+| `groceryScore` | 1-5 → ×20 | Normalized |
+| `parkScore` | 1-5 → ×20 | Normalized |
+| `restaurantDensity` | 1-5 → ×20 | Normalized |
+| `medicalDensity` | 1-5 → ×20 | Normalized |
+| `livabilityScore` | 0-100 | Pre-computed composite |
+| `subwaySketchyIndex` | 0-100 | Perception metric |
 
-## Future Enhancements
+### Placeholder Data (Replace with Real Data)
 
-- [ ] Address lookup feature (Tier 2)
-- [ ] Interactive map view
-- [ ] Neighborhood comparison tool
-- [ ] Save favorite neighborhoods
-- [ ] Export results to PDF
-- [ ] Additional filtering options
+| Field | Source Needed |
+|-------|--------------|
+| `floodZone` | FEMA NFHL API |
+| `noiseComplaintsPer1000` | NYC Open Data 311 |
+| `commuteTimes` | MTA GTFS real-time data |
+| `hasElevator` (subway-stations.js) | MTA ADA API |
 
-## License
+## 🗺️ Neighborhood URLs
 
-MIT License - feel free to use and modify!
+Old format: `/bushwick.html` → New format: `/neighborhood.html?slug=bushwick`
 
----
+The service worker automatically redirects old URLs for backwards compatibility.
 
-Made with ❤️ for NYC apartment hunters
+## 🔧 Adding Neighborhoods
+
+1. Add entry to `data/neighborhoods.js` with all required fields
+2. Include `slug`, `name`, `borough`, and score fields
+3. Add to `sitemap.xml`
+4. Add commute times to `transform_neighborhoods.py`
+
+## 📅 Data Last Updated: 2026-04-21

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Search and compare 111 NYC neighborhoods by safety, rent, transit, schools, nightlife, parks, and commute time.">
+  <title>Find a Neighborhood — NYC Livability Index</title>
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/search.css">
+</head>
+<body>
+  <div class="spinner-overlay" id="spinner-overlay"><div class="spinner"></div><div class="spinner-label">Calculating matches...</div></div>
+  <div class="toast" id="toast"></div>
+  <div class="modal-overlay" id="compare-modal">
+    <div class="modal-box" style="max-width:1000px">
+      <div class="modal-header"><h2>🔍 Side-by-Side Comparison</h2><button class="modal-close" id="compare-modal-close" aria-label="Close">×</button></div>
+      <div class="modal-body"><div class="compare-table-wrap"></div></div>
+    </div>
+  </div>
+  <button class="compare-bar" id="compare-bar" aria-label="Compare selected neighborhoods">
+    <span class="compare-label">Compare Selected (0/3)</span><span>→</span>
+  </button>
+  <nav class="top-nav">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">NYC Livability Index</a>
+      <div class="nav-links">
+        <a href="search.html" class="active">Find a Neighborhood</a>
+        <a href="transportation.html">Subway Safety</a>
+        <a href="livability.html">Map</a>
+        <a href="address.html">Learn About An Address</a>
+        <a href="moving-to-nyc.html">Moving to NYC</a>
+        <a href="favorites.html" class="nav-favorites fav-count">Favorites</a>
+      </div>
+    </div>
+  </nav>
+</div>
+
+  <!-- ── Hero Header ── -->
+  <div class="search-hero">
+    <div class="search-hero-bg"></div>
+    <div class="search-hero-content">
+      <h1 class="search-hero-headline">Find your future home here.</h1>
+      <span class="data-badge">📅 Data updated: <span data-last-updated>2026-04-21</span></span>
+    </div>
+  </div>
+
+  <div class="page-content">
+
+    <div class="controls-panel">
+      <!-- Top row: compact name search + budget inline -->
+      <div class="controls-top-row">
+        <div class="name-search-wrap compact">
+          <span class="name-search-icon">🔍</span>
+          <input type="text" id="name-search" placeholder="Search by name..." autocomplete="off" aria-label="Search by name">
+        </div>
+        <div class="budget-inline">
+          <label for="budget">Max Rent (your share):</label>
+          <input type="number" id="budget" placeholder="e.g. 2500" step="100" min="0">
+          <label class="bedroom-chip"><input type="checkbox" name="bedrooms" value="studio" checked> Studio</label>
+          <label class="bedroom-chip"><input type="checkbox" name="bedrooms" value="1br"> 1 BR</label>
+          <label class="bedroom-chip"><input type="checkbox" name="bedrooms" value="2br"> 2 BR</label>
+          <label class="bedroom-chip"><input type="checkbox" name="bedrooms" value="3br"> 3 BR</label>
+          <label class="bedroom-chip"><input type="checkbox" name="bedrooms" value="4br"> 4 BR</label>
+        </div>
+        <div class="living-situation-row">
+          <label class="living-sit-label">Living situation:</label>
+          <div class="living-sit-options">
+            <label class="living-sit-radio"><input type="radio" name="living-situation" value="alone" checked> Living alone</label>
+            <label class="living-sit-radio"><input type="radio" name="living-situation" value="roommates"> Splitting with roommate(s)</label>
+          </div>
+          <div class="roommate-controls" id="roommate-controls" style="display:none">
+            <label for="roommate-count">Number of roommates:</label>
+            <select id="roommate-count">
+              <option value="1">1 roommate (2 people total)</option>
+              <option value="2">2 roommates (3 people total)</option>
+              <option value="3">3 roommates (4 people total)</option>
+              <option value="4">4 roommates (5 people total)</option>
+              <option value="5">5 roommates (6 people total)</option>
+              <option value="6">6 roommates (7 people total)</option>
+            </select>
+            <span class="total-budget-preview" id="total-budget-preview"></span>
+          </div>
+        </div>
+      </div>
+      <!-- Commute + checkboxes row -->
+      <div class="filters-row">
+        <div class="commute-row">
+          <label for="commute-dest">Commute to:</label>
+          <select id="commute-dest">
+            <option value="none">None</option>
+            <option value="midtown">Midtown Manhattan</option>
+            <option value="fidi">Financial District</option>
+            <option value="hudsonYards">Hudson Yards</option>
+            <option value="downtownBklyn">Downtown Brooklyn</option>
+            <option value="lic">Long Island City</option>
+            <option value="flatiron">Flatiron District</option>
+            <option value="jamaica">Downtown Jamaica</option>
+            <option value="hudsonSquare">Hudson Square</option>
+            <option value="fordhamRd">Fordham Rd (BX)</option>
+            <option value="upperEastSide">Upper East Side</option>
+          </select>
+        </div>
+        <div class="filter-checks">
+          <label class="filter-check-item"><input type="checkbox" id="exclude-flood"> Exclude flood zones</label>
+        </div>
+      </div>
+      <div class="borough-section">
+        <label class="borough-label">Borough (select multiple):</label>
+        <div class="borough-chips" id="borough-chips">
+          <button class="borough-chip" data-borough="Manhattan">Manhattan</button>
+          <button class="borough-chip" data-borough="Brooklyn">Brooklyn</button>
+          <button class="borough-chip" data-borough="Queens">Queens</button>
+          <button class="borough-chip" data-borough="Bronx">Bronx</button>
+          <button class="borough-chip" data-borough="Staten Island">Staten Island</button>
+        </div>
+      </div>
+      <div id="simple-mode" class="search-mode">
+        <h3 class="mode-title">Priority Weights — drag to adjust importance</h3>
+        <div class="sliders-grid">
+          <div class="slider-group"><div class="slider-label"><span>Safety</span><span class="slider-value" id="safety-value">50</span></div><input type="range" id="safety" min="0" max="100" value="50"><div class="threshold-row"><span class="threshold-label">Min:</span><input type="range" id="thresh-safety" min="0" max="10" value="0" class="threshold-slider"><span class="threshold-value" id="thresh-safety-value">0</span></div></div>
+          <div class="slider-group"><div class="slider-label"><span>Transit</span><span class="slider-value" id="transit-value">50</span></div><input type="range" id="transit" min="0" max="100" value="50"><div class="threshold-row"><span class="threshold-label">Min:</span><input type="range" id="thresh-transit" min="0" max="10" value="0" class="threshold-slider"><span class="threshold-value" id="thresh-transit-value">0</span></div></div>
+          <div class="slider-group"><div class="slider-label"><span>Affordability</span><span class="slider-value" id="affordability-value">50</span></div><input type="range" id="affordability" min="0" max="100" value="50"><div class="threshold-row"><span class="threshold-label">Min:</span><input type="range" id="thresh-affordability" min="0" max="10" value="0" class="threshold-slider"><span class="threshold-value" id="thresh-affordability-value">0</span></div></div>
+          <div class="slider-group"><div class="slider-label"><span>Nightlife</span><span class="slider-value" id="nightlife-value">50</span></div><input type="range" id="nightlife" min="0" max="100" value="50"><div class="threshold-row"><span class="threshold-label">Min:</span><input type="range" id="thresh-nightlife" min="0" max="10" value="0" class="threshold-slider"><span class="threshold-value" id="thresh-nightlife-value">0</span></div></div>
+          <div class="slider-group"><div class="slider-label"><span>Walkability</span><span class="slider-value" id="walkability-value">50</span></div><input type="range" id="walkability" min="0" max="100" value="50"><div class="threshold-row"><span class="threshold-label">Min:</span><input type="range" id="thresh-walkability" min="0" max="10" value="0" class="threshold-slider"><span class="threshold-value" id="thresh-walkability-value">0</span></div></div>
+          <div class="slider-group"><div class="slider-label"><span>Schools</span><span class="slider-value" id="schools-value">50</span></div><input type="range" id="schools" min="0" max="100" value="50"><div class="threshold-row"><span class="threshold-label">Min:</span><input type="range" id="thresh-schools" min="0" max="10" value="0" class="threshold-slider"><span class="threshold-value" id="thresh-schools-value">0</span></div></div>
+          <div class="slider-group"><div class="slider-label"><span>Groceries</span><span class="slider-value" id="groceries-value">50</span></div><input type="range" id="groceries" min="0" max="100" value="50"><div class="threshold-row"><span class="threshold-label">Min:</span><input type="range" id="thresh-groceries" min="0" max="10" value="0" class="threshold-slider"><span class="threshold-value" id="thresh-groceries-value">0</span></div></div>
+          <div class="slider-group"><div class="slider-label"><span>Parks</span><span class="slider-value" id="parks-value">50</span></div><input type="range" id="parks" min="0" max="100" value="50"><div class="threshold-row"><span class="threshold-label">Min:</span><input type="range" id="thresh-parks" min="0" max="10" value="0" class="threshold-slider"><span class="threshold-value" id="thresh-parks-value">0</span></div></div>
+          <div class="slider-group"><div class="slider-label"><span>Commute</span><span class="slider-value" id="commute-value">0</span></div><input type="range" id="commute" min="0" max="100" value="0"><div class="threshold-row"><span class="threshold-label">Min:</span><input type="range" id="thresh-commute" min="0" max="10" value="0" class="threshold-slider"><span class="threshold-value" id="thresh-commute-value">0</span></div></div>
+          <div class="slider-group"><div class="slider-label"><span>Quiet</span><span class="slider-value" id="noise-value">0</span></div><input type="range" id="noise" min="0" max="100" value="0"><div class="threshold-row"><span class="threshold-label">Min:</span><input type="range" id="thresh-noise" min="0" max="10" value="0" class="threshold-slider"><span class="threshold-value" id="thresh-noise-value">0</span></div></div>
+        </div>
+      </div>
+      <!-- Advanced mode removed; sliders always visible -->
+      <div class="button-group">
+        <button class="btn-primary btn-search" id="find-btn">Find Neighborhoods</button>
+        <button class="btn-secondary" id="reset-btn">✕ Clear All</button>
+        <button class="share-btn" id="share-btn">Share Search</button>
+      </div>
+      <div class="saved-searches-row">
+        <input type="text" id="save-search-name" placeholder="Name this search...">
+        <button class="btn-ghost" id="save-search-btn">💾 Save Search</button>
+        <select id="load-saved-search"><option value="">Load saved search...</option></select>
+      </div>
+    </div>
+    <div class="results-section" id="results-section" style="display:none">
+      <div class="results-header">
+        <div>
+          <span class="results-title">Top Matches</span>
+          <div class="score-explain">
+            <span class="tooltip-wrap">Match Score: Personalized to your weights
+              <span class="tooltip-icon">?</span>
+              <span class="tooltip-text">Livability Score (0–100): Safety 30%, Transit 20%, Walk Score 15%, Restaurant Density 10%, Nightlife 10%, Schools 5%, Amenities 10%. Match Score personalizes this to your selected priorities. Affordability is excluded — filter by budget first, then rank by quality.</span>
+            </span>
+          </div>
+        </div>
+        <div class="results-controls">
+          <span class="results-count" id="results-count"></span>
+          <select class="sort-select" id="sort-select">
+            <option value="match">Sort: Match Score</option>
+            <option value="safety">Sort: Safety</option>
+            <option value="rent">Sort: Rent Low→High</option>
+            <option value="name">Sort: Name</option>
+          </select>
+          <button class="clear-btn" id="reset-btn-2">✕ Clear</button>
+        </div>
+      </div>
+      <div class="cards-container" id="cards-container"></div>
+      <div class="pagination-section" id="pagination-section" style="display:none">
+        <button class="load-more-btn" id="load-more-btn">Load 20 More</button>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <p>NYC Livability Index | Built for transplants, by a transplant</p>
+    <p class="footer-updated">Data last updated: <span data-last-updated>2026-04-21</span></p>
+    <a href="mailto:?subject=Data%20Issue" class="footer-report">Report a data issue</a>
+  </footer>
+  <script type="module" src="js/app.js"></script>
+  <script type="module">
+    if("serviceWorker"in navigator)navigator.serviceWorker.register("/sw.js").catch(()=>{});
+    document.querySelectorAll(".weight-slider").forEach(s=>s.addEventListener("input",function(){const v=document.getElementById(this.id+"-value");if(v)v.textContent=this.value+"%"}));
+    document.getElementById("reset-btn-2")?.addEventListener("click",()=>document.getElementById("reset-btn")?.click());
+  </script>
+</body>
+</html>
